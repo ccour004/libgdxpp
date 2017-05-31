@@ -1,0 +1,53 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:2:1-20:12
+	package
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:3:11-35
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+	android:versionName
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:5:11-36
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+	android:versionCode
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:4:11-34
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:2:11-69
+application
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:6:3-19:17
+	android:label
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:10:7-39
+	android:fullBackupContent
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:8:7-40
+	android:allowBackup
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:7:7-34
+	android:theme
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:9:7-65
+activity#org.libsdl.app.SDLActivity
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:11:5-18:16
+	android:label
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:13:15-47
+	android:configChanges
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:12:15-65
+	android:name
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:11:15-42
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:14:7-17:23
+action#android.intent.action.MAIN
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:15:9-61
+	android:name
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:15:17-58
+category#android.intent.category.LAUNCHER
+ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:16:9-69
+	android:name
+		ADDED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml:16:19-66
+uses-sdk
+INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+	android:targetSdkVersion
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml
+		INJECTED from /home/colin/git/android-sdl2-gradle-template/app/src/main/AndroidManifest.xml

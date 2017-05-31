@@ -1,0 +1,44 @@
+apply plugin: 'com.android.model.native'
+
+model {
+    android {
+        compileSdkVersion = 25
+        buildToolsVersion = '25.0.3'
+
+        defaultConfig {
+            minSdkVersion.apiLevel = 16
+            targetSdkVersion.apiLevel = 25
+            versionCode = 1
+            versionName = '1.0'
+        }
+        ndk {
+            moduleName = 'bullet3'
+            ldLibs.addAll(["log", "android", "dl"])
+            cppFlags.addAll(["-I" + file("src/").absolutePath])
+	    stl "stlport_static"
+        }
+
+        sources {
+            main {
+                jni {
+                    source {
+                        srcDirs = ['src/BulletSoftBody/','src/BulletCollision/','src/BulletDynamics/','src/LinearMath/']
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+// This is just copy out the header file and built lib into distribution
+// directory for clint application to use; it is a small overhead of this sample:
+//    both lib and app are put inside one project space [save maintenance time]
+task(distributeLib, type : Copy) {
+    // trigger build library
+    dependsOn assemble
+    into '../distribution/bullet3/'
+    from('build/outputs/native/release/lib') {
+        into 'lib/'
+    }
+}
