@@ -2,6 +2,9 @@
 Porting portions of LibGDX to C/C++.
 
 * augmented from from android-sdl2-gradle-template:
+  * Requires a folder 'dependencies'
+    * put SDL2-2.0.5 in it
+    * put bullet3 in it
   * Requires a local.properties file
     * ndk.dir= /path/to/sdk/ndk-bundle
     * sdk.dir= /path/to/sdk
