@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/colin/git/android-sdl2-gradle-template/app/src/main/shaders"/></dataSet><dataSet config="arm8"><source path="/home/colin/git/android-sdl2-gradle-template/app/src/arm8/shaders"/></dataSet><dataSet config="debug"><source path="/home/colin/git/android-sdl2-gradle-template/app/src/debug/shaders"/></dataSet><dataSet config="arm8Debug"><source path="/home/colin/git/android-sdl2-gradle-template/app/src/arm8Debug/shaders"/></dataSet></merger>

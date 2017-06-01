@@ -1,6 +1,7 @@
 # libgdxpp
 Porting portions of LibGDX to C/C++.
 
+* Run build.sh to retrieve and build dependencies, build android/desktop apps, and launch everything.
 * augmented from from android-sdl2-gradle-template:
   * Requires a folder 'dependencies'
     * put SDL2-2.0.5 in it

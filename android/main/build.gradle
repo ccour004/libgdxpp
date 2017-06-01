@@ -34,6 +34,7 @@ model {
 	    ldLibs.addAll(["GLESv1_CM", "EGL", "GLESv2","GLESv3", "log", "android", "dl"])
             cppFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             cppFlags.addAll(["-I" + file("../bullet3/include/").absolutePath])
+cppFlags.addAll(["-std=c++11"])
             CFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
 	    CFlags.addAll(["-I" + file("../bullet3/src/").absolutePath])
             stl "stlport_static"

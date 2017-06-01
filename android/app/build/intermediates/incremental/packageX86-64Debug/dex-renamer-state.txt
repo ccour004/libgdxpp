@@ -1,4 +1,0 @@
-#Wed May 31 16:44:12 EDT 2017
-base.0=/home/colin/git/android-sdl2-gradle-template/app/build/intermediates/transforms/dex/x86-64/debug/folders/1000/1f/main
-renamed.0=classes.dex
-file.0=/home/colin/git/android-sdl2-gradle-template/app/build/intermediates/transforms/dex/x86-64/debug/folders/1000/1f/main/classes.dex

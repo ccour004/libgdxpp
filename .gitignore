@@ -34,6 +34,8 @@
 .gradle
 /build/
 /dependencies/*
+android/app/build/
+android/local.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
