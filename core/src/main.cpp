@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include "BulletSim.hpp"
+//#include "BulletSim.hpp"
 #include "ShapeCreator.hpp"
 
 //#include <GLES/gl.h>
@@ -117,9 +117,9 @@ int main(int argc, char* argv[])
     //SDL_StartTextInput();
 
     //!!! THIS WORKS !!!
-    BulletSim* sim = new BulletSim;
+    /*BulletSim* sim = new BulletSim;
     sim->init();
-    sim->runSim();
+    sim->runSim();*/
 
     while(!quit){
         while(SDL_PollEvent(&e) != 0){

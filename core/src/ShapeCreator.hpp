@@ -55,7 +55,7 @@ public:
         return true;
     }
 
-    bool setViewMatrix(btVector3 eye,btVector3 target,btVector3 up){
+    bool setViewMatrix(btVector3& eye,btVector3& target,btVector3& up){
         btVector3 zaxis = btVector3(eye - target).normalized();
         btVector3 xaxis = up.cross(zaxis).normalized();
         btVector3 yaxis = zaxis.cross(xaxis);
@@ -339,7 +339,7 @@ struct MeshInstance{
     Shader* shader;
     btVector3 transform;
 public:
-    MeshInstance(Mesh* mesh,Shader* shader,btVector3 transform){
+    MeshInstance(Mesh* mesh,Shader* shader,btVector3& transform){
         this->mesh = mesh;
         this->shader = shader;
         this->transform = transform;
@@ -407,7 +407,7 @@ public:
         float angleV = 0.0f;
 
         int s = divisionsU + 3;
-        GLuint tmpIndices[s];
+        GLuint* tmpIndices = new GLuint[s];
         int tempOffset = 0;
 
         for (int iv = 0; iv <= divisionsV; iv++) {
