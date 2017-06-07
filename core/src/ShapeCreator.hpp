@@ -1,3 +1,8 @@
+#ifndef SDL_H
+#define SDL_H
+#include <SDL.h>
+#endif
+
 #include <LinearMath/btVector3.h>
 #include <LinearMath/btHashMap.h>
 #include <math.h>

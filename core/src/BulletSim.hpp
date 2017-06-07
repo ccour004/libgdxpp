@@ -1,3 +1,7 @@
+#ifndef SDL_H
+#define SDL_H
+#include <SDL.h>
+#endif
 
 #include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
