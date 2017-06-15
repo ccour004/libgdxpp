@@ -1,11 +1,8 @@
-#ifndef SDL_H
-#define SDL_H
-#include <SDL.h>
-#endif
+#pragma once
 
 class ApplicationListener{
 public:
-	virtual void create() = 0;
+	virtual bool create() = 0;
 	virtual void resize(int width, int height) = 0;
 	virtual void render() = 0;
 	virtual void pause() = 0;
@@ -93,7 +90,10 @@ public:
 		    //SDL_StartTextInput();
 
 		//Let listener know that we're created now.
-		listener->create();	
+		if(!listener->create()){
+            this->dispose();
+            return;	
+        }
 		listener->resize(640,480);
 
 		//Enter main loop.
