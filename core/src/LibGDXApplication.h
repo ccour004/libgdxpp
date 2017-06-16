@@ -18,10 +18,10 @@ int err(const char* fmt){
 
 class LibGDX_Application{
 private:
-	ApplicationListener* listener;
-    	SDL_Window* window;
-    	SDL_GLContext glContext;
-        void dispose(){
+    ApplicationListener* listener;
+    SDL_Window* window;
+    SDL_GLContext glContext;
+    void dispose(){
 	   listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
            SDL_GL_DeleteContext(glContext);
@@ -90,7 +90,7 @@ public:
 		    //SDL_StartTextInput();
 
 		//Let listener know that we're created now.
-		if(!listener->create()){
+        if(!listener->create()){
             this->dispose();
             return;	
         }

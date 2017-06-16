@@ -75,6 +75,7 @@ ShaderProgram (std::string vertexShader, std::string fragmentShader,std::string 
 		if (isCompiled()) {
 			fetchAttributes();
 			fetchUniforms();
+            SDL_Log("Shader fetched all variables!");
 			addManagedShader(app, this);
 		}
 	}
@@ -742,9 +743,13 @@ private:
 	}
     
     void addManagedShader (std::string app, ShaderProgram* shaderProgram) {
+        SDL_Log("OK BEGIN ADD MANAGED SHADER");
 		std::vector<ShaderProgram*>* managedResources;
-        try{managedResources = &shaders.at(app);}catch(std::out_of_range){
-            managedResources = new std::vector<ShaderProgram*>;}
+
+        auto search = shaders.find(app);
+        if(managedResources == NULL || search == shaders.end())
+            managedResources = new std::vector<ShaderProgram*>;
+
 		managedResources->push_back(shaderProgram);
 		shaders[app] = *managedResources;
 	}
@@ -809,6 +814,7 @@ private:
             char* cName;
 			location = glGetAttribLocation(program, cName);
 			attributes[std::string(cName)] = location;
+            delete cName;
         }
 		return location;
 	}

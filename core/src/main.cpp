@@ -5,9 +5,10 @@
 
 class MyAppListener: public ApplicationListener{
     MeshBuilder modelBuilder;
+    bool isCreated = false;
     Mesh mesh;
     Matrix4* view,*proj;
-    ShaderProgram* shaderProgram;
+    ShaderProgram* shaderProgram;int counter = 0;
     
     Vector3 eye,target,up;
     float near = 0.1f,far = 100.0f,fov = 67.0f,aspect = 0.6182f;
@@ -24,6 +25,7 @@ class MyAppListener: public ApplicationListener{
     }
 public:
  bool create(){
+     if(isCreated) return true;
         //Setup shader program.
         ShaderProgram::prependVertexCode = "#version 300 es\n";
         ShaderProgram::prependFragmentCode = "#version 300 es\n";
@@ -51,6 +53,7 @@ public:
         //Setup instance.
         mesh = modelBuilder.build(2,2,2,20,20);
         mesh.init();
+        isCreated = true;
         return true;
  }
 
