@@ -29,6 +29,7 @@ class Vector3;
  * 
  * @author mzechner */
  class Matrix3:public Serializable {
+     public:
 	static const long serialVersionUID = 7907569533774959788L;
 	 static const int M00 = 0;
 	 static const int M01 = 3;
@@ -39,8 +40,8 @@ class Vector3;
 	 static const int M20 = 2;
 	 static const int M21 = 5;
 	 static const int M22 = 8;
-	 float* val = new float[9];
-	 float* tmp = new float[9];
+	 std::vector<float> val;
+	 std::vector<float> tmp;
 
 	 Matrix3 () {
 		idt();
@@ -54,14 +55,13 @@ class Vector3;
 	 * @param values The float array to copy. Remember that this matrix is in <a
 	 *           href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column major</a> order. (The float array is
 	 *           not modified.) */
-	 Matrix3 (float* values) {
+	 Matrix3 (const std::vector<float>& values) {
 		this->set(values);
 	}
 
 	/** Sets this matrix to the identity matrix
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 idt () {
-		float* val = this->val;
+	 Matrix3& idt () {
 		val[M00] = 1;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -71,7 +71,7 @@ class Vector3;
 		val[M02] = 0;
 		val[M12] = 0;
 		val[M22] = 1;
-		return this;
+		return *this;
 	}
 
 	/** Postmultiplies this matrix with the provided matrix and stores the result in this matrix. For example:
@@ -81,8 +81,7 @@ class Vector3;
 	 * </pre>
 	 * @param m Matrix to multiply by.
 	 * @return This matrix for the purpose of chaining operations together. */
-	 Matrix3 mul (Matrix3 m) {
-		float* val = this->val;
+	 Matrix3& mul (const Matrix3& m) {
 
 		float v00 = val[M00] * m.val[M00] + val[M01] * m.val[M10] + val[M02] * m.val[M20];
 		float v01 = val[M00] * m.val[M01] + val[M01] * m.val[M11] + val[M02] * m.val[M21];
@@ -106,7 +105,7 @@ class Vector3;
 		val[M12] = v12;
 		val[M22] = v22;
 
-		return this;
+		return *this;
 	}
 
 	/** Premultiplies this matrix with the provided matrix and stores the result in this matrix. For example:
@@ -116,8 +115,7 @@ class Vector3;
 	 * </pre>
 	 * @param m The other Matrix to multiply by
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 mulLeft (Matrix3 m) {
-		float* val = this->val;
+	 Matrix3& mulLeft (const Matrix3& m) {
 
 		float v00 = m.val[M00] * val[M00] + m.val[M01] * val[M10] + m.val[M02] * val[M20];
 		float v01 = m.val[M00] * val[M01] + m.val[M01] * val[M11] + m.val[M02] * val[M21];
@@ -141,23 +139,22 @@ class Vector3;
 		val[M12] = v12;
 		val[M22] = v22;
 
-		return this;
+		return *this;
 	}
 
 	/** Sets this matrix to a rotation matrix that will rotate any vector in counter-clockwise direction around the z-axis.
 	 * @param degrees the angle in degrees.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToRotation (float degrees) {
+	 Matrix3& setToRotation (float degrees) {
 		return setToRotationRad(MathUtils::degreesToRadians * degrees);
 	}
 
 	/** Sets this matrix to a rotation matrix that will rotate any vector in counter-clockwise direction around the z-axis.
 	 * @param radians the angle in radians.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToRotationRad (float radians) {
-		float cos = (float)Math.cos(radians);
-		float sin = (float)Math.sin(radians);
-		float* val = this->val;
+	 Matrix3& setToRotationRad (float radians) {
+		float cos = MathUtils::cos(radians);
+		float sin = MathUtils::sin(radians);
 
 		val[M00] = cos;
 		val[M10] = sin;
@@ -171,34 +168,20 @@ class Vector3;
 		val[M12] = 0;
 		val[M22] = 1;
 
-		return this;
+		return *this;
 	}
 
-	 Matrix3 setToRotation (Vector3 axis, float degrees) {
+	 Matrix3& setToRotation (const Vector3& axis, float degrees) {
 		return setToRotation(axis, MathUtils::cosDeg(degrees), MathUtils::sinDeg(degrees));
 	}
 
-	 Matrix3 setToRotation (Vector3 axis, float cos, float sin) {
-		float* val = this->val;
-		float oc = 1.0f - cos;
-		val[M00] = oc * axis.x * axis.x + cos;
-		val[M10] = oc * axis.x * axis.y - axis.z * sin;
-		val[M20] = oc * axis.z * axis.x + axis.y * sin;
-		val[M01] = oc * axis.x * axis.y + axis.z * sin;
-		val[M11] = oc * axis.y * axis.y + cos;
-		val[M21] = oc * axis.y * axis.z - axis.x * sin;
-		val[M02] = oc * axis.z * axis.x - axis.y * sin;
-		val[M12] = oc * axis.y * axis.z + axis.x * sin;
-		val[M22] = oc * axis.z * axis.z + cos;
-		return this;
-	}
+	 Matrix3& setToRotation (const Vector3& axis, float cos, float sin);
 
 	/** Sets this matrix to a translation matrix.
 	 * @param x the translation in x
 	 * @param y the translation in y
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToTranslation (float x, float y) {
-		float* val = this->val;
+	 Matrix3& setToTranslation (float x, float y) {
 
 		val[M00] = 1;
 		val[M10] = 0;
@@ -212,37 +195,20 @@ class Vector3;
 		val[M12] = y;
 		val[M22] = 1;
 
-		return this;
+		return *this;
 	}
 
 	/** Sets this matrix to a translation matrix.
 	 * @param translation The translation vector.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToTranslation (Vector2 translation) {
-		float* val = this->val;
-
-		val[M00] = 1;
-		val[M10] = 0;
-		val[M20] = 0;
-
-		val[M01] = 0;
-		val[M11] = 1;
-		val[M21] = 0;
-
-		val[M02] = translation.x;
-		val[M12] = translation.y;
-		val[M22] = 1;
-
-		return this;
-	}
+	 Matrix3& setToTranslation (const Vector2& translation);
 
 	/** Sets this matrix to a scaling matrix.
 	 * 
 	 * @param scaleX the scale in x
 	 * @param scaleY the scale in y
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToScaling (float scaleX, float scaleY) {
-		float* val = this->val;
+	 Matrix3& setToScaling (float scaleX, float scaleY) {
 		val[M00] = scaleX;
 		val[M10] = 0;
 		val[M20] = 0;
@@ -252,36 +218,24 @@ class Vector3;
 		val[M02] = 0;
 		val[M12] = 0;
 		val[M22] = 1;
-		return this;
+		return *this;
 	}
 
 	/** Sets this matrix to a scaling matrix.
 	 * @param scale The scale vector.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 setToScaling (Vector2 scale) {
-		float* val = this->val;
-		val[M00] = scale.x;
-		val[M10] = 0;
-		val[M20] = 0;
-		val[M01] = 0;
-		val[M11] = scale.y;
-		val[M21] = 0;
-		val[M02] = 0;
-		val[M12] = 0;
-		val[M22] = 1;
-		return this;
-	}
+	 Matrix3& setToScaling (const Vector2& scale);
 
 	 std::string toString () {
-		float* val = this->val;
-		return "[" + val[M00] + "|" + val[M01] + "|" + val[M02] + "]\n" //
-			+ "[" + val[M10] + "|" + val[M11] + "|" + val[M12] + "]\n" //
-			+ "[" + val[M20] + "|" + val[M21] + "|" + val[M22] + "]";
+        std::stringstream ss;
+		ss<< "[" <<  val[M00] <<  "|" <<  val[M01] <<  "|" <<  val[M02] <<  "]\n" //
+			<<  "[" <<  val[M10] <<  "|" <<  val[M11] <<  "|" <<  val[M12] <<  "]\n" //
+			<<  "[" <<  val[M20] <<  "|" <<  val[M21] <<  "|" <<  val[M22] <<  "]";
+        return ss.str();
 	}
 
 	/** @return The determinant of this matrix */
 	 float det () {
-		float* val = this->val;
 		return val[M00] * val[M11] * val[M22] + val[M01] * val[M12] * val[M20] + val[M02] * val[M10] * val[M21] - val[M00]
 			* val[M12] * val[M21] - val[M01] * val[M10] * val[M22] - val[M02] * val[M11] * val[M20];
 	}
@@ -289,12 +243,11 @@ class Vector3;
 	/** Inverts this matrix given that the determinant is != 0.
 	 * @return This matrix for the purpose of chaining operations.
 	 * @throws GdxRuntimeException if the matrix is singular (not invertible) */
-	 Matrix3 inv () {
-		float det = det();
-		if (det == 0) throw new GdxRuntimeException("Can't invert a singular matrix");
+	 Matrix3& inv () {
+		float determinant = det();
+		if (determinant == 0) throw "GdxRuntimeException: Can't invert a singular matrix";
 
-		float inv_det = 1.0f / det;
-		float* tmp = this->tmp, val = this->val;
+		float inv_det = 1.0f / determinant;
 
 		tmp[M00] = val[M11] * val[M22] - val[M21] * val[M12];
 		tmp[M10] = val[M20] * val[M12] - val[M10] * val[M22];
@@ -316,23 +269,21 @@ class Vector3;
 		val[M12] = inv_det * tmp[M12];
 		val[M22] = inv_det * tmp[M22];
 
-		return this;
+		return *this;
 	}
 
 	/** Copies the values from the provided matrix to this matrix.
 	 * @param mat The matrix to copy.
 	 * @return This matrix for the purposes of chaining. */
-	 Matrix3 set (Matrix3 mat) {
-		System.arraycopy(mat.val, 0, val, 0, val.length);
-		return this;
+	 Matrix3& set (const Matrix3& mat) {
+        this->set(mat.val);
+		return *this;
 	}
 
 	/** Copies the values from the provided affine matrix to this matrix. The last row is set to (0, 0, 1).
 	 * @param affine The affine matrix to copy.
 	 * @return This matrix for the purposes of chaining. */
-	 Matrix3 set (Affine2 affine) {
-		float* val = this->val;
-
+	 Matrix3& set (const Affine2& affine) {
 		val[M00] = affine.m00;
 		val[M10] = affine.m10;
 		val[M20] = 0;
@@ -343,24 +294,23 @@ class Vector3;
 		val[M12] = affine.m12;
 		val[M22] = 1;
 
-		return this;
+		return *this;
 	}
 
 	/** Sets this 3x3 matrix to the top left 3x3 corner of the provided 4x4 matrix.
 	 * @param mat The matrix whose top left corner will be copied. This matrix will not be modified.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3 set (Matrix4 mat) {
-		float* val = this->val;
-		val[M00] = mat.val[Matrix4.M00];
-		val[M10] = mat.val[Matrix4.M10];
-		val[M20] = mat.val[Matrix4.M20];
-		val[M01] = mat.val[Matrix4.M01];
-		val[M11] = mat.val[Matrix4.M11];
-		val[M21] = mat.val[Matrix4.M21];
-		val[M02] = mat.val[Matrix4.M02];
-		val[M12] = mat.val[Matrix4.M12];
-		val[M22] = mat.val[Matrix4.M22];
-		return this;
+	 Matrix3& set (const Matrix4& mat) {
+		val[M00] = mat.val[Matrix4::M00];
+		val[M10] = mat.val[Matrix4::M10];
+		val[M20] = mat.val[Matrix4::M20];
+		val[M01] = mat.val[Matrix4::M01];
+		val[M11] = mat.val[Matrix4::M11];
+		val[M21] = mat.val[Matrix4::M21];
+		val[M02] = mat.val[Matrix4::M02];
+		val[M12] = mat.val[Matrix4::M12];
+		val[M22] = mat.val[Matrix4::M22];
+		return *this;
 	}
 
 	/** Sets the matrix to the given matrix as a float array. The float array must have at least 9 elements; the first 9 will be
@@ -369,46 +319,45 @@ class Vector3;
 	 * @param values The matrix, in float form, that is to be copied. Remember that this matrix is in <a
 	 *           href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column major</a> order.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3 set (float* values) {
-		System.arraycopy(values, 0, val, 0, val.length);
-		return this;
+	 Matrix3& set (std::vector<float> values) {
+		val[M00] = values[Matrix4::M00];
+		val[M10] = values[Matrix4::M10];
+		val[M20] = values[Matrix4::M20];
+		val[M01] = values[Matrix4::M01];
+		val[M11] = values[Matrix4::M11];
+		val[M21] = values[Matrix4::M21];
+		val[M02] = values[Matrix4::M02];
+		val[M12] = values[Matrix4::M12];
+		val[M22] = values[Matrix4::M22];
+		return *this;
 	}
 
 	/** Adds a translational component to the matrix in the 3rd column. The other columns are untouched.
 	 * @param vector The translation vector.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 trn (Vector2 vector) {
-		val[M02] += vector.x;
-		val[M12] += vector.y;
-		return this;
-	}
+	 Matrix3& trn (const Vector2& vector);
 
 	/** Adds a translational component to the matrix in the 3rd column. The other columns are untouched.
 	 * @param x The x-component of the translation vector.
 	 * @param y The y-component of the translation vector.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 trn (float x, float y) {
+	 Matrix3& trn (float x, float y) {
 		val[M02] += x;
 		val[M12] += y;
-		return this;
+		return *this;
 	}
 
 	/** Adds a translational component to the matrix in the 3rd column. The other columns are untouched.
 	 * @param vector The translation vector. (The z-component of the vector is ignored because this is a 3x3 matrix)
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 trn (Vector3 vector) {
-		val[M02] += vector.x;
-		val[M12] += vector.y;
-		return this;
-	}
+	 Matrix3& trn (const Vector3& vector);
 
 	/** Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x
 	 * glTranslate/glRotate/glScale.
 	 * @param x The x-component of the translation vector.
 	 * @param y The y-component of the translation vector.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 translate (float x, float y) {
-		float* val = this->val;
+	 Matrix3& translate (float x, float y) {
 		tmp[M00] = 1;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -421,35 +370,20 @@ class Vector3;
 		tmp[M12] = y;
 		tmp[M22] = 1;
 		mul(val, tmp);
-		return this;
+		return *this;
 	}
 
 	/** Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x
 	 * glTranslate/glRotate/glScale.
 	 * @param translation The translation vector.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 translate (Vector2 translation) {
-		float* val = this->val;
-		tmp[M00] = 1;
-		tmp[M10] = 0;
-		tmp[M20] = 0;
-
-		tmp[M01] = 0;
-		tmp[M11] = 1;
-		tmp[M21] = 0;
-
-		tmp[M02] = translation.x;
-		tmp[M12] = translation.y;
-		tmp[M22] = 1;
-		mul(val, tmp);
-		return this;
-	}
+	 Matrix3& translate (const Vector2& translation);
 
 	/** Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x
 	 * glTranslate/glRotate/glScale.
 	 * @param degrees The angle in degrees
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3 rotate (float degrees) {
+	 Matrix3& rotate (float degrees) {
 		return rotateRad(MathUtils::degreesToRadians * degrees);
 	}
 
@@ -457,11 +391,10 @@ class Vector3;
 	 * glTranslate/glRotate/glScale.
 	 * @param radians The angle in radians
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3* rotateRad (float radians) {
-		if (radians == 0) return this;
-		float cos = cos(radians);
-		float sin = sin(radians);
-		float* tmp = this->tmp;
+	 Matrix3& rotateRad (float radians) {
+		if (radians == 0) return *this;
+		float cos = MathUtils::cos(radians);
+		float sin = MathUtils::sin(radians);
 
 		tmp[M00] = cos;
 		tmp[M10] = sin;
@@ -475,7 +408,7 @@ class Vector3;
 		tmp[M12] = 0;
 		tmp[M22] = 1;
 		mul(val, tmp);
-		return this;
+		return *this;
 	}
 
 	/** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
@@ -483,8 +416,7 @@ class Vector3;
 	 * @param scaleX The scale in the x-axis.
 	 * @param scaleY The scale in the y-axis.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3* scale (float scaleX, float scaleY) {
-		float* tmp = this->tmp;
+	 Matrix3& scale (float scaleX, float scaleY) {
 		tmp[M00] = scaleX;
 		tmp[M10] = 0;
 		tmp[M20] = 0;
@@ -495,87 +427,56 @@ class Vector3;
 		tmp[M12] = 0;
 		tmp[M22] = 1;
 		mul(val, tmp);
-		return this;
+		return *this;
 	}
 
 	/** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
 	 * glTranslate/glRotate/glScale.
 	 * @param scale The vector to scale the matrix by.
 	 * @return This matrix for the purpose of chaining. */
-	 Matrix3* scale (const Vector2& scale) {
-		float* tmp = this->tmp;
-		tmp[M00] = scale.x;
-		tmp[M10] = 0;
-		tmp[M20] = 0;
-		tmp[M01] = 0;
-		tmp[M11] = scale.y;
-		tmp[M21] = 0;
-		tmp[M02] = 0;
-		tmp[M12] = 0;
-		tmp[M22] = 1;
-		mul(val, tmp);
-		return this;
-	}
+	 Matrix3& scale (const Vector2& scale);
 
 	/** Get the values in this matrix.
 	 * @return The float values that make up this matrix in column-major order. */
-	 float* getValues () {
+	 std::vector<float> getValues () {
 		return val;
 	}
 
-	 Vector2* getTranslation (const Vector2& position) {
-		position.x = val[M02];
-		position.y = val[M12];
-		return position;
-	}
+	 Vector2& getTranslation (const Vector2& position);
 
-	 Vector2* getScale (const Vector2& scale) {
-		float* val = this->val;
-		scale.x = (float)Math.sqrt(val[M00] * val[M00] + val[M01] * val[M01]);
-		scale.y = (float)Math.sqrt(val[M10] * val[M10] + val[M11] * val[M11]);
-		return scale;
-	}
+	 Vector2& getScale (const Vector2& scale);
 
 	 float getRotation () {
-		return MathUtils::radiansToDegrees * atan2(val[M10], val[M00]);
+		return MathUtils::radiansToDegrees * MathUtils::atan2(val[M10], val[M00]);
 	}
 
 	 float getRotationRad () {
-		return atan2(val[M10], val[M00]);
+		return MathUtils::atan2(val[M10], val[M00]);
 	}
 
 	/** Scale the matrix in the both the x and y components by the scalar value.
 	 * @param scale The single value that will be used to scale both the x and y components.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3 scl (float scale) {
+	 Matrix3& scl (float scale) {
 		val[M00] *= scale;
 		val[M11] *= scale;
-		return this;
+		return *this;
 	}
 
 	/** Scale this matrix using the x and y components of the vector but leave the rest of the matrix alone.
 	 * @param scale The {@link Vector3} to use to scale this matrix.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3* scl (const Vector2& scale) {
-		val[M00] *= scale.x;
-		val[M11] *= scale.y;
-		return this;
-	}
+	 Matrix3& scl (const Vector2& scale);
 
 	/** Scale this matrix using the x and y components of the vector but leave the rest of the matrix alone.
 	 * @param scale The {@link Vector3} to use to scale this matrix. The z component will be ignored.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3* scl (const Vector3& scale) {
-		val[M00] *= scale.x;
-		val[M11] *= scale.y;
-		return this;
-	}
+	 Matrix3& scl (const Vector3& scale);
 
 	/** Transposes the current matrix.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3* transpose () {
+	 Matrix3& transpose () {
 		// Where MXY you do not have to change MXX
-		float* val = this->val;
 		float v01 = val[M10];
 		float v02 = val[M20];
 		float v10 = val[M01];
@@ -588,7 +489,7 @@ class Vector3;
 		val[M12] = v12;
 		val[M20] = v20;
 		val[M21] = v21;
-		return this;
+		return *this;
 	}
 
 	/** Multiplies matrix a with matrix b in the following manner:

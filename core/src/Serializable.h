@@ -8,8 +8,8 @@ public:
     inline bool isType(const K &k) {
         return typeid(T).hash_code() == typeid(k).hash_code();
     }
-    Serializable();
-    ~Serializable();
+    Serializable(){};
+    ~Serializable(){};
 
 };
 

@@ -25,8 +25,8 @@
 /** Encapsulates a 3D vector. Allows chaining operations by returning a reference to itself in all modification methods.
  * @author badlogicgames@gmail.com */
 
-template<typename T>
-class Vector3:public Serializable, public Vector<T> {
+class Vector3:public Serializable, public Vector<Vector3> {
+    public:
 	static const long serialVersionUID = 3840054589595372522L;
 
 	/** the x-component of this vector **/
@@ -36,13 +36,13 @@ class Vector3:public Serializable, public Vector<T> {
 	/** the z-component of this vector **/
 	float z;
 
-	 Vector3 X =  Vector3(1, 0, 0);
-	 Vector3 Y =  Vector3(0, 1, 0);
-	 Vector3 Z =  Vector3(0, 0, 1);
-	 Vector3 Zero =  Vector3(0, 0, 0);
+    static Vector3 X;
+    static Vector3 Y;
+    static Vector3 Z;
+    static Vector3 Zero;
 
 	static Matrix4 tmpMat;
-public:
+
 	/** Constructs a vector at (0,0,0) */
 	Vector3 () {
 	}
@@ -64,7 +64,7 @@ public:
 	/** Creates a vector from the given array. The array must have at least 3 elements.
 	 *
 	 * @param values The array */
-	Vector3 (const float* values) {
+	Vector3 (const std::vector<float>& values) {
 		this->set(values[0], values[1], values[2]);
 	}
 
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @param vector The vector
 	 * @param z The z-component */
-	Vector3 (const Vector2 vector, float z) {
+	Vector3 (const Vector2& vector, float z) {
 		this->set(vector.x, vector.y, z);
 	}
 
@@ -82,15 +82,15 @@ public:
 	 * @param y The y-component
 	 * @param z The z-component
 	 * @return this vector for chaining */
-	Vector3 set (float x, float y, float z) {
+	Vector3& set (float x, float y, float z) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
-		return this;
+		return *this;
 	}
 
 	
-	Vector3 set (const Vector3 vector) {
+	Vector3& set (const Vector3& vector) {
 		return this->set(vector.x, vector.y, vector.z);
 	}
 
@@ -98,7 +98,7 @@ public:
 	 *
 	 * @param values The array
 	 * @return this vector for chaining */
-	Vector3 set (const float* values) {
+	Vector3& set (const std::vector<float>& values) {
 		return this->set(values[0], values[1], values[2]);
 	}
 
@@ -107,7 +107,7 @@ public:
 	 * @param vector The vector
 	 * @param z The z-component
 	 * @return This vector for chaining */
-	Vector3 set (const Vector2 vector, float z) {
+	Vector3& set (const Vector2& vector, float z) {
 		return this->set(vector.x, vector.y, z);
 	}
 
@@ -115,34 +115,34 @@ public:
 	 * @param azimuthalAngle The angle between x-axis in radians [0, 2pi]
 	 * @param polarAngle The angle between z-axis in radians [0, pi]
 	 * @return This vector for chaining */
-	Vector3 setFromSpherical (float azimuthalAngle, float polarAngle) {
-		float cosPolar = cos(polarAngle);
-		float sinPolar = sin(polarAngle);
+	Vector3& setFromSpherical (float azimuthalAngle, float polarAngle) {
+		float cosPolar = MathUtils::cos(polarAngle);
+		float sinPolar = MathUtils::sin(polarAngle);
 
-		float cosAzim = cos(azimuthalAngle);
-		float sinAzim = sin(azimuthalAngle);
+		float cosAzim = MathUtils::cos(azimuthalAngle);
+		float sinAzim = MathUtils::sin(azimuthalAngle);
 
 		return this->set(cosAzim * sinPolar, sinAzim * sinPolar, cosPolar);
 	}
 
 	
-	Vector3 setToRandomDirection () {
+	Vector3& setToRandomDirection () {
 		float u = random();
 		float v = random();
 
-		float theta = PI2 * u; // azimuthal angle
-		float phi = acos(2f * v - 1f); // polar angle
+		float theta = MathUtils::PI2 * u; // azimuthal angle
+		float phi = acos(2.0f * v - 1.0f); // polar angle
 
 		return this->setFromSpherical(theta, phi);
 	}
 
 	
 	Vector3 cpy () {
-		return new Vector3(this);
+		return Vector3(*this);
 	}
 
 	
-	Vector3 add (const Vector3 vector) {
+	Vector3& add (const Vector3& vector) {
 		return this->add(vector.x, vector.y, vector.z);
 	}
 
@@ -151,7 +151,7 @@ public:
 	 * @param y The y-component of the other vector
 	 * @param z The z-component of the other vector
 	 * @return This vector for chaining. */
-	Vector3 add (float x, float y, float z) {
+	Vector3& add (float x, float y, float z) {
 		return this->set(this->x + x, this->y + y, this->z + z);
 	}
 
@@ -159,12 +159,15 @@ public:
 	 *
 	 * @param values The value
 	 * @return This vector for chaining */
-	Vector3 add (float values) {
+	Vector3& add (float values) {
 		return this->set(this->x + values, this->y + values, this->z + values);
 	}
 
+    Vector3 operator-(const Vector3& a){
+        return Vector3(x - a.x,y - a.y,z - a.z);
+    }
 	
-	Vector3 sub (const Vector3 a_vec) {
+	Vector3& sub (const Vector3& a_vec) {
 		return this->sub(a_vec.x, a_vec.y, a_vec.z);
 	}
 
@@ -174,7 +177,7 @@ public:
 	 * @param y The y-component of the other vector
 	 * @param z The z-component of the other vector
 	 * @return This vector for chaining */
-	Vector3 sub (float x, float y, float z) {
+	Vector3& sub (float x, float y, float z) {
 		return this->set(this->x - x, this->y - y, this->z - z);
 	}
 
@@ -182,17 +185,17 @@ public:
 	 *
 	 * @param value The value
 	 * @return This vector for chaining */
-	Vector3 sub (float value) {
+	Vector3& sub (float value) {
 		return this->set(this->x - value, this->y - value, this->z - value);
 	}
 
 	
-	Vector3 scl (float scalar) {
+	Vector3& scl (float scalar) {
 		return this->set(this->x * scalar, this->y * scalar, this->z * scalar);
 	}
 
 	
-	Vector3 scl (const Vector3 other) {
+	Vector3& scl (const Vector3& other) {
 		return this->set(x * other.x, y * other.y, z * other.z);
 	}
 
@@ -201,24 +204,24 @@ public:
 	 * @param vy Y value
 	 * @param vz Z value
 	 * @return This vector for chaining */
-	Vector3 scl (float vx, float vy, float vz) {
+	Vector3& scl (float vx, float vy, float vz) {
 		return this->set(this->x * vx, this->y * vy, this->z * vz);
 	}
 
 	
-	Vector3 mulAdd (Vector3 vec, float scalar) {
+	Vector3& mulAdd (const Vector3& vec, float scalar) {
 		this->x += vec.x * scalar;
 		this->y += vec.y * scalar;
 		this->z += vec.z * scalar;
-		return this;
+		return *this;
 	}
 
 	
-	Vector3 mulAdd (Vector3 vec, Vector3 mulVec) {
+	Vector3& mulAdd (const Vector3& vec, const Vector3& mulVec) {
 		this->x += vec.x * mulVec.x;
 		this->y += vec.y * mulVec.y;
 		this->z += vec.z * mulVec.z;
-		return this;
+		return *this;
 	}
 
 	/** @return The euclidean length */
@@ -243,7 +246,7 @@ public:
 
 	/** @param vector The other vector
 	 * @return Whether this and the other vector are equal */
-	bool idt (const Vector3 vector) {
+	bool idt (const Vector3& vector) {
 		return x == vector.x && y == vector.y && z == vector.z;
 	}
 
@@ -256,7 +259,7 @@ public:
 	}
 
 	
-	float dst (const Vector3 vector) {
+	float dst (const Vector3& vector) {
 		float a = vector.x - x;
 		float b = vector.y - y;
 		float c = vector.z - z;
@@ -280,7 +283,7 @@ public:
 	}
 
 	
-	float dst2 (Vector3 point) {
+	float dst2 (const Vector3& point) {
 		float a = point.x - x;
 		float b = point.y - y;
 		float c = point.z - z;
@@ -300,10 +303,10 @@ public:
 	}
 
 	
-	Vector3 nor () {
+	Vector3& nor () {
 		float len2 = this->len2();
-		if (len2 == 0f || len2 == 1f) return this;
-		return this->scl(1f / sqrt(len2));
+		if (len2 == 0.0f || len2 == 1.0f) return *this;
+		return this->scl(1.0f / sqrt(len2));
 	}
 
 	/** @return The dot product between the two vectors */
@@ -312,7 +315,7 @@ public:
 	}
 
 	
-	float dot (const Vector3 vector) {
+	float dot (const Vector3& vector) {
 		return x * vector.x + y * vector.y + z * vector.z;
 	}
 
@@ -328,8 +331,8 @@ public:
 	/** Sets this vector to the cross product between it and the other vector.
 	 * @param vector The other vector
 	 * @return This vector for chaining */
-	Vector3 crs (const Vector3 vector) {
-		return this->set(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
+	Vector3 crs (const Vector3& vector) {
+		return Vector3(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
 	}
 
 	/** Sets this vector to the cross product between it and the other vector.
@@ -338,14 +341,14 @@ public:
 	 * @param z The z-component of the other vector
 	 * @return This vector for chaining */
 	Vector3 crs (float x, float y, float z) {
-		return this->set(this->y * z - this->z * y, this->z * x - this->x * z, this->x * y - this->y * x);
+		return Vector3(this->y * z - this->z * y, this->z * x - this->x * z, this->x * y - this->y * x);
 	}
 
 	/** Left-multiplies the vector by the given 4x3 column major matrix. The matrix should be composed by a 3x3 matrix representing
 	 * rotation and scale plus a 1x3 matrix representing the translation.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 mul4x3 (float* matrix) {
+	Vector3& mul4x3 (const std::vector<float>& matrix) {
 		return set(x * matrix[0] + y * matrix[3] + z * matrix[6] + matrix[9], x * matrix[1] + y * matrix[4] + z * matrix[7]
 			+ matrix[10], x * matrix[2] + y * matrix[5] + z * matrix[8] + matrix[11]);
 	}
@@ -353,45 +356,45 @@ public:
 	/** Left-multiplies the vector by the given matrix, assuming the fourth (w) component of the vector is 1.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 mul (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		return this->set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03], x
-			* l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12] + l_mat[Matrix4.M13], x * l_mat[Matrix4.M20] + y
-			* l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M23]);
+	Vector3& mul (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02] + l_mat[Matrix4::M03], x
+			* l_mat[Matrix4::M10] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12] + l_mat[Matrix4::M13], x * l_mat[Matrix4::M20] + y
+			* l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M23]);
 	}
 
 	/** Multiplies the vector by the transpose of the given matrix, assuming the fourth (w) component of the vector is 1.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 traMul (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		return this->set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20] + l_mat[Matrix4.M30], x
-			* l_mat[Matrix4.M01] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21] + l_mat[Matrix4.M31], x * l_mat[Matrix4.M02] + y
-			* l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M32]);
+	Vector3& traMul (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20] + l_mat[Matrix4::M30], x
+			* l_mat[Matrix4::M01] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21] + l_mat[Matrix4::M31], x * l_mat[Matrix4::M02] + y
+			* l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M32]);
 	}
 
 	/** Left-multiplies the vector by the given matrix.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 mul (Matrix3 matrix) {
-		float l_mat[] = matrix.val;
-		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M01] + z * l_mat[Matrix3.M02], x * l_mat[Matrix3.M10] + y
-			* l_mat[Matrix3.M11] + z * l_mat[Matrix3.M12], x * l_mat[Matrix3.M20] + y * l_mat[Matrix3.M21] + z * l_mat[Matrix3.M22]);
+	Vector3& mul (const Matrix3& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return set(x * l_mat[Matrix3::M00] + y * l_mat[Matrix3::M01] + z * l_mat[Matrix3::M02], x * l_mat[Matrix3::M10] + y
+			* l_mat[Matrix3::M11] + z * l_mat[Matrix3::M12], x * l_mat[Matrix3::M20] + y * l_mat[Matrix3::M21] + z * l_mat[Matrix3::M22]);
 	}
 
 	/** Multiplies the vector by the transpose of the given matrix.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 traMul (Matrix3 matrix) {
-		float l_mat[] = matrix.val;
-		return set(x * l_mat[Matrix3.M00] + y * l_mat[Matrix3.M10] + z * l_mat[Matrix3.M20], x * l_mat[Matrix3.M01] + y
-			* l_mat[Matrix3.M11] + z * l_mat[Matrix3.M21], x * l_mat[Matrix3.M02] + y * l_mat[Matrix3.M12] + z * l_mat[Matrix3.M22]);
+	Vector3& traMul (const Matrix3& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return set(x * l_mat[Matrix3::M00] + y * l_mat[Matrix3::M10] + z * l_mat[Matrix3::M20], x * l_mat[Matrix3::M01] + y
+			* l_mat[Matrix3::M11] + z * l_mat[Matrix3::M21], x * l_mat[Matrix3::M02] + y * l_mat[Matrix3::M12] + z * l_mat[Matrix3::M22]);
 	}
 
 	/** Multiplies the vector by the given {@link Quaternion}.
 	 * @return This vector for chaining */
-	Vector3 mul (const Quaternion quat) {
-		return quat.transform(this);
+	Vector3& mul (Quaternion& quat) {
+		return quat.transform(*this);
 	}
 
 	/** Multiplies this vector by the given matrix dividing by w, assuming the fourth (w) component of the vector is 1. This is
@@ -399,32 +402,32 @@ public:
 	 *
 	 * @param matrix The matrix.
 	 * @return This vector for chaining */
-	Vector3 prj (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		float l_w = 1f / (x * l_mat[Matrix4.M30] + y * l_mat[Matrix4.M31] + z * l_mat[Matrix4.M32] + l_mat[Matrix4.M33]);
-		return this->set((x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02] + l_mat[Matrix4.M03]) * l_w, (x
-			* l_mat[Matrix4.M10] + y * l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12] + l_mat[Matrix4.M13])
-			* l_w, (x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22] + l_mat[Matrix4.M23]) * l_w);
+	Vector3& prj (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		float l_w = 1.0f / (x * l_mat[Matrix4::M30] + y * l_mat[Matrix4::M31] + z * l_mat[Matrix4::M32] + l_mat[Matrix4::M33]);
+		return this->set((x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02] + l_mat[Matrix4::M03]) * l_w, (x
+			* l_mat[Matrix4::M10] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12] + l_mat[Matrix4::M13])
+			* l_w, (x * l_mat[Matrix4::M20] + y * l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M23]) * l_w);
 	}
 
 	/** Multiplies this vector by the first three columns of the matrix, essentially only applying rotation and scaling.
 	 *
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3 rot (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		return this->set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M01] + z * l_mat[Matrix4.M02], x * l_mat[Matrix4.M10] + y
-			* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M12], x * l_mat[Matrix4.M20] + y * l_mat[Matrix4.M21] + z * l_mat[Matrix4.M22]);
+	Vector3& rot (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02], x * l_mat[Matrix4::M10] + y
+			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12], x * l_mat[Matrix4::M20] + y * l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22]);
 	}
 
 	/** Multiplies this vector by the transpose of the first three columns of the matrix. Note: only works for translation and
 	 * rotation, does not work for scaling. For those, use {@link #rot(Matrix4)} with {@link Matrix4#inv()}.
 	 * @param matrix The transformation matrix
 	 * @return The vector for chaining */
-	Vector3 unrotate (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		return this->set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
-			* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21], x * l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22]);
+	Vector3& unrotate (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20], x * l_mat[Matrix4::M01] + y
+			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21], x * l_mat[Matrix4::M02] + y * l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22]);
 	}
 
 	/** Translates this vector in the direction opposite to the translation of the matrix and the multiplies this vector by the
@@ -432,13 +435,13 @@ public:
 	 * scaling. For those, use {@link #mul(Matrix4)} with {@link Matrix4#inv()}.
 	 * @param matrix The transformation matrix
 	 * @return The vector for chaining */
-	Vector3 untransform (const Matrix4 matrix) {
-		float l_mat[] = matrix.val;
-		x -= l_mat[Matrix4.M03];
-		y -= l_mat[Matrix4.M03];
-		z -= l_mat[Matrix4.M03];
-		return this->set(x * l_mat[Matrix4.M00] + y * l_mat[Matrix4.M10] + z * l_mat[Matrix4.M20], x * l_mat[Matrix4.M01] + y
-			* l_mat[Matrix4.M11] + z * l_mat[Matrix4.M21], x * l_mat[Matrix4.M02] + y * l_mat[Matrix4.M12] + z * l_mat[Matrix4.M22]);
+	Vector3& untransform (const Matrix4& matrix) {
+		std::vector<float> l_mat = matrix.val;
+		x -= l_mat[Matrix4::M03];
+		y -= l_mat[Matrix4::M03];
+		z -= l_mat[Matrix4::M03];
+		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20], x * l_mat[Matrix4::M01] + y
+			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21], x * l_mat[Matrix4::M02] + y * l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22]);
 	}
 
 	/** Rotates this vector by the given angle in degrees around the given axis.
@@ -448,7 +451,7 @@ public:
 	 * @param axisY the y-component of the axis
 	 * @param axisZ the z-component of the axis
 	 * @return This vector for chaining */
-	Vector3 rotate (float degrees, float axisX, float axisY, float axisZ) {
+	Vector3& rotate (float degrees, float axisX, float axisY, float axisZ) {
 		return this->mul(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
 	}
 
@@ -459,7 +462,7 @@ public:
 	 * @param axisY the y-component of the axis
 	 * @param axisZ the z-component of the axis
 	 * @return This vector for chaining */
-	Vector3 rotateRad (float radians, float axisX, float axisY, float axisZ) {
+	Vector3& rotateRad (float radians, float axisX, float axisY, float axisZ) {
 		return this->mul(tmpMat.setToRotationRad(axisX, axisY, axisZ, radians));
 	}
 
@@ -468,7 +471,7 @@ public:
 	 * @param axis the axis
 	 * @param degrees the angle in degrees
 	 * @return This vector for chaining */
-	Vector3 rotate (const Vector3 axis, float degrees) {
+	Vector3& rotate (const Vector3& axis, float degrees) {
 		tmpMat.setToRotation(axis, degrees);
 		return this->mul(tmpMat);
 	}
@@ -478,7 +481,7 @@ public:
 	 * @param axis the axis
 	 * @param radians the angle in radians
 	 * @return This vector for chaining */
-	Vector3 rotateRad (const Vector3 axis, float radians) {
+	Vector3& rotateRad (const Vector3& axis, float radians) {
 		tmpMat.setToRotationRad(axis, radians);
 		return this->mul(tmpMat);
 	}
@@ -490,7 +493,7 @@ public:
 
 	
 	bool isUnit (const float margin) {
-		return Math.abs(len2() - 1f) < margin;
+		return abs(len2() - 1.0f) < margin;
 	}
 
 	
@@ -504,66 +507,66 @@ public:
 	}
 
 	
-	bool isOnLine (Vector3 other, float epsilon) {
+	bool isOnLine (const Vector3& other, float epsilon) {
 		return len2(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x) <= epsilon;
 	}
 
 	
-	bool isOnLine (Vector3 other) {
-		return len2(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x) <= FLOAT_ROUNDING_ERROR;
+	bool isOnLine (const Vector3& other) {
+		return len2(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x) <= MathUtils::FLOAT_ROUNDING_ERROR;
 	}
 
 	
-	bool isCollinear (Vector3 other, float epsilon) {
+	bool isCollinear (const Vector3& other, float epsilon) {
 		return isOnLine(other, epsilon) && hasSameDirection(other);
 	}
 
 	
-	bool isCollinear (Vector3 other) {
+	bool isCollinear (const Vector3& other) {
 		return isOnLine(other) && hasSameDirection(other);
 	}
 
 	
-	bool isCollinearOpposite (Vector3 other, float epsilon) {
+	bool isCollinearOpposite (const Vector3& other, float epsilon) {
 		return isOnLine(other, epsilon) && hasOppositeDirection(other);
 	}
 
 	
-	bool isCollinearOpposite (Vector3 other) {
+	bool isCollinearOpposite (const Vector3& other) {
 		return isOnLine(other) && hasOppositeDirection(other);
 	}
 
 	
-	bool isPerpendicular (Vector3 vector) {
-		return isZero(dot(vector));
+	bool isPerpendicular (const Vector3& vector) {
+		return MathUtils::isZero(dot(vector));
 	}
 
 	
-	bool isPerpendicular (Vector3 vector, float epsilon) {
-		return isZero(dot(vector), epsilon);
+	bool isPerpendicular (const Vector3& vector, float epsilon) {
+		return MathUtils::isZero(dot(vector), epsilon);
 	}
 
 	
-	bool hasSameDirection (Vector3 vector) {
+	bool hasSameDirection (const Vector3& vector) {
 		return dot(vector) > 0;
 	}
 
 	
-	bool hasOppositeDirection (Vector3 vector) {
+	bool hasOppositeDirection (const Vector3& vector) {
 		return dot(vector) < 0;
 	}
 
 	
-	Vector3 lerp (const Vector3 target, float alpha) {
+	Vector3& lerp (const Vector3& target, float alpha) {
 		x += alpha * (target.x - x);
 		y += alpha * (target.y - y);
 		z += alpha * (target.z - z);
-		return this;
+		return *this;
 	}
 
 	
-	Vector3 interpolate (Vector3 target, float alpha, Interpolation& interpolator) {
-		return lerp(target, interpolator.apply(0f, 1f, alpha));
+	Vector3& interpolate (const Vector3& target, float alpha, Interpolation& interpolator) {
+		return lerp(target, interpolator.apply(0.0f, 1.0f, alpha));
 	}
 
 	/** Spherically interpolates between this vector and the target vector by alpha which is in the range [0,1]. The result is
@@ -572,95 +575,93 @@ public:
 	 * @param target The target vector
 	 * @param alpha The interpolation coefficient
 	 * @return This vector for chaining. */
-	Vector3 slerp (const Vector3 target, float alpha) {
-		float dot = dot(target);
+	Vector3& slerp (const Vector3& target, float alpha) {
+		float dotProduct = dot(target);
 		// If the inputs are too close for comfort, simply linearly interpolate.
-		if (dot > 0.9995 || dot < -0.9995) return lerp(target, alpha);
+		if (dotProduct > 0.9995f || dotProduct < -0.9995f) return lerp(target, alpha);
 
 		// theta0 = angle between input vectors
-		float theta0 = acos(dot);
+		float theta0 = acos(dotProduct);
 		// theta = angle between this vector and result
 		float theta = theta0 * alpha;
 
-		float st = (float)Math.sin(theta);
-		float tx = target.x - x * dot;
-		float ty = target.y - y * dot;
-		float tz = target.z - z * dot;
+		float st = MathUtils::sin(theta);
+		float tx = target.x - x * dotProduct;
+		float ty = target.y - y * dotProduct;
+		float tz = target.z - z * dotProduct;
 		float l2 = tx * tx + ty * ty + tz * tz;
-		float dl = st * ((l2 < 0.0001f) ? 1f : 1f / sqrt(l2));
+		float dl = st * ((l2 < 0.0001f) ? 1.0f : 1.0f / sqrt(l2));
 
-		return scl((float)Math.cos(theta)).add(tx * dl, ty * dl, tz * dl).nor();
+		return scl(MathUtils::cos(theta)).add(tx * dl, ty * dl, tz * dl).nor();
 	}
 
 	/** Converts this {@code Vector3} to a string in the format {@code (x,y,z)}.
 	 * @return a string representation of this object. */
 	
 	std::string toString () {
-		return "(" + x + "," + y + "," + z + ")";
+        std::stringstream ss;
+		ss<< "(" << x << "," << y << "," << z <<")";
+        return ss.str();
 	}
 
 	/** Sets this {@code Vector3} to the value represented by the specified string according to the format of {@link #toString()}.
 	 * @param v the string.
 	 * @return this vector for chaining */
-	Vector3 fromString (std::string v) {
-		int s0 = v.indexOf(',', 1);
-		int s1 = v.indexOf(',', s0 + 1);
-		if (s0 != -1 && s1 != -1 && v.charAt(0) == '(' && v.charAt(v.length() - 1) == ')') {
-			try {
-				float x = Float.parseFloat(v.substring(1, s0));
-				float y = Float.parseFloat(v.substring(s0 + 1, s1));
-				float z = Float.parseFloat(v.substring(s1 + 1, v.length() - 1));
-				return this->set(x, y, z);
-			} catch (NumberFormatException ex) {
-				// Throw a GdxRuntimeException
-			}
-		}
-		throw new GdxRuntimeException("Malformed Vector3: " + v);
+	Vector3& fromString (std::string v) {
+		int s0 = v.find(',', 1);
+		int s1 = v.find(',', s0 + 1);
+		if (s0 != -1 && s1 != -1 && v[0] == '(' && v[v.size() - 1] == ')') {
+            float x = std::stof(v.substr(1, s0-1));
+            float y = std::stof(v.substr(s0 + 1, s1-(s0+1)));
+            float z = std::stof(v.substr(s1 + 1, (v.size() - 1)-(s1+1)));
+            return this->set(x, y, z);
+        }
+		throw "GdxRuntimeException: Malformed Vector3: ";
 	}
 
 	
-	Vector3 limit (float limit) {
+	Vector3& limit (float limit) {
 		return limit2(limit * limit);
 	}
 
 	
-	Vector3 limit2 (float limit2) {
-		float len2 = len2();
-		if (len2 > limit2) {
-			scl(sqrt(limit2 / len2));
+	Vector3& limit2 (float limit2) {
+		float length2 = len2();
+		if (length2 > limit2) {
+			scl(sqrt(limit2 / length2));
 		}
-		return this;
+		return *this;
 	}
 
 	
-	Vector3 setLength (float len) {
+	Vector3& setLength (float len) {
 		return setLength2(len * len);
 	}
 
 	
-	Vector3 setLength2 (float len2) {
+	Vector3& setLength2 (float length2) {
 		float oldLen2 = len2();
-		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl(sqrt(len2 / oldLen2));
+		return (oldLen2 == 0 || oldLen2 == length2) ? *this : scl(sqrt(length2 / oldLen2));
 	}
 
 	
-	Vector3 clamp (float min, float max) {
-		float len2 = len2();
-		if (len2 == 0f) return this;
+	Vector3& clamp (float min, float max) {
+		float length2 = len2();
+		if (length2 == 0.0f) return *this;
 		float max2 = max * max;
-		if (len2 > max2) return scl(sqrt(max2 / len2));
+		if (length2 > max2) return scl(sqrt(max2 / length2));
 		float min2 = min * min;
-		if (len2 < min2) return scl(sqrt(min2 / len2));
-		return this;
+		if (length2 < min2) return scl(sqrt(min2 / length2));
+		return *this;
 	}
 
 	
 	int hashCode () {
 		int prime = 31;
 		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
-		result = prime * result + NumberUtils.floatToIntBits(z);
+		result = prime * result + std::hash<float>{}(x);
+		result = prime * result + std::hash<float>{}(y);
+		result = prime * result + std::hash<float>{}(z);
 		return result;
 	}
 
@@ -670,8 +671,7 @@ public:
 	}
 
 	
-	bool epsilonEquals (const Vector3 other, float epsilon) {
-		if (other == null) return false;
+	bool epsilonEquals (const Vector3& other, float epsilon) {
 		if (abs(other.x - x) > epsilon) return false;
 		if (abs(other.y - y) > epsilon) return false;
 		if (abs(other.z - z) > epsilon) return false;
@@ -688,11 +688,11 @@ public:
 	}
 
 	
-	Vector3 setZero () {
+	Vector3& setZero () {
 		this->x = 0;
 		this->y = 0;
 		this->z = 0;
-		return this;
+		return *this;
 	}
 };
 

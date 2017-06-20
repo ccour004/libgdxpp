@@ -27,6 +27,7 @@ const T& clamp(const T& x, const T& upper, const T& lower) {
 /** Takes a linear value in the range of 0-1 and outputs a (usually) non-linear, interpolated value.
  * @author Nathan Sweet */
 class Interpolation {
+    public:
 	/** @param a Alpha value between 0 and 1. */
 	virtual float apply (float a) = 0;
 

@@ -7,7 +7,7 @@
 #include <fstream>
 
 struct Mesh {
-    Vector3 transform;
+    Vector3 transform = Vector3(0,0,0);
     std::vector<GLuint> indices;
     std::vector<Vector3> vertices;
     GLuint* indicesGL;
@@ -108,7 +108,7 @@ public:
             for (int iu = 0; iu <= divisionsU; iu++) {
                 angleU = auo + stepU * iu;
                 // Fixme : wrong normal calculation if transform
-                mesh.vertices.push_back(Vector3(cos(angleU) * hw * t, h, sin(angleU) * hd * t)/* * mesh.transform*/);
+                mesh.vertices.push_back(Vector3(cos(angleU) * hw * t, h, sin(angleU) * hd * t).add(mesh.transform));
                 tmpIndices[tempOffset] = mesh.vertices.size()-1;
                 int o = tempOffset + s;
                 if ((iv > 0) && (iu > 0)) // FIXME don't duplicate lines and points

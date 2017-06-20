@@ -15,6 +15,7 @@
  ******************************************************************************/
  
  #pragma once
+ #include "Camera.h"
 
 /** A Camera with perspective projection.
  * 

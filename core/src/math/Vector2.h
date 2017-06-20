@@ -21,13 +21,13 @@
 
 /** Encapsulates a 2D vector. Allows chaining methods by returning a reference to itself
  * @author badlogicgames@gmail.com */
- template<typename T>
-class Vector2: public Serializable,  Vector<T> {
+class Vector2: public Serializable,  Vector<Vector2> {
+    public:
 	 static const long serialVersionUID = 913902788239530931L;
 
-	 static Vector2 X =  Vector2(1, 0);
-	 static Vector2 Y =  Vector2(0, 1);
-	 static Vector2 Zero =  Vector2(0, 0);
+	 static Vector2 X;
+	 static Vector2 Y;
+	 static Vector2 Zero;
 
 	/** the x-component of this vector **/
 	 float x;
@@ -55,7 +55,7 @@ public:
 
 	
 	 Vector2 cpy () {
-		return  Vector2(this);
+		return  Vector2(*this);
 	}
 
 	 static float len (float x, float y) {
@@ -77,64 +77,64 @@ public:
 	}
 
 	
-	 Vector2 set (const Vector2& v) {
+	 Vector2& set (const Vector2& v) {
 		x = v.x;
 		y = v.y;
-		return this;
+		return *this;
 	}
 
 	/** Sets the components of this vector
 	 * @param x The x-component
 	 * @param y The y-component
 	 * @return This vector for chaining */
-	 Vector2 set (float x, float y) {
+	 Vector2& set (float x, float y) {
 		this->x = x;
 		this->y = y;
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 sub (const Vector2& v) {
+	 Vector2& sub (const Vector2& v) {
 		x -= v.x;
 		y -= v.y;
-		return this;
+		return *this;
 	}
 
 	/** Substracts the other vector from this vector.
 	 * @param x The x-component of the other vector
 	 * @param y The y-component of the other vector
 	 * @return This vector for chaining */
-	 Vector2 sub (float x, float y) {
+	 Vector2& sub (float x, float y) {
 		this->x -= x;
 		this->y -= y;
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 nor () {
-		float len = len();
-		if (len != 0) {
-			x /= len;
-			y /= len;
+	 Vector2& nor () {
+		float length = len();
+		if (length != 0) {
+			x /= length;
+			y /= length;
 		}
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 add (const Vector2& v) {
+	 Vector2& add (const Vector2& v) {
 		x += v.x;
 		y += v.y;
-		return this;
+		return *this;
 	}
 
 	/** Adds the given components to this vector
 	 * @param x The x-component
 	 * @param y The y-component
 	 * @return This vector for chaining */
-	 Vector2 add (float x, float y) {
+	 Vector2& add (float x, float y) {
 		this->x += x;
 		this->y += y;
-		return this;
+		return *this;
 	}
 
 	 static float dot (float x1, float y1, float x2, float y2) {
@@ -151,39 +151,39 @@ public:
 	}
 
 	
-	 Vector2 scl (float scalar) {
+	 Vector2& scl (float scalar) {
 		x *= scalar;
 		y *= scalar;
-		return this;
+		return *this;
 	}
 
 	/** Multiplies this vector by a scalar
 	 * @return This vector for chaining */
-	 Vector2 scl (float x, float y) {
+	 Vector2& scl (float x, float y) {
 		this->x *= x;
 		this->y *= y;
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 scl (const Vector2& v) {
+	 Vector2& scl (const Vector2& v) {
 		this->x *= v.x;
 		this->y *= v.y;
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 mulAdd (const Vector2& vec, float scalar) {
+	 Vector2& mulAdd (const Vector2& vec, float scalar) {
 		this->x += vec.x * scalar;
 		this->y += vec.y * scalar;
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 mulAdd (const Vector2& vec, const Vector2& mulVec) {
+	 Vector2& mulAdd (const Vector2& vec, const Vector2& mulVec) {
 		this->x += vec.x * mulVec.x;
 		this->y += vec.y * mulVec.y;
-		return this;
+		return *this;
 	}
 
 	 static float dst (float x1, float y1, float x2, float y2) {
@@ -231,74 +231,72 @@ public:
 	}
 
 	
-	 Vector2 limit (float limit) {
+	 Vector2& limit (float limit) {
 		return limit2(limit * limit);
 	}
 
 	
-	 Vector2 limit2 (float limit2) {
-		float len2 = len2();
-		if (len2 > limit2) {
-			return scl(sqrt(limit2 / len2));
+	 Vector2& limit2 (float limit2) {
+		float length2 = len2();
+		if (length2 > limit2) {
+			return scl(sqrt(limit2 / length2));
 		}
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 clamp (float min, float max) {
-		float len2 = len2();
-		if (len2 == 0f) return this;
+	 Vector2& clamp (float min, float max) {
+		float length2 = len2();
+		if (length2 == 0.0f) return *this;
 		float max2 = max * max;
-		if (len2 > max2) return scl(sqrt(max2 / len2));
+		if (length2 > max2) return scl(sqrt(max2 / length2));
 		float min2 = min * min;
-		if (len2 < min2) return scl(sqrt(min2 / len2));
-		return this;
+		if (length2 < min2) return scl(sqrt(min2 / length2));
+		return *this;
 	}
 
 	
-	 Vector2 setLength (float len) {
+	 Vector2& setLength (float len) {
 		return setLength2(len * len);
 	}
 
 	
-	 Vector2 setLength2 (float len2) {
+	 Vector2& setLength2 (float length2) {
 		float oldLen2 = len2();
-		return (oldLen2 == 0 || oldLen2 == len2) ? this : scl(sqrt(len2 / oldLen2));
+		return (oldLen2 == 0 || oldLen2 == length2) ? *this : scl(sqrt(length2 / oldLen2));
 	}
 
 	/** Converts this {@code Vector2} to a string in the format {@code (x,y)}.
 	 * @return a string representation of this object. */
 	
 	 std::string toString () {
-		return "(" + x + "," + y + ")";
+        std::stringstream ss;
+		ss<< "(" << x << "," << y << ")";
+        return ss.str();
 	}
 
 	/** Sets this {@code Vector2} to the value represented by the specified string according to the format of {@link #toString()}.
 	 * @param v the string.
 	 * @return this vector for chaining */
-	 Vector2 fromString (std::string v) {
-		int s = v.indexOf(',', 1);
-		if (s != -1 && v.charAt(0) == '(' && v.charAt(v.length() - 1) == ')') {
-			try {
-				float x = Float.parseFloat(v.substring(1, s));
-				float y = Float.parseFloat(v.substring(s + 1, v.length() - 1));
-				return this->set(x, y);
-			} catch (NumberFormatException ex) {
-				// Throw a GdxRuntimeException
-			}
+	 Vector2& fromString (std::string v) {
+		int s = v.find(',', 1);
+		if (s != -1 && v[0] == '(' && v[v.size() - 1] == ')') {
+            float x = std::stof(v.substr(1, s-1));
+            float y = std::stof(v.substr(s + 1, v.size()));
+            return this->set(x, y);
 		}
-		throw  "GdxRuntimeException: Malformed Vector2: ");
+		throw  "GdxRuntimeException: Malformed Vector2: ";
 	}
 
 	/** Left-multiplies this vector by the given matrix
 	 * @param mat the matrix
 	 * @return this vector */
-	 Vector2 mul (const Matrix3& mat) {
+	 Vector2& mul (const Matrix3& mat) {
 		float x = this->x * mat.val[0] + this->y * mat.val[3] + mat.val[6];
 		float y = this->x * mat.val[1] + this->y * mat.val[4] + mat.val[7];
 		this->x = x;
 		this->y = y;
-		return this;
+		return *this;
 	}
 
 	/** Calculates the 2D cross product between this and the given vector.
@@ -319,7 +317,7 @@ public:
 	/** @return the angle in degrees of this vector (point) relative to the x-axis. Angles are towards the positive y-axis (typically
 	 *         counter-clockwise) and between 0 and 360. */
 	 float angle () {
-		float angle = atan2(y, x) * MathUtils::radiansToDegrees;
+		float angle = MathUtils::atan2(y, x) * MathUtils::radiansToDegrees;
 		if (angle < 0) angle += 360;
 		return angle;
 	}
@@ -327,47 +325,47 @@ public:
 	/** @return the angle in degrees of this vector (point) relative to the given vector. Angles are towards the positive y-axis
 	 *         (typically counter-clockwise.) between -180 and +180 */
 	 float angle (const Vector2& reference) {
-		return atan2(crs(reference), dot(reference)) * MathUtils::radiansToDegrees;
+		return MathUtils::atan2(crs(reference), dot(reference)) * MathUtils::radiansToDegrees;
 	}
 
 	/** @return the angle in radians of this vector (point) relative to the x-axis. Angles are towards the positive y-axis.
 	 *         (typically counter-clockwise) */
 	 float angleRad () {
-		return atan2(y, x);
+		return MathUtils::atan2(y, x);
 	}
 
 	/** @return the angle in radians of this vector (point) relative to the given vector. Angles are towards the positive y-axis.
 	 *         (typically counter-clockwise.) */
 	 float angleRad (const Vector2& reference) {
-		return atan2(crs(reference), dot(reference));
+		return MathUtils::atan2(crs(reference), dot(reference));
 	}
 
 	/** Sets the angle of the vector in degrees relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param degrees The angle in degrees to set. */
-	 Vector2 setAngle (float degrees) {
+	 Vector2& setAngle (float degrees) {
 		return setAngleRad(degrees * MathUtils::degreesToRadians);
 	}
 
 	/** Sets the angle of the vector in radians relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param radians The angle in radians to set. */
-	 Vector2 setAngleRad (float radians) {
-		this->set(len(), 0f);
+	 Vector2& setAngleRad (float radians) {
+		this->set(len(), 0.0f);
 		this->rotateRad(radians);
 
-		return this;
+		return *this;
 	}
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param degrees the angle in degrees */
-	 Vector2 rotate (float degrees) {
+	 Vector2& rotate (float degrees) {
 		return rotateRad(degrees * MathUtils::degreesToRadians);
 	}
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param radians the angle in radians */
-	 Vector2 rotateRad (float radians) {
-		float cos = cos(radians);
-		float sin = sin(radians);
+	 Vector2& rotateRad (float radians) {
+		float cos = MathUtils::cos(radians);
+		float sin = MathUtils::sin(radians);
 
 		float X = this->x * cos - this->y * sin;
 		float Y = this->x * sin + this->y * cos;
@@ -375,11 +373,11 @@ public:
 		this->x = X;
 		this->y = Y;
 
-		return this;
+		return *this;
 	}
 
 	/** Rotates the Vector2 by 90 degrees in the specified direction, where >= 0 is counter-clockwise and < 0 is clockwise. */
-	 Vector2 rotate90 (int dir) {
+	 Vector2& rotate90 (int dir) {
 		float x = this->x;
 		if (dir >= 0) {
 			this->x = -y;
@@ -388,25 +386,25 @@ public:
 			this->x = y;
 			y = -x;
 		}
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 lerp (Vector2 target, float alpha) {
+	 Vector2& lerp (const Vector2& target, float alpha) {
 		float invAlpha = 1.0f - alpha;
 		this->x = (x * invAlpha) + (target.x * alpha);
 		this->y = (y * invAlpha) + (target.y * alpha);
-		return this;
+		return *this;
 	}
 
 	
-	 Vector2 interpolate (const Vector2& target, float alpha, Interpolation& interpolation) {
+	 Vector2& interpolate (const Vector2& target, float alpha, Interpolation& interpolation) {
 		return lerp(target, interpolation.apply(alpha));
 	}
 
 	
-	 Vector2 setToRandomDirection () {
-		float theta = MathUtils.random(0f, MathUtils::PI2);
+	 Vector2& setToRandomDirection () {
+		float theta = MathUtils::random(0.0f, MathUtils::PI2);
 		return this->set(cos(theta), sin(theta));
 	}
 
@@ -414,25 +412,18 @@ public:
 	 int hashCode () {
 		int prime = 31;
 		int result = 1;
-		result = prime * result + NumberUtils.floatToIntBits(x);
-		result = prime * result + NumberUtils.floatToIntBits(y);
+		result = prime * result + std::hash<float>{}(x);
+		result = prime * result + std::hash<float>{}(y);
 		return result;
 	}
 
 	
 	 bool operator== (const Vector2& obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Vector2 other = (Vector2)obj;
-		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x)) return false;
-		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y)) return false;
-		return true;
+		return x==obj.x && y==obj.y;
 	}
 
 	
 	 bool epsilonEquals (const Vector2& other, float epsilon) {
-		if (other == null) return false;
 		if (abs(other.x - x) > epsilon) return false;
 		if (abs(other.y - y) > epsilon) return false;
 		return true;
@@ -453,7 +444,7 @@ public:
 
 	
 	 bool isUnit (float margin) {
-		return Math.abs(len2() - 1.0f) < margin;
+		return abs(len2() - 1.0f) < margin;
 	}
 
 	
@@ -468,42 +459,42 @@ public:
 
 	
 	 bool isOnLine (const Vector2& other) {
-		return MathUtils.isZero(x * other.y - y * other.x);
+		return MathUtils::isZero(x * other.y - y * other.x);
 	}
 
 	
 	 bool isOnLine (const Vector2& other, float epsilon) {
-		return MathUtils.isZero(x * other.y - y * other.x, epsilon);
+		return MathUtils::isZero(x * other.y - y * other.x, epsilon);
 	}
 
 	
 	 bool isCollinear (const Vector2& other, float epsilon) {
-		return isOnLine(other, epsilon) && dot(other) > 0f;
+		return isOnLine(other, epsilon) && dot(other) > 0.0f;
 	}
 
 	
 	 bool isCollinear (const Vector2& other) {
-		return isOnLine(other) && dot(other) > 0f;
+		return isOnLine(other) && dot(other) > 0.0f;
 	}
 
 	
 	 bool isCollinearOpposite (const Vector2& other, float epsilon) {
-		return isOnLine(other, epsilon) && dot(other) < 0f;
+		return isOnLine(other, epsilon) && dot(other) < 0.0f;
 	}
 
 	
 	 bool isCollinearOpposite (const Vector2& other) {
-		return isOnLine(other) && dot(other) < 0f;
+		return isOnLine(other) && dot(other) < 0.0f;
 	}
 
 	
 	 bool isPerpendicular (const Vector2& vector) {
-		return MathUtils.isZero(dot(vector));
+		return MathUtils::isZero(dot(vector));
 	}
 
 	
 	 bool isPerpendicular (const Vector2& vector, float epsilon) {
-		return MathUtils.isZero(dot(vector), epsilon);
+		return MathUtils::isZero(dot(vector), epsilon);
 	}
 
 	
@@ -517,10 +508,10 @@ public:
 	}
 
 	
-	 Vector2 setZero () {
+	 Vector2& setZero () {
 		this->x = 0;
 		this->y = 0;
-		return this;
+		return *this;
 	}
-}
+};
 

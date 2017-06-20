@@ -10,7 +10,7 @@
 
 #include <SDL.h>
 #include <sstream>
-#include "math/Vector3.h"
+//#include "math/Vector3.h"
 
 char* file_read(const char* filename) {
         SDL_RWops *rw = SDL_RWFromFile(filename, "rb");
@@ -36,7 +36,7 @@ char* file_read(const char* filename) {
         return res;
 }
 
-std::string fileToString(std::string filename){
+std::string fileToString(const std::string& filename){
     return std::string(file_read(filename.c_str()));
 }
 
@@ -181,14 +181,14 @@ public:
     float r,g,b,a;
 };
 
-class Ray{
+/*class Ray{
 public:
     Vector3 origin,direction;
     Ray(Vector3 origin,Vector3 direction){
         this->origin = origin;
         this->direction = direction;
     }
-};
+};*/
 
 class Frustum{
   public:

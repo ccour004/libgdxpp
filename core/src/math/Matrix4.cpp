@@ -1,19 +1,21 @@
 #include "Matrix4.h"
 
-	Matrix4* Matrix4::set (const Quaternion& quaternion) {
+    static std::vector<float> Matrix4::tmp(16);
+
+	Matrix4& Matrix4::set (const Quaternion& quaternion) {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
     
-	Matrix4* Matrix4::set (const Vector3& position, const Quaternion& orientation) {
+	Matrix4& Matrix4::set (const Vector3& position, const Quaternion& orientation) {
 		return set(position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.w);
 	}
     
-	Matrix4* Matrix4::set (const Vector3& position, const Quaternion& orientation, const Vector3& scale) {
+	Matrix4& Matrix4::set (const Vector3& position, const Quaternion& orientation, const Vector3& scale) {
 		return set(position.x, position.y, position.z, orientation.x, orientation.y, orientation.z, orientation.w, scale.x,
 			scale.y, scale.z);
 	}
     
-	Matrix4* Matrix4::set (const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis, const Vector3& pos) {
+	Matrix4& Matrix4::set (const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis, const Vector3& pos) {
 		val[M00] = xAxis.x;
 		val[M01] = xAxis.y;
 		val[M02] = xAxis.z;
@@ -33,14 +35,14 @@
 		return this;
 	}
 
-	Matrix4* Matrix4::trn (const Vector3& vector) {
+	Matrix4& Matrix4::trn (const Vector3& vector) {
 		val[M03] += vector.x;
 		val[M13] += vector.y;
 		val[M23] += vector.z;
 		return this;
 	}
     
-    Matrix4* Matrix4::setTranslation (const Vector3& vector) {
+    Matrix4& Matrix4::setTranslation (const Vector3& vector) {
 		val[M03] = vector.x;
 		val[M13] = vector.y;
 		val[M23] = vector.z;
@@ -55,7 +57,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setToTranslationAndScaling (const Vector3& translation, const Vector3& scaling) {
+	Matrix4& Matrix4::setToTranslationAndScaling (const Vector3& translation, const Vector3& scaling) {
 		idt();
 		val[M03] = translation.x;
 		val[M13] = translation.y;
@@ -66,7 +68,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setToRotation (const Vector3& axis, float degrees) {
+	Matrix4& Matrix4::setToRotation (const Vector3& axis, float degrees) {
 		if (degrees == 0) {
 			idt();
 			return this;
@@ -74,7 +76,7 @@
 		return set(quat.set(axis, degrees));
 	}
     
-	Matrix4* Matrix4::setToRotationRad (const Vector3& axis, float radians) {
+	Matrix4& Matrix4::setToRotationRad (const Vector3& axis, float radians) {
 		if (radians == 0) {
 			idt();
 			return this;
@@ -82,7 +84,7 @@
 		return set(quat.setFromAxisRad(axis, radians));
 	}
     
-	Matrix4* Matrix4::setToRotation (float axisX, float axisY, float axisZ, float degrees) {
+	Matrix4& Matrix4::setToRotation (float axisX, float axisY, float axisZ, float degrees) {
 		if (degrees == 0) {
 			idt();
 			return this;
@@ -90,7 +92,7 @@
 		return set(quat.setFromAxis(axisX, axisY, axisZ, degrees));
 	}
     
-	Matrix4* Matrix4::setToRotationRad (float axisX, float axisY, float axisZ, float radians) {
+	Matrix4& Matrix4::setToRotationRad (float axisX, float axisY, float axisZ, float radians) {
 		if (radians == 0) {
 			idt();
 			return this;
@@ -98,25 +100,25 @@
 		return set(quat.setFromAxisRad(axisX, axisY, axisZ, radians));
 	}
     
-	Matrix4* Matrix4::setToRotation (const Vector3& v1, const Vector3& v2) {
+	Matrix4& Matrix4::setToRotation (const Vector3& v1, const Vector3& v2) {
 		return set(quat.setFromCross(v1, v2));
 	}
     
-	Matrix4* Matrix4::setToRotation (float x1,float y1, float z1, float x2, float y2, float z2) {
+	Matrix4& Matrix4::setToRotation (float x1,float y1, float z1, float x2, float y2, float z2) {
 		return set(quat.setFromCross(x1, y1, z1, x2, y2, z2));
 	}
     
-	Matrix4* Matrix4::setFromEulerAngles (float yaw, float pitch, float roll) {
+	Matrix4& Matrix4::setFromEulerAngles (float yaw, float pitch, float roll) {
 		quat.setEulerAngles(yaw, pitch, roll);
 		return set(quat);
 	}
     
-	Matrix4* Matrix4::setFromEulerAnglesRad (float yaw, float pitch, float roll) {
+	Matrix4& Matrix4::setFromEulerAnglesRad (float yaw, float pitch, float roll) {
 		quat.setEulerAnglesRad(yaw, pitch, roll);
 		return set(quat);
 	}
     
-	Matrix4* Matrix4::setToScaling (const Vector3& vector) {
+	Matrix4& Matrix4::setToScaling (const Vector3& vector) {
 		idt();
 		val[M00] = vector.x;
 		val[M11] = vector.y;
@@ -124,7 +126,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setToLookAt (const Vector3& direction, const Vector3& up) {
+	Matrix4& Matrix4::setToLookAt (const Vector3& direction, const Vector3& up) {
 		l_vez.set(direction).nor();
 		l_vex.set(direction).nor();
 		l_vex.crs(up).nor();
@@ -143,7 +145,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setToLookAt (const Vector3& position, const Vector3& target, const Vector3& up) {
+	Matrix4& Matrix4::setToLookAt (const Vector3& position, const Vector3& target, const Vector3& up) {
 		tmpVec.set(target).sub(position);
 		setToLookAt(tmpVec, up);
 		this.mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
@@ -151,7 +153,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setToWorld (const Vector3& position, const Vector3& forward, const Vector3& up) {
+	Matrix4& Matrix4::setToWorld (const Vector3& position, const Vector3& forward, const Vector3& up) {
 		tmpForward.set(forward).nor();
 		right.set(tmpForward).crs(up).nor();
 		tmpUp.set(right).crs(tmpForward).nor();
@@ -160,7 +162,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::avg (const Matrix4& other, float w) {
+	Matrix4& Matrix4::avg (const Matrix4& other, float w) {
 		getScale(tmpVec);
 		other.getScale(tmpForward);
 
@@ -177,7 +179,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::avg (const std::vector<Matrix4>& t) {
+	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t) {
 		const float w = 1.0f / t.size();
 
 		tmpVec.set(t[0].getScale(tmpUp).scl(w));
@@ -198,7 +200,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::avg (const std::vector<Matrix4>& t, std::vector<float> w) {
+	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t, std::vector<float> w) {
 		tmpVec.set(t[0].getScale(tmpUp).scl(w[0]));
 		quat.set(t[0].getRotation(quat2).exp(w[0]));
 		tmpForward.set(t[0].getTranslation(tmpUp).scl(w[0]));
@@ -217,7 +219,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::set (const Matrix3& mat) {
+	Matrix4& Matrix4::set (const Matrix3& mat) {
 		val[0] = mat.val[0];
 		val[1] = mat.val[1];
 		val[2] = mat.val[2];
@@ -237,7 +239,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::set (const Affine2& affine) {
+	Matrix4& Matrix4::set (const Affine2& affine) {
 		val[M00] = affine.m00;
 		val[M10] = affine.m10;
 		val[M20] = 0;
@@ -257,7 +259,7 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::setAsAffine (const Affine2& affine) {
+	Matrix4& Matrix4::setAsAffine (const Affine2& affine) {
 		val[M00] = affine.m00;
 		val[M10] = affine.m10;
 		val[M01] = affine.m01;
@@ -267,66 +269,66 @@
 		return this;
 	}
     
-	Matrix4* Matrix4::scl (const Vector3& scale) {
+	Matrix4& Matrix4::scl (const Vector3& scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		val[M22] *= scale.z;
 		return this;
 	}
     
-	Vector3* Matrix4::getTranslation (Vector3& position) {
+	Vector3& Matrix4::getTranslation (Vector3& position) {
 		position.x = val[M03];
 		position.y = val[M13];
 		position.z = val[M23];
 		return position;
 	}
     
-	Quaternion* Matrix4::getRotation (Quaternion& rotation, bool normalizeAxes) {
+	Quaternion& Matrix4::getRotation (Quaternion& rotation, bool normalizeAxes) {
 		return rotation.setFromMatrix(normalizeAxes, this);
 	}
     
-	Quaternion* Matrix4::getRotation (Quaternion& rotation) {
+	Quaternion& Matrix4::getRotation (Quaternion& rotation) {
 		return rotation.setFromMatrix(this);
 	}
     
-	Vector3* Matrix4::getScale (Vector3 scale) {
+	Vector3& Matrix4::getScale (Vector3 scale) {
 		return scale.set(getScaleX(), getScaleY(), getScaleZ());
 	}
     
-	Matrix4* Matrix4::translate (const Vector3& translation) {
+	Matrix4& Matrix4::translate (const Vector3& translation) {
 		return translate(translation.x, translation.y, translation.z);
 	}
     
-	Matrix4* Matrix4::rotate (const Vector3& axis, float degrees) {
+	Matrix4& Matrix4::rotate (const Vector3& axis, float degrees) {
 		if (degrees == 0) return this;
 		quat.set(axis, degrees);
 		return rotate(quat);
 	}
     
-	Matrix4* Matrix4::rotateRad (const Vector3& axis, float radians) {
+	Matrix4& Matrix4::rotateRad (const Vector3& axis, float radians) {
 		if (radians == 0) return this;
 		quat.setFromAxisRad(axis, radians);
 		return rotate(quat);
 	}
     
-	Matrix4* Matrix4::rotate (float axisX, float axisY, float axisZ, float degrees) {
+	Matrix4& Matrix4::rotate (float axisX, float axisY, float axisZ, float degrees) {
 		if (degrees == 0) return this;
 		quat.setFromAxis(axisX, axisY, axisZ, degrees);
 		return rotate(quat);
 	}
     
-	Matrix4* Matrix4::rotateRad (float axisX, float axisY, float axisZ, float radians) {
+	Matrix4& Matrix4::rotateRad (float axisX, float axisY, float axisZ, float radians) {
 		if (radians == 0) return this;
 		quat.setFromAxisRad(axisX, axisY, axisZ, radians);
 		return rotate(quat);
 	}
     
-	Matrix4* Matrix4::rotate (const Quaternion& rotation) {
+	Matrix4& Matrix4::rotate (const Quaternion& rotation) {
 		rotation.toMatrix(tmp);
 		mul(val, tmp);
 		return this;
 	}
     
-	Matrix4* Matrix4::rotate (const Vector3& v1, const Vector3& v2) {
+	Matrix4& Matrix4::rotate (const Vector3& v1, const Vector3& v2) {
 		return rotate(quat.setFromCross(v1, v2));
 	}

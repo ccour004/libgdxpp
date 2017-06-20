@@ -15,6 +15,10 @@
  ******************************************************************************/
  
 #pragma once
+#include "math/collision/Ray.h"
+#include "math/Vector3.h"
+#include "math/Matrix4.h"
+#include "math/Quaternion.h"
 
 class Camera
 {

@@ -22,6 +22,7 @@ class Sin {
 		std::vector<float> table;
 
 		Sin(int SIN_COUNT,int SIN_MASK,float radFull,float degToIndex,float degreesToRadians) {
+            table = std::vector<float>(SIN_COUNT);
 			for (int i = 0; i < SIN_COUNT; i++)
 				table[i] = sin((i + 0.5f) / SIN_COUNT * radFull);
 			for (int i = 0; i < 360; i += 90)

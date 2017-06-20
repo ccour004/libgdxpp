@@ -24,13 +24,13 @@ private:
     void dispose(){
 	   listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
-           SDL_GL_DeleteContext(glContext);
+       SDL_GL_DeleteContext(glContext);
 	   SDL_DestroyWindow(window);
 	   SDL_Quit();
 	}
 public:
 	LibGDX_Application(ApplicationListener* listener){
-		this->listener = listener;
+        this->listener = listener;
 		//Initialization flag
 		bool success = true;
 		SDL_Log("++START SDL++");
@@ -109,10 +109,11 @@ public:
 				        quit = true;
 				    break;
 				case SDL_WINDOWEVENT:
-				    SDL_Log("WINDOW EVENT");
+				    //SDL_Log("WINDOW EVENT");
 				    if (e.window.windowID == SDL_GetWindowID(window)) {
 				        switch (e.window.event) {
 				            case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                                SDL_Log("RESIZE WINDOW EVENT");
                                                 listener->resize(e.window.data1,e.window.data2);
 				                break;
 				            }

@@ -17,7 +17,6 @@
 #pragma once
 
 #include "../Serializable.h"
-#include "NumberUtils.h"
 #include "MathUtils.h"
 
 /** A simple quaternion class.
@@ -73,18 +72,18 @@ class Quaternion:public Serializable {
 	 * @param z The z-component
 	 * @param w The w-component
 	 * @return This quaternion for chaining */
-	 Quaternion* set (float x, float y, float z, float w) {
+	 Quaternion& set (float x, float y, float z, float w) {
 		this->x = x;
 		this->y = y;
 		this->z = z;
 		this->w = w;
-		return this;
+		return *this;
 	}
 
 	/** Sets the quaternion components from the given quaternion.
 	 * @param quaternion The quaternion.
 	 * @return This quaternion for chaining. */
-	 Quaternion* set (const Quaternion& quaternion) {
+	 Quaternion& set (const Quaternion& quaternion) {
 		return this->set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 
@@ -93,7 +92,7 @@ class Quaternion:public Serializable {
 	 * @param axis The axis
 	 * @param angle The angle in degrees
 	 * @return This quaternion for chaining. */
-	 Quaternion* set (const Vector3& axis, float angle);
+	 Quaternion& set (const Vector3& axis, float angle);
 
 	/** @return a copy of this quaternion */
 	 Quaternion cpy () {
@@ -122,7 +121,7 @@ class Quaternion:public Serializable {
 	 * @param pitch the rotation around the x axis in degrees
 	 * @param roll the rotation around the z axis degrees
 	 * @return this quaternion */
-	 Quaternion* setEulerAngles (float yaw, float pitch, float roll) {
+	 Quaternion& setEulerAngles (float yaw, float pitch, float roll) {
 		return setEulerAnglesRad(yaw * MathUtils::degreesToRadians, pitch * MathUtils::degreesToRadians, roll
 			* MathUtils::degreesToRadians);
 	}
@@ -132,7 +131,7 @@ class Quaternion:public Serializable {
 	 * @param pitch the rotation around the x axis in radians
 	 * @param roll the rotation around the z axis in radians
 	 * @return this quaternion */
-	 Quaternion* setEulerAnglesRad (float yaw, float pitch, float roll) {
+	 Quaternion& setEulerAnglesRad (float yaw, float pitch, float roll) {
 		const float hr = roll * 0.5f;
 		const float shr = sin(hr);
 		const float chr = cos(hr);
@@ -151,7 +150,7 @@ class Quaternion:public Serializable {
 		y = (shy_chp * chr) - (chy_shp * shr); // sin(yaw/2) * cos(pitch/2) * cos(roll/2) - cos(yaw/2) * sin(pitch/2) * sin(roll/2)
 		z = (chy_chp * shr) - (shy_shp * chr); // cos(yaw/2) * cos(pitch/2) * sin(roll/2) - sin(yaw/2) * sin(pitch/2) * cos(roll/2)
 		w = (chy_chp * chr) + (shy_shp * shr); // cos(yaw/2) * cos(pitch/2) * cos(roll/2) + sin(yaw/2) * sin(pitch/2) * sin(roll/2)
-		return this;
+		return *this;
 	}
 
 	/** Get the pole of the gimbal lock, if any.
@@ -211,7 +210,7 @@ class Quaternion:public Serializable {
 
 	/** Normalizes this quaternion to unit length
 	 * @return the quaternion for chaining */
-	 Quaternion* nor () {
+	 Quaternion& nor () {
 		float len = len2();
 		if (len != 0.f && !MathUtils::isEqual(len, 1.0f)) {
 			len = sqrt(len);
@@ -220,30 +219,30 @@ class Quaternion:public Serializable {
 			y /= len;
 			z /= len;
 		}
-		return this;
+		return *this;
 	}
 
 	/** Conjugate the quaternion.
 	 * 
 	 * @return This quaternion for chaining */
-	 Quaternion* conjugate () {
+	 Quaternion& conjugate () {
 		x = -x;
 		y = -y;
 		z = -z;
-		return this;
+		return *this;
 	}
 
 	// TODO : this would better fit into the vector3 class
 	/** Transforms the given vector using this quaternion
 	 * 
 	 * @param v Vector to transform */
-	 Vector3* transform (Vector3& v);
+	 Vector3& transform (Vector3& v);
 
 	/** Multiplies this quaternion with another one in the form of this = this * other
 	 * 
 	 * @param other Quaternion to multiply with
 	 * @return This quaternion for chaining */
-	 Quaternion* mul (const Quaternion& other) {
+	 Quaternion& mul (const Quaternion& other) {
 		const float X = this->w * other.x + this->x * other.w + this->y * other.z - this->z * other.y;
 		const float Y = this->w * other.y + this->y * other.w + this->z * other.x - this->x * other.z;
 		const float Z = this->w * other.z + this->z * other.w + this->x * other.y - this->y * other.x;
@@ -252,7 +251,7 @@ class Quaternion:public Serializable {
 		this->y = Y;
 		this->z = Z;
 		this->w = W;
-		return this;
+		return *this;
 	}
 
 	/** Multiplies this quaternion with another one in the form of this = this * other
@@ -262,7 +261,7 @@ class Quaternion:public Serializable {
 	 * @param z the z component of the other quaternion to multiply with
 	 * @param w the w component of the other quaternion to multiply with
 	 * @return This quaternion for chaining */
-	 Quaternion* mul (const float x, const float y, const float z, const float w) {
+	 Quaternion& mul (const float x, const float y, const float z, const float w) {
 		const float X = this->w * x + this->x * w + this->y * z - this->z * y;
 		const float Y = this->w * y + this->y * w + this->z * x - this->x * z;
 		const float Z = this->w * z + this->z * w + this->x * y - this->y * x;
@@ -271,14 +270,14 @@ class Quaternion:public Serializable {
 		this->y = Y;
 		this->z = Z;
 		this->w = W;
-		return this;
+		return *this;
 	}
 
 	/** Multiplies this quaternion with another one in the form of this = other * this
 	 * 
 	 * @param other Quaternion to multiply with
 	 * @return This quaternion for chaining */
-	 Quaternion* mulLeft (const Quaternion& other) {
+	 Quaternion& mulLeft (const Quaternion& other) {
 		const float X = other.w * this->x + other.x * this->w + other.y * this->z - other.z * y;
 		const float Y = other.w * this->y + other.y * this->w + other.z * this->x - other.x * z;
 		const float Z = other.w * this->z + other.z * this->w + other.x * this->y - other.y * x;
@@ -287,7 +286,7 @@ class Quaternion:public Serializable {
 		this->y = Y;
 		this->z = Z;
 		this->w = W;
-		return this;
+		return *this;
 	}
 
 	/** Multiplies this quaternion with another one in the form of this = other * this
@@ -297,7 +296,7 @@ class Quaternion:public Serializable {
 	 * @param z the z component of the other quaternion to multiply with
 	 * @param w the w component of the other quaternion to multiply with
 	 * @return This quaternion for chaining */
-	 Quaternion* mulLeft (const float x, const float y, const float z, const float w) {
+	 Quaternion& mulLeft (const float x, const float y, const float z, const float w) {
 		const float X = w * this->x + x * this->w + y * this->z - z * this->y;
 		const float Y = w * this->y + y * this->w + z * this->x - x * this->z;
 		const float Z = w * this->z + z * this->w + x * this->y - y * this->x;
@@ -306,25 +305,25 @@ class Quaternion:public Serializable {
 		this->y = Y;
 		this->z = Z;
 		this->w = W;
-		return this;
+		return *this;
 	}
 
 	/** Add the x,y,z,w components of the passed in quaternion to the ones of this quaternion */
-	 Quaternion* add (const Quaternion& quaternion) {
+	 Quaternion& add (const Quaternion& quaternion) {
 		this->x += quaternion.x;
 		this->y += quaternion.y;
 		this->z += quaternion.z;
 		this->w += quaternion.w;
-		return this;
+		return *this;
 	}
 
 	/** Add the x,y,z,w components of the passed in quaternion to the ones of this quaternion */
-	 Quaternion* add (float qx, float qy, float qz, float qw) {
+	 Quaternion& add (float qx, float qy, float qz, float qw) {
 		this->x += qx;
 		this->y += qy;
 		this->z += qz;
 		this->w += qw;
-		return this;
+		return *this;
 	}
 
 	// TODO : the matrix4 set(quaternion) doesnt set the last row+col of the matrix to 0,0,0,1 so... that's why there is this
@@ -336,7 +335,7 @@ class Quaternion:public Serializable {
 
 	/** Sets the quaternion to an identity Quaternion
 	 * @return this quaternion for chaining */
-	 Quaternion* idt () {
+	 Quaternion& idt () {
 		return this->set(0, 0, 0, 1);
 	}
 
@@ -357,14 +356,14 @@ class Quaternion:public Serializable {
 	 * @param axis The axis
 	 * @param degrees The angle in degrees
 	 * @return This quaternion for chaining. */
-	 Quaternion* setFromAxis (const Vector3& axis, const float degrees);
+	 Quaternion& setFromAxis (const Vector3& axis, const float degrees);
 
 	/** Sets the quaternion components from the given axis and angle around that axis.
 	 * 
 	 * @param axis The axis
 	 * @param radians The angle in radians
 	 * @return This quaternion for chaining. */
-	 Quaternion* setFromAxisRad (const Vector3& axis, const float radians);
+	 Quaternion& setFromAxisRad (const Vector3& axis, const float radians);
      
 	/** Sets the quaternion components from the given axis and angle around that axis.
 	 * @param x X direction of the axis
@@ -372,7 +371,7 @@ class Quaternion:public Serializable {
 	 * @param z Z direction of the axis
 	 * @param degrees The angle in degrees
 	 * @return This quaternion for chaining. */
-	 Quaternion* setFromAxis (const float x, const float y, const float z, const float degrees) {
+	 Quaternion& setFromAxis (const float x, const float y, const float z, const float degrees) {
 		return setFromAxisRad(x, y, z, degrees * MathUtils::degreesToRadians);
 	}
 
@@ -382,21 +381,21 @@ class Quaternion:public Serializable {
 	 * @param z Z direction of the axis
 	 * @param radians The angle in radians
 	 * @return This quaternion for chaining. */
-	 Quaternion* setFromAxisRad (const float x, const float y, const float z, const float radians);
+	 Quaternion& setFromAxisRad (const float x, const float y, const float z, const float radians);
 
 	/** Sets the Quaternion from the given matrix, optionally removing any scaling. */
-	 Quaternion* setFromMatrix (bool normalizeAxes, const Matrix4& matrix);
+	 Quaternion& setFromMatrix (bool normalizeAxes, const Matrix4& matrix);
 
 	/** Sets the Quaternion from the given rotation matrix, which must not contain scaling. */
-	 Quaternion* setFromMatrix (const Matrix4& matrix) {
+	 Quaternion& setFromMatrix (const Matrix4& matrix) {
 		return setFromMatrix(false, matrix);
 	}
 
 	/** Sets the Quaternion from the given matrix, optionally removing any scaling. */
-	 Quaternion* setFromMatrix (bool normalizeAxes, const Matrix3& matrix);
+	 Quaternion& setFromMatrix (bool normalizeAxes, const Matrix3& matrix);
 
 	/** Sets the Quaternion from the given rotation matrix, which must not contain scaling. */
-	 Quaternion* setFromMatrix (const Matrix3& matrix) {
+	 Quaternion& setFromMatrix (const Matrix3& matrix) {
 		return setFromMatrix(false, matrix);
 	}
 
@@ -418,7 +417,7 @@ class Quaternion:public Serializable {
 	 * @param zx z-axis x-coordinate
 	 * @param zy z-axis y-coordinate
 	 * @param zz z-axis z-coordinate */
-	 Quaternion* setFromAxes (float xx, float xy, float xz, float yx, float yy, float yz, float zx, float zy, float zz) {
+	 Quaternion& setFromAxes (float xx, float xy, float xz, float yx, float yy, float yz, float zx, float zy, float zz) {
 		return setFromAxes(false, xx, xy, xz, yx, yy, yz, zx, zy, zz);
 	}
 
@@ -441,7 +440,7 @@ class Quaternion:public Serializable {
 	 * @param zx z-axis x-coordinate
 	 * @param zy z-axis y-coordinate
 	 * @param zz z-axis z-coordinate */
-	 Quaternion* setFromAxes (bool normalizeAxes, float xx, float xy, float xz, float yx, float yy, float yz, float zx,
+	 Quaternion& setFromAxes (bool normalizeAxes, float xx, float xy, float xz, float yx, float yy, float yz, float zx,
 		float zy, float zz);
 
 	/** Set this quaternion to the rotation between two vectors.
@@ -465,7 +464,7 @@ class Quaternion:public Serializable {
 	 * @param end the end quaternion
 	 * @param alpha alpha in the range [0,1]
 	 * @return this quaternion for chaining */
-	 Quaternion* slerp (const Quaternion& end, float alpha) {
+	 Quaternion& slerp (const Quaternion& end, float alpha) {
 		const float d = this->x * end.x + this->y * end.y + this->z * end.z + this->w * end.w;
 		float absDot = d < 0.f ? -d : d;
 
@@ -496,22 +495,22 @@ class Quaternion:public Serializable {
 		w = (scale0 * w) + (scale1 * end.w);
 
 		// Return the interpolated quaternion
-		return this;
+		return *this;
 	}
 
 	/** Spherical linearly interpolates multiple quaternions and stores the result in this Quaternion. Will not destroy the data
 	 * previously inside the elements of q. result = (q_1^w_1)*(q_2^w_2)* ... *(q_n^w_n) where w_i=1/n.
 	 * @param q List of quaternions
 	 * @return This quaternion for chaining */
-	 Quaternion* slerp (const std::vector<Quaternion>& q) {
+	 Quaternion& slerp (const std::vector<Quaternion>& q) {
 
 		// Calculate exponents and multiply everything from left to right
 		const float w = 1.0f / q.size();
-		set(q[0])->exp(w);
+		set(q[0]).exp(w);
 		for (int i = 1; i < q.size(); i++)
-			mul(*tmp1.set(q[i])->exp(w));
+			mul(tmp1.set(q[i]).exp(w));
 		nor();
-		return this;
+		return *this;
 	}
 
 	/** Spherical linearly interpolates multiple quaternions by the given weights and stores the result in this Quaternion. Will not
@@ -520,21 +519,21 @@ class Quaternion:public Serializable {
 	 * @param q List of quaternions
 	 * @param w List of weights
 	 * @return This quaternion for chaining */
-	 Quaternion* slerp (const std::vector<Quaternion>& q, const std::vector<float>& w) {
+	 Quaternion& slerp (const std::vector<Quaternion>& q, const std::vector<float>& w) {
 
 		// Calculate exponents and multiply everything from left to right
-		set(q[0])->exp(w[0]);
+		set(q[0]).exp(w[0]);
 		for (int i = 1; i < q.size(); i++)
-			mul(*tmp1.set(q[i])->exp(w[i]));
+			mul(tmp1.set(q[i]).exp(w[i]));
 		nor();
-		return this;
+		return *this;
 	}
 
 	/** Calculates (this quaternion)^alpha where alpha is a real number and stores the result in this quaternion. See
 	 * http://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power
 	 * @param alpha Exponent
 	 * @return This quaternion for chaining */
-	 Quaternion* exp (float alpha) {
+	 Quaternion& exp (float alpha) {
 
 		// Calculate |q|^alpha
 		float norm = len();
@@ -560,17 +559,17 @@ class Quaternion:public Serializable {
 		// Fix any possible discrepancies
 		nor();
 
-		return this;
+		return *this;
 	}
 
 	
 	 int hashCode () {
 		const int prime = 31;
 		int result = 1;
-		result = prime * result + NumberUtils::floatToRawIntBits(w);
-		result = prime * result + NumberUtils::floatToRawIntBits(x);
-		result = prime * result + NumberUtils::floatToRawIntBits(y);
-		result = prime * result + NumberUtils::floatToRawIntBits(z);
+		result = prime * result + std::hash<float>{}(w);
+		result = prime * result + std::hash<float>{}(x);
+		result = prime * result + std::hash<float>{}(y);
+		result = prime * result + std::hash<float>{}(z);
 		return result;
 	}
 
@@ -614,12 +613,12 @@ class Quaternion:public Serializable {
 	/** Multiplies the components of this quaternion with the given scalar.
 	 * @param scalar the scalar.
 	 * @return this quaternion for chaining. */
-	 Quaternion* mul (float scalar) {
+	 Quaternion& mul (float scalar) {
 		this->x *= scalar;
 		this->y *= scalar;
 		this->z *= scalar;
 		this->w *= scalar;
-		return this;
+		return *this;
 	}
 
 	/** Get the axis angle representation of the rotation in degrees. The supplied vector will receive the axis (x, y and z values)
@@ -714,192 +713,3 @@ class Quaternion:public Serializable {
 	 * @return the angle in degrees of the rotation around the specified axis */
 	 float getAngleAround (const Vector3& axis);
 };
-
-static Quaternion::tmp1 =  Quaternion(0, 0, 0, 0);
-static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
-
-    Quaternion* Quaternion::set (const Vector3& axis, float angle) {
-		return setFromAxis(axis.x, axis.y, axis.z, angle);
-	}
-    
-    Vector3* Quaternion::transform (Vector3& v) {
-		tmp2.set(*this);
-		tmp2.conjugate();
-		tmp2.mulLeft(tmp1.set(v.x, v.y, v.z, 0)).mulLeft(this);
-
-		v.x = tmp2.x;
-		v.y = tmp2.y;
-		v.z = tmp2.z;
-		return v;
-	}
-    
-    Quaternion* Quaternion::setFromAxis (const Vector3& axis, const float degrees) {
-		return setFromAxis(axis.x, axis.y, axis.z, degrees);
-	}
-
-    Quaternion* Quaternion::setFromAxisRad (const Vector3& axis, const float radians) {
-		return setFromAxisRad(axis.x, axis.y, axis.z, radians);
-	}
-    
-    Quaternion* Quaternion::setFromAxisRad (const float x, const float y, const float z, const float radians) {
-		float d = Vector3::len(x, y, z);
-		if (d == 0f) return idt();
-		d = 1f / d;
-		float l_ang = radians < 0 ? MathUtils::PI2 - (-radians % MathUtils::PI2) : radians % MathUtils::PI2;
-		float l_sin = sin(l_ang / 2);
-		float l_cos = cos(l_ang / 2);
-		return this->set(d * x * l_sin, d * y * l_sin, d * z * l_sin, l_cos).nor();
-	}
-    
-    Quaternion* Quaternion::setFromMatrix (bool normalizeAxes, const Matrix4& matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Matrix4.M00], matrix.val[Matrix4.M01], matrix.val[Matrix4.M02],
-			matrix.val[Matrix4.M10], matrix.val[Matrix4.M11], matrix.val[Matrix4.M12], matrix.val[Matrix4.M20],
-			matrix.val[Matrix4.M21], matrix.val[Matrix4.M22]);
-	}
-    
-    Quaternion* Quaternion::setFromMatrix (bool normalizeAxes, const Matrix3& matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Matrix3.M00], matrix.val[Matrix3.M01], matrix.val[Matrix3.M02],
-			matrix.val[Matrix3.M10], matrix.val[Matrix3.M11], matrix.val[Matrix3.M12], matrix.val[Matrix3.M20],
-			matrix.val[Matrix3.M21], matrix.val[Matrix3.M22]);
-	}
-    
-    Quaternion* Quaternion::setFromAxes (bool normalizeAxes, float xx, float xy, float xz, float yx, float yy, float yz, float zx,
-		float zy, float zz) {
-		if (normalizeAxes) {
-			const float lx = 1.0f / Vector3::len(xx, xy, xz);
-			const float ly = 1.0f / Vector3::len(yx, yy, yz);
-			const float lz = 1.0f / Vector3::len(zx, zy, zz);
-			xx *= lx;
-			xy *= lx;
-			xz *= lx;
-			yx *= ly;
-			yy *= ly;
-			yz *= ly;
-			zx *= lz;
-			zy *= lz;
-			zz *= lz;
-		}
-		// the trace is the sum of the diagonal elements; see
-		// http://mathworld.wolfram.com/MatrixTrace.html
-		const float t = xx + yy + zz;
-
-		// we protect the division by s by ensuring that s>=1
-		if (t >= 0) { // |w| >= .5
-			float s = sqrt(t + 1); // |s|>=1 ...
-			w = 0.5f * s;
-			s = 0.5f / s; // so this division isn't bad
-			x = (zy - yz) * s;
-			y = (xz - zx) * s;
-			z = (yx - xy) * s;
-		} else if ((xx > yy) && (xx > zz)) {
-			float s = sqrt(1.0f + xx - yy - zz); // |s|>=1
-			x = s * 0.5f; // |x| >= .5
-			s = 0.5f / s;
-			y = (yx + xy) * s;
-			z = (xz + zx) * s;
-			w = (zy - yz) * s;
-		} else if (yy > zz) {
-			float s = sqrt(1.0f + yy - xx - zz); // |s|>=1
-			y = s * 0.5f; // |y| >= .5
-			s = 0.5f / s;
-			x = (yx + xy) * s;
-			z = (zy + yz) * s;
-			w = (xz - zx) * s;
-		} else {
-			float s = sqrt(1.0f + zz - xx - yy); // |s|>=1
-			z = s * 0.5f; // |z| >= .5
-			s = 0.5f / s;
-			x = (xz + zx) * s;
-			y = (zy + yz) * s;
-			w = (yx - xy) * s;
-		}
-
-		return this;
-	}
-    
-    Quaternion Quaternion::setFromCross (const Vector3& v1, const Vector3& v2) {
-		const float dot = MathUtils::clamp(v1.dot(v2), -1.0f, 1.0f);
-		const float angle = acos(dot);
-		return setFromAxisRad(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x, angle);
-	}
-    
-    Quaternion Quaternion::setFromCross (const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {
-		const float dot = MathUtils::clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
-		const float angle = acos(dot);
-		return setFromAxisRad(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2, angle);
-	}
-    
-    float Quaternion::getAxisAngleRad (Vector3& axis) {
-		if (this->w > 1) this->nor(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
-		float angle = (float)(2.0 * acos(this->w));
-		double s = sqrt(1 - this->w * this->w); // assuming quaternion normalised then w is less than 1, so term always positive.
-		if (s < MathUtils::FLOAT_ROUNDING_ERROR) { // test to avoid divide by zero, s is always positive due to sqrt
-			// if s close to zero then direction of axis not important
-			axis.x = this->x; // if it is important that axis is normalised then replace with x=1; y=z=0;
-			axis.y = this->y;
-			axis.z = this->z;
-		} else {
-			axis.x = (float)(this->x / s); // normalise axis
-			axis.y = (float)(this->y / s);
-			axis.z = (float)(this->z / s);
-		}
-
-		return angle;
-	}
-    
-    void Quaternion::getSwingTwist (const float axisX, const float axisY, const float axisZ, const Quaternion& swing,
-		const Quaternion& twist) {
-		const float d = Vector3.dot(this->x, this->y, this->z, axisX, axisY, axisZ);
-		twist.set(axisX * d, axisY * d, axisZ * d, this->w).nor();
-		if (d < 0) twist.mul(-1f);
-		swing.set(twist).conjugate().mulLeft(this);
-	}
-    
-    void Quaternion::getSwingTwist (const Vector3& axis, const Quaternion& swing, const Quaternion& twist) {
-		getSwingTwist(axis.x, axis.y, axis.z, swing, twist);
-	}
-    
-    float Quaternion::getAngleAroundRad (const float axisX, const float axisY, const float axisZ) {
-		const float d = Vector3.dot(this->x, this->y, this->z, axisX, axisY, axisZ);
-		const float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d, this->w);
-		return MathUtils::isZero(l2) ? 0.0f : (float)(2.0f * acos(MathUtils::clamp(
-			(float)((d < 0 ? -this->w : this->w) / Math.sqrt(l2)), -1.0f, 1.0f)));
-	}
-    
-    float Quaternion::getAngleAroundRad (const Vector3& axis) {
-		return getAngleAroundRad(axis.x, axis.y, axis.z);
-	}
-    
-    float Quaternion::getAngleAround (const Vector3& axis) {
-		return getAngleAround(axis.x, axis.y, axis.z);
-	}
-    
-    void Quaternion::toMatrix (std::vector<float>& matrix) {
-		const float xx = x * x;
-		const float xy = x * y;
-		const float xz = x * z;
-		const float xw = x * w;
-		const float yy = y * y;
-		const float yz = y * z;
-		const float yw = y * w;
-		const float zz = z * z;
-		const float zw = z * w;
-		// Set matrix from quaternion
-		matrix[Matrix4.M00] = 1 - 2 * (yy + zz);
-		matrix[Matrix4.M01] = 2 * (xy - zw);
-		matrix[Matrix4.M02] = 2 * (xz + yw);
-		matrix[Matrix4.M03] = 0;
-		matrix[Matrix4.M10] = 2 * (xy + zw);
-		matrix[Matrix4.M11] = 1 - 2 * (xx + zz);
-		matrix[Matrix4.M12] = 2 * (yz - xw);
-		matrix[Matrix4.M13] = 0;
-		matrix[Matrix4.M20] = 2 * (xz - yw);
-		matrix[Matrix4.M21] = 2 * (yz + xw);
-		matrix[Matrix4.M22] = 1 - 2 * (xx + yy);
-		matrix[Matrix4.M23] = 0;
-		matrix[Matrix4.M30] = 0;
-		matrix[Matrix4.M31] = 0;
-		matrix[Matrix4.M32] = 0;
-		matrix[Matrix4.M33] = 1;
-	}
-

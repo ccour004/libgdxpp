@@ -36,7 +36,7 @@ class Vector {
 	/** Limits the length of this vector, based on the desired maximum length.
 	 * @param limit desired maximum length for this vector
 	 * @return this vector for chaining */
-	virtual T limit (float limit) = 0;
+	virtual T& limit (float limit) = 0;
 
 	/** Limits the length of this vector, based on the desired maximum length squared.
 	 * <p />
@@ -44,12 +44,12 @@ class Vector {
 	 * @param limit2 squared desired maximum length for this vector
 	 * @return this vector for chaining
 	 * @see #len2() */
-	virtual T limit2 (float limit2) = 0;
+	virtual T& limit2 (float limit2) = 0;
 
 	/** Sets the length of this vector. Does nothing is this vector is zero.
 	 * @param len desired length for this vector
 	 * @return this vector for chaining */
-	virtual T setLength (float len) = 0;
+	virtual T& setLength (float len) = 0;
 
 	/** Sets the length of this vector, based on the square of the desired length. Does nothing is this vector is zero.
 	 * <p />
@@ -57,32 +57,32 @@ class Vector {
 	 * @param len2 desired square of the length for this vector
 	 * @return this vector for chaining
 	 * @see #len2() */
-	virtual T setLength2 (float len2) = 0;
+	virtual T& setLength2 (float len2) = 0;
 
 	/** Clamps this vector's length to given min and max values
 	 * @param min Min length
 	 * @param max Max length
 	 * @return This vector for chaining */
-	virtual T clamp (float min, float max) = 0;
+	virtual T& clamp (float min, float max) = 0;
 
 	/** Sets this vector from the given vector
 	 * @param v The vector
 	 * @return This vector for chaining */
-	virtual T set (const T& v) = 0;
+	virtual T& set (const T& v) = 0;
 
 	/** Subtracts the given vector from this vector.
 	 * @param v The vector
 	 * @return This vector for chaining */
-	virtual T sub (const T& v) = 0;
+	virtual T& sub (const T& v) = 0;
 
 	/** Normalizes this vector. Does nothing if it is zero.
 	 * @return This vector for chaining */
-	virtual T nor () = 0;
+	virtual T& nor () = 0;
 
 	/** Adds the given vector to this vector
 	 * @param v The vector
 	 * @return This vector for chaining */
-	virtual T add (const T& v) = 0;
+	virtual T& add (const T& v) = 0;
 
 	/** @param v The other vector
 	 * @return The dot product between this and the other vector */
@@ -91,11 +91,11 @@ class Vector {
 	/** Scales this vector by a scalar
 	 * @param scalar The scalar
 	 * @return This vector for chaining */
-	virtual T scl (float scalar) = 0;
+	virtual T& scl (float scalar) = 0;
 
 	/** Scales this vector by another vector
 	 * @return This vector for chaining */
-	virtual T scl (const T& v) = 0;
+	virtual T& scl (const T& v) = 0;
 
 	/** @param v The other vector
 	 * @return the distance between this and the other vector */
@@ -112,7 +112,7 @@ class Vector {
 	 * @param target The target vector
 	 * @param alpha The interpolation coefficient
 	 * @return This vector for chaining. */
-	virtual T lerp (const T& target, float alpha) = 0;
+	virtual T& lerp (const T& target, float alpha) = 0;
 
 	/** Interpolates between this vector and the given target vector by alpha (within range [0,1]) using the given Interpolation
 	 * method. the result is stored in this vector.
@@ -120,11 +120,11 @@ class Vector {
 	 * @param alpha The interpolation coefficient
 	 * @param interpolator An Interpolation object describing the used interpolation method
 	 * @return This vector for chaining. */
-	virtual T interpolate (const T& target, float alpha, Interpolation& interpolator) = 0;
+	virtual T& interpolate (const T& target, float alpha, Interpolation& interpolator) = 0;
 
 	/** Sets this vector to the unit vector with a random direction
 	 * @return This vector for chaining */
-	virtual T setToRandomDirection () = 0;
+	virtual T& setToRandomDirection () = 0;
 
 	/** @return Whether this vector is a unit length vector */
 	virtual bool isUnit () = 0;
@@ -182,15 +182,15 @@ class Vector {
 	/** First scale a supplied vector, then add it to this vector.
 	 * @param v addition vector
 	 * @param scalar for scaling the addition vector */
-	virtual T mulAdd (const T& v, float scalar) = 0;
+	virtual T& mulAdd (const T& v, float scalar) = 0;
 
 	/** First scale a supplied vector, then add it to this vector.
 	 * @param v addition vector
 	 * @param mulVec vector by whose values the addition vector will be scaled */
-	virtual T mulAdd (const T& v, const T& mulVec) = 0;
+	virtual T& mulAdd (const T& v, const T& mulVec) = 0;
 
 	/** Sets the components of this vector to 0
 	 * @return This vector for chaining */
-	virtual T setZero () = 0;
+	virtual T& setZero () = 0;
 };
 
