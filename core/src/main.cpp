@@ -1,4 +1,5 @@
 #include "GL.h"
+#include "math/Vector3.h"
 #include "ShapeCreator.hpp"
 #include "LibGDXApplication.h"
 #include "ShaderProgram.h"

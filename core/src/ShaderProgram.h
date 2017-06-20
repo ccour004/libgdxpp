@@ -743,7 +743,6 @@ private:
 	}
     
     void addManagedShader (std::string app, ShaderProgram* shaderProgram) {
-        SDL_Log("OK BEGIN ADD MANAGED SHADER");
 		std::vector<ShaderProgram*>* managedResources;
 
         auto search = shaders.find(app);

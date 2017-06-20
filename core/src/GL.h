@@ -10,6 +10,7 @@
 
 #include <SDL.h>
 #include <sstream>
+#include "math/Vector3.h"
 
 char* file_read(const char* filename) {
         SDL_RWops *rw = SDL_RWFromFile(filename, "rb");
@@ -39,7 +40,7 @@ std::string fileToString(std::string filename){
     return std::string(file_read(filename.c_str()));
 }
 
-class Vector2{
+/*class Vector2{
 public:
     Vector2(float x,float y){this->x = x;this->y = y;}
     float x,y;
@@ -160,7 +161,7 @@ public:
     }
 };
 
-Matrix4 operator *(Matrix4& a,Matrix4& b){
+Matrix4 operator *(const Matrix4& a,const Matrix4& b){
     Vector4 rows[4],cols[4];
     for(int i = 0;i < 16;i+=4){
         rows[i / 4] = Vector4(a.getData()[i],a.getData()[i+1],a.getData()[i+2],a.getData()[i+3]);
@@ -172,11 +173,25 @@ Matrix4 operator *(Matrix4& a,Matrix4& b){
         rows[2]*cols[0],rows[2]*cols[1],rows[2]*cols[2],rows[2]*cols[3],
         rows[3]*cols[0],rows[3]*cols[1],rows[3]*cols[2],rows[3]*cols[3]
     });
-}
+}*/
 
 class Color{
 public:
     Color(float r,float g,float b,float a){this->r = r;this->g = g;this->b = b;this->a = a;}
     float r,g,b,a;
+};
+
+class Ray{
+public:
+    Vector3 origin,direction;
+    Ray(Vector3 origin,Vector3 direction){
+        this->origin = origin;
+        this->direction = direction;
+    }
+};
+
+class Frustum{
+  public:
+Frustum(){}  
 };
 
