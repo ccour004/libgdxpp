@@ -332,7 +332,7 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 * @param vector The other vector
 	 * @return This vector for chaining */
 	Vector3 crs (const Vector3& vector) {
-		return Vector3(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
+		return set(y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x);
 	}
 
 	/** Sets this vector to the cross product between it and the other vector.
@@ -341,7 +341,7 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 * @param z The z-component of the other vector
 	 * @return This vector for chaining */
 	Vector3 crs (float x, float y, float z) {
-		return Vector3(this->y * z - this->z * y, this->z * x - this->x * z, this->x * y - this->y * x);
+		return set(this->y * z - this->z * y, this->z * x - this->x * z, this->x * y - this->y * x);
 	}
 
 	/** Left-multiplies the vector by the given 4x3 column major matrix. The matrix should be composed by a 3x3 matrix representing
@@ -356,22 +356,12 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	/** Left-multiplies the vector by the given matrix, assuming the fourth (w) component of the vector is 1.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3& mul (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02] + l_mat[Matrix4::M03], x
-			* l_mat[Matrix4::M10] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12] + l_mat[Matrix4::M13], x * l_mat[Matrix4::M20] + y
-			* l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M23]);
-	}
+	Vector3& mul (const Matrix4& matrix);
 
 	/** Multiplies the vector by the transpose of the given matrix, assuming the fourth (w) component of the vector is 1.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3& traMul (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20] + l_mat[Matrix4::M30], x
-			* l_mat[Matrix4::M01] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21] + l_mat[Matrix4::M31], x * l_mat[Matrix4::M02] + y
-			* l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M32]);
-	}
+	Vector3& traMul (const Matrix4& matrix);
 
 	/** Left-multiplies the vector by the given matrix.
 	 * @param matrix The matrix
@@ -402,47 +392,26 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 *
 	 * @param matrix The matrix.
 	 * @return This vector for chaining */
-	Vector3& prj (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		float l_w = 1.0f / (x * l_mat[Matrix4::M30] + y * l_mat[Matrix4::M31] + z * l_mat[Matrix4::M32] + l_mat[Matrix4::M33]);
-		return this->set((x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02] + l_mat[Matrix4::M03]) * l_w, (x
-			* l_mat[Matrix4::M10] + y * l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12] + l_mat[Matrix4::M13])
-			* l_w, (x * l_mat[Matrix4::M20] + y * l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22] + l_mat[Matrix4::M23]) * l_w);
-	}
+	Vector3& prj (const Matrix4& matrix);
 
 	/** Multiplies this vector by the first three columns of the matrix, essentially only applying rotation and scaling.
 	 *
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3& rot (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M01] + z * l_mat[Matrix4::M02], x * l_mat[Matrix4::M10] + y
-			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M12], x * l_mat[Matrix4::M20] + y * l_mat[Matrix4::M21] + z * l_mat[Matrix4::M22]);
-	}
+	Vector3& rot (const Matrix4& matrix);
 
 	/** Multiplies this vector by the transpose of the first three columns of the matrix. Note: only works for translation and
 	 * rotation, does not work for scaling. For those, use {@link #rot(Matrix4)} with {@link Matrix4#inv()}.
 	 * @param matrix The transformation matrix
 	 * @return The vector for chaining */
-	Vector3& unrotate (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20], x * l_mat[Matrix4::M01] + y
-			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21], x * l_mat[Matrix4::M02] + y * l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22]);
-	}
+	Vector3& unrotate (const Matrix4& matrix);
 
 	/** Translates this vector in the direction opposite to the translation of the matrix and the multiplies this vector by the
 	 * transpose of the first three columns of the matrix. Note: only works for translation and rotation, does not work for
 	 * scaling. For those, use {@link #mul(Matrix4)} with {@link Matrix4#inv()}.
 	 * @param matrix The transformation matrix
 	 * @return The vector for chaining */
-	Vector3& untransform (const Matrix4& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		x -= l_mat[Matrix4::M03];
-		y -= l_mat[Matrix4::M03];
-		z -= l_mat[Matrix4::M03];
-		return this->set(x * l_mat[Matrix4::M00] + y * l_mat[Matrix4::M10] + z * l_mat[Matrix4::M20], x * l_mat[Matrix4::M01] + y
-			* l_mat[Matrix4::M11] + z * l_mat[Matrix4::M21], x * l_mat[Matrix4::M02] + y * l_mat[Matrix4::M12] + z * l_mat[Matrix4::M22]);
-	}
+	Vector3& untransform (const Matrix4& matrix);
 
 	/** Rotates this vector by the given angle in degrees around the given axis.
 	 *
@@ -451,9 +420,7 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 * @param axisY the y-component of the axis
 	 * @param axisZ the z-component of the axis
 	 * @return This vector for chaining */
-	Vector3& rotate (float degrees, float axisX, float axisY, float axisZ) {
-		return this->mul(tmpMat.setToRotation(axisX, axisY, axisZ, degrees));
-	}
+	Vector3& rotate (float degrees, float axisX, float axisY, float axisZ);
 
 	/** Rotates this vector by the given angle in radians around the given axis.
 	 *
@@ -462,29 +429,21 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 * @param axisY the y-component of the axis
 	 * @param axisZ the z-component of the axis
 	 * @return This vector for chaining */
-	Vector3& rotateRad (float radians, float axisX, float axisY, float axisZ) {
-		return this->mul(tmpMat.setToRotationRad(axisX, axisY, axisZ, radians));
-	}
+	Vector3& rotateRad (float radians, float axisX, float axisY, float axisZ);
 
 	/** Rotates this vector by the given angle in degrees around the given axis.
 	 *
 	 * @param axis the axis
 	 * @param degrees the angle in degrees
 	 * @return This vector for chaining */
-	Vector3& rotate (const Vector3& axis, float degrees) {
-		tmpMat.setToRotation(axis, degrees);
-		return this->mul(tmpMat);
-	}
+	Vector3& rotate (const Vector3& axis, float degrees);
 
 	/** Rotates this vector by the given angle in radians around the given axis.
 	 *
 	 * @param axis the axis
 	 * @param radians the angle in radians
 	 * @return This vector for chaining */
-	Vector3& rotateRad (const Vector3& axis, float radians) {
-		tmpMat.setToRotationRad(axis, radians);
-		return this->mul(tmpMat);
-	}
+	Vector3& rotateRad (const Vector3& axis, float radians);
 
 	
 	bool isUnit () {

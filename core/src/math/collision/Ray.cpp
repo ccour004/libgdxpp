@@ -1,10 +1,4 @@
 #include "Ray.h"
 
-Ray::Ray()
-{
-}
-
-Ray::~Ray()
-{
-}
+static Vector3 Ray::tmp = Vector3();
 

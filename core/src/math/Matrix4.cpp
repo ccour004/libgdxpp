@@ -1,6 +1,6 @@
 #include "Matrix4.h"
 
-    static std::vector<float> Matrix4::tmp(16);
+    std::vector<float> Matrix4::tmp(16);
 
 	Matrix4& Matrix4::set (const Quaternion& quaternion) {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
@@ -32,21 +32,21 @@
 		val[M31] = 0;
 		val[M32] = 0;
 		val[M33] = 1;
-		return this;
+		return *this;
 	}
 
 	Matrix4& Matrix4::trn (const Vector3& vector) {
 		val[M03] += vector.x;
 		val[M13] += vector.y;
 		val[M23] += vector.z;
-		return this;
+		return *this;
 	}
     
     Matrix4& Matrix4::setTranslation (const Vector3& vector) {
 		val[M03] = vector.x;
 		val[M13] = vector.y;
 		val[M23] = vector.z;
-		return this;
+		return *this;
 	}
 
 	Matrix4 Matrix4::setToTranslation (const Vector3& vector) {
@@ -54,7 +54,7 @@
 		val[M03] = vector.x;
 		val[M13] = vector.y;
 		val[M23] = vector.z;
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setToTranslationAndScaling (const Vector3& translation, const Vector3& scaling) {
@@ -65,13 +65,13 @@
 		val[M00] = scaling.x;
 		val[M11] = scaling.y;
 		val[M22] = scaling.z;
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setToRotation (const Vector3& axis, float degrees) {
 		if (degrees == 0) {
 			idt();
-			return this;
+			return *this;
 		}
 		return set(quat.set(axis, degrees));
 	}
@@ -79,7 +79,7 @@
 	Matrix4& Matrix4::setToRotationRad (const Vector3& axis, float radians) {
 		if (radians == 0) {
 			idt();
-			return this;
+			return *this;
 		}
 		return set(quat.setFromAxisRad(axis, radians));
 	}
@@ -87,7 +87,7 @@
 	Matrix4& Matrix4::setToRotation (float axisX, float axisY, float axisZ, float degrees) {
 		if (degrees == 0) {
 			idt();
-			return this;
+			return *this;
 		}
 		return set(quat.setFromAxis(axisX, axisY, axisZ, degrees));
 	}
@@ -95,7 +95,7 @@
 	Matrix4& Matrix4::setToRotationRad (float axisX, float axisY, float axisZ, float radians) {
 		if (radians == 0) {
 			idt();
-			return this;
+			return *this;
 		}
 		return set(quat.setFromAxisRad(axisX, axisY, axisZ, radians));
 	}
@@ -123,7 +123,7 @@
 		val[M00] = vector.x;
 		val[M11] = vector.y;
 		val[M22] = vector.z;
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setToLookAt (const Vector3& direction, const Vector3& up) {
@@ -142,15 +142,15 @@
 		val[M21] = -l_vez.y;
 		val[M22] = -l_vez.z;
 
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setToLookAt (const Vector3& position, const Vector3& target, const Vector3& up) {
 		tmpVec.set(target).sub(position);
 		setToLookAt(tmpVec, up);
-		this.mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
+		this->mul(tmpMat.setToTranslation(-position.x, -position.y, -position.z));
 
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setToWorld (const Vector3& position, const Vector3& forward, const Vector3& up) {
@@ -158,11 +158,11 @@
 		right.set(tmpForward).crs(up).nor();
 		tmpUp.set(right).crs(tmpForward).nor();
 
-		this.set(right, tmpUp, tmpForward.scl(-1), position);
-		return this;
+		this->set(right, tmpUp, tmpForward.scl(-1), position);
+		return *this;
 	}
     
-	Matrix4& Matrix4::avg (const Matrix4& other, float w) {
+	Matrix4& Matrix4::avg (Matrix4& other, float w) {
 		getScale(tmpVec);
 		other.getScale(tmpForward);
 
@@ -176,7 +176,7 @@
 		rotate(quat.slerp(quat2, 1 - w));
 		setTranslation(tmpUp.scl(w).add(right.scl(1 - w)));
 
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t) {
@@ -197,7 +197,7 @@
 		rotate(quat);
 		setTranslation(tmpForward);
 
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t, std::vector<float> w) {
@@ -216,7 +216,7 @@
 		rotate(quat);
 		setTranslation(tmpForward);
 
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::set (const Matrix3& mat) {
@@ -236,7 +236,7 @@
 		val[13] = mat.val[7];
 		val[14] = 0;
 		val[15] = mat.val[8];
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::set (const Affine2& affine) {
@@ -256,7 +256,7 @@
 		val[M13] = affine.m12;
 		val[M23] = 0;
 		val[M33] = 1;
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::setAsAffine (const Affine2& affine) {
@@ -266,14 +266,14 @@
 		val[M11] = affine.m11;
 		val[M03] = affine.m02;
 		val[M13] = affine.m12;
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::scl (const Vector3& scale) {
 		val[M00] *= scale.x;
 		val[M11] *= scale.y;
 		val[M22] *= scale.z;
-		return this;
+		return *this;
 	}
     
 	Vector3& Matrix4::getTranslation (Vector3& position) {
@@ -300,33 +300,33 @@
 	}
     
 	Matrix4& Matrix4::rotate (const Vector3& axis, float degrees) {
-		if (degrees == 0) return this;
+		if (degrees == 0) return *this;
 		quat.set(axis, degrees);
 		return rotate(quat);
 	}
     
 	Matrix4& Matrix4::rotateRad (const Vector3& axis, float radians) {
-		if (radians == 0) return this;
+		if (radians == 0) return *this;
 		quat.setFromAxisRad(axis, radians);
 		return rotate(quat);
 	}
     
 	Matrix4& Matrix4::rotate (float axisX, float axisY, float axisZ, float degrees) {
-		if (degrees == 0) return this;
+		if (degrees == 0) return *this;
 		quat.setFromAxis(axisX, axisY, axisZ, degrees);
 		return rotate(quat);
 	}
     
 	Matrix4& Matrix4::rotateRad (float axisX, float axisY, float axisZ, float radians) {
-		if (radians == 0) return this;
+		if (radians == 0) return *this;
 		quat.setFromAxisRad(axisX, axisY, axisZ, radians);
 		return rotate(quat);
 	}
     
-	Matrix4& Matrix4::rotate (const Quaternion& rotation) {
+	Matrix4& Matrix4::rotate (Quaternion& rotation) {
 		rotation.toMatrix(tmp);
 		mul(val, tmp);
-		return this;
+		return *this;
 	}
     
 	Matrix4& Matrix4::rotate (const Vector3& v1, const Vector3& v2) {

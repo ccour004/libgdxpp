@@ -14,6 +14,32 @@
 		return *this;
 	}
     
+    Matrix3& Matrix3::set (const Matrix4& mat) {
+		val[M00] = mat.val[Matrix4::M00];
+		val[M10] = mat.val[Matrix4::M10];
+		val[M20] = mat.val[Matrix4::M20];
+		val[M01] = mat.val[Matrix4::M01];
+		val[M11] = mat.val[Matrix4::M11];
+		val[M21] = mat.val[Matrix4::M21];
+		val[M02] = mat.val[Matrix4::M02];
+		val[M12] = mat.val[Matrix4::M12];
+		val[M22] = mat.val[Matrix4::M22];
+		return *this;
+	}
+    
+	 Matrix3& Matrix3::set (std::vector<float> values) {
+		val[M00] = values[Matrix4::M00];
+		val[M10] = values[Matrix4::M10];
+		val[M20] = values[Matrix4::M20];
+		val[M01] = values[Matrix4::M01];
+		val[M11] = values[Matrix4::M11];
+		val[M21] = values[Matrix4::M21];
+		val[M02] = values[Matrix4::M02];
+		val[M12] = values[Matrix4::M12];
+		val[M22] = values[Matrix4::M22];
+		return *this;
+	}
+    
 	 Matrix3& Matrix3::setToTranslation (const Vector2& translation) {
 		val[M00] = 1;
 		val[M10] = 0;

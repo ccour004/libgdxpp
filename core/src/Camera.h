@@ -19,6 +19,7 @@
 #include "math/Vector3.h"
 #include "math/Matrix4.h"
 #include "math/Quaternion.h"
+#include "math/Frustum.h"
 
 class Camera
 {
@@ -57,11 +58,11 @@ public:
 
 	/** Recalculates the projection and view matrix of this camera and the {@link Frustum} planes. Use this after you've manipulated
 	 * any of the attributes of the camera. */
-	virtual void update () = 0;
+	virtual void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) = 0;
 
 	/** Recalculates the projection and view matrix of this camera and the {@link Frustum} planes if <code>updateFrustum</code> is
 	 * true. Use this after you've manipulated any of the attributes of the camera. */
-	virtual void update (bool updateFrustum) = 0;
+	virtual void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight,bool updateFrustum) = 0;
 
 /** Recalculates the direction of the camera to look at the point (x, y, z). This function assumes the up vector is normalized.
 	 * @param x the x-coordinate of the point to look at
@@ -71,10 +72,10 @@ public:
 		tmpVec.set(x, y, z).sub(position).nor();
 		if (!tmpVec.isZero()) {
 			float dot = tmpVec.dot(up); // up and direction must ALWAYS be orthonormal vectors
-			if (Math.abs(dot - 1) < 0.000000001f) {
+			if (abs(dot - 1) < 0.000000001f) {
 				// Collinear
 				up.set(direction).scl(-1);
-			} else if (Math.abs(dot + 1) < 0.000000001f) {
+			} else if (abs(dot + 1) < 0.000000001f) {
 				// Collinear opposite
 				up.set(direction);
 			}
@@ -85,7 +86,7 @@ public:
 
 	/** Recalculates the direction of the camera to look at the point (x, y, z).
 	 * @param target the point to look at */
-	void lookAt (Vector3 target) {
+	void lookAt (const Vector3& target) {
 		lookAt(target.x, target.y, target.z);
 	}
 
@@ -113,7 +114,7 @@ public:
 	 * 
 	 * @param axis the axis to rotate around
 	 * @param angle the angle, in degrees */
-	void rotate (Vector3 axis, float angle) {
+	void rotate (const Vector3& axis, float angle) {
 		direction.rotate(axis, angle);
 		up.rotate(axis, angle);
 	}
@@ -122,7 +123,7 @@ public:
 	 * orthogonalized.
 	 * 
 	 * @param transform The rotation matrix */
-	void rotate (const Matrix4 transform) {
+	void rotate (const Matrix4& transform) {
 		direction.rot(transform);
 		up.rot(transform);
 	}
@@ -131,7 +132,7 @@ public:
 	 * orthogonalized.
 	 * 
 	 * @param quat The quaternion */
-	void rotate (const Quaternion quat) {
+	void rotate ( Quaternion& quat) {
 		quat.transform(direction);
 		quat.transform(up);
 	}
@@ -169,7 +170,7 @@ public:
 
 	/** Moves the camera by the given vector.
 	 * @param vec the displacement vector */
-	void translate (Vector3 vec) {
+	void translate (const Vector3& vec) {
 		position.add(vec);
 	}
 
@@ -185,10 +186,11 @@ public:
 	 * @param viewportWidth the width of the viewport in pixels
 	 * @param viewportHeight the height of the viewport in pixels
 	 * @return the mutated and unprojected screenCoords {@link Vector3} */
-	Vector3 unproject (Vector3 screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight) {
+	Vector3& unproject (Vector3& screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight,
+    float Gdx_graphics_getHeight) {
 		float x = screenCoords.x, y = screenCoords.y;
 		x = x - viewportX;
-		y = Gdx.graphics.getHeight() - y - 1;
+		y = Gdx_graphics_getHeight - y - 1;
 		y = y - viewportY;
 		screenCoords.x = (2 * x) / viewportWidth - 1;
 		screenCoords.y = (2 * y) / viewportHeight - 1;
@@ -204,8 +206,8 @@ public:
 	 * will return a point on the near plane, a z-coordinate of 1 will return a point on the far plane.
 	 * @param screenCoords the point in screen coordinates
 	 * @return the mutated and unprojected screenCoords {@link Vector3} */
-	Vector3 unproject (Vector3 screenCoords) {
-		unproject(screenCoords, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	Vector3& unproject (Vector3& screenCoords,float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+		unproject(screenCoords, 0, 0, Gdx_graphics_getWidth, Gdx_graphics_getHeight,Gdx_graphics_getHeight);
 		return screenCoords;
 	}
 
@@ -214,8 +216,8 @@ public:
 	 * <b>bottom</b> left, with the y-axis pointing <b>upwards</b> and the x-axis pointing to the right. This makes it easily
 	 * useable in conjunction with {@link Batch} and similar classes.
 	 * @return the mutated and projected worldCoords {@link Vector3} */
-	Vector3 project (Vector3 worldCoords) {
-		project(worldCoords, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	Vector3& project (Vector3& worldCoords,float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+		project(worldCoords, 0, 0,Gdx_graphics_getWidth, Gdx_graphics_getHeight);
 		return worldCoords;
 	}
 
@@ -230,7 +232,7 @@ public:
 	 * @param viewportWidth the width of the viewport in pixels
 	 * @param viewportHeight the height of the viewport in pixels
 	 * @return the mutated and projected worldCoords {@link Vector3} */
-	Vector3 project (Vector3 worldCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight) {
+	Vector3& project (Vector3& worldCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight) {
 		worldCoords.prj(combined);
 		worldCoords.x = viewportWidth * (worldCoords.x + 1) / 2 + viewportX;
 		worldCoords.y = viewportHeight * (worldCoords.y + 1) / 2 + viewportY;
@@ -246,10 +248,10 @@ public:
 	 * @param viewportWidth the width of the viewport in pixels
 	 * @param viewportHeight the height of the viewport in pixels
 	 * @return the picking Ray. */
-	Ray getPickRay (float screenX, float screenY, float viewportX, float viewportY, float viewportWidth,
-		float viewportHeight) {
-		unproject(ray.origin.set(screenX, screenY, 0), viewportX, viewportY, viewportWidth, viewportHeight);
-		unproject(ray.direction.set(screenX, screenY, 1), viewportX, viewportY, viewportWidth, viewportHeight);
+	Ray& getPickRay (float screenX, float screenY, float viewportX, float viewportY, float viewportWidth,
+		float viewportHeight,float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+		unproject(ray.origin.set(screenX, screenY, 0), viewportX, viewportY, viewportWidth, viewportHeight,Gdx_graphics_getHeight);
+		unproject(ray.direction.set(screenX, screenY, 1), viewportX, viewportY, viewportWidth, viewportHeight,Gdx_graphics_getHeight);
 		ray.direction.sub(ray.origin).nor();
 		return ray;
 	}
@@ -258,8 +260,8 @@ public:
 	 * whole screen. The screen coordinates origin is assumed to be in the top left corner, its y-axis pointing down, the x-axis
 	 * pointing to the right. The returned instance is not a new instance but an internal member only accessible via this function.
 	 * @return the picking Ray. */
-	Ray getPickRay (float screenX, float screenY) {
-		return getPickRay(screenX, screenY, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+	Ray& getPickRay (float screenX, float screenY,float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+		return getPickRay(screenX, screenY, 0.0f, 0.0f, Gdx_graphics_getWidth, Gdx_graphics_getHeight,Gdx_graphics_getWidth, Gdx_graphics_getHeight);
 	}
 };
 

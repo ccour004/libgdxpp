@@ -9,15 +9,17 @@ class MyAppListener: public ApplicationListener{
     MeshBuilder modelBuilder = MeshBuilder();
     bool isCreated = false;
     Mesh mesh;
-    Matrix4 view,proj;
+    PerspectiveCamera camera;
+    //Matrix4 view,proj;
     ShaderProgram shaderProgram;
     int counter = 0;
     
-    Vector3 eye = Vector3(0,0,3),target = Vector3(0,0,0),up = Vector3(0,1,0);
-    float near = 0.1f,far = 100.0f,fov = 67.0f,aspect = 0.6182f;
+    //Vector3 eye = Vector3(0,0,3),target = Vector3(0,0,0),up = Vector3(0,1,0);
+    Vector3 center;
+    //float near = 0.1f,far = 100.0f,fov = 67.0f,aspect = 0.6182f;
     int width = 640,height = 480;
     
-    void buildProj(float near,float far,float fov,float aspect){
+    /*void buildProj(float near,float far,float fov,float aspect){
         float top = near * tan(M_PI / 180.0f * fov / 2.0f),bottom = -top,right = top * aspect, left = -right;
         proj = Matrix4(std::vector<float>{
         (2.0f * near) / (right-left),0,(right+left)/(right-left),0,
@@ -25,12 +27,12 @@ class MyAppListener: public ApplicationListener{
         0,0,-1.0f * ((far+near)/(far-near)),-(2.0f * far*near) / (far-near),
         0,0,-1,1
         });        
-    }
+    }*/
     
-    void buildView(Vector3& eye,Vector3& target,Vector3& up){
+    /*void buildView(Vector3& eye,Vector3& target,Vector3& up){
         Vector3 zaxis = (eye-target).nor();
-        Vector3 xaxis = up.crs(zaxis).nor();
-        Vector3 yaxis = zaxis.crs(xaxis); 
+        Vector3 xaxis = up.cpy().crs(zaxis).nor();
+        Vector3 yaxis = zaxis.cpy().crs(xaxis); 
         SDL_Log("XAXIS: %s,YAXIS: %s,ZAXIS: %s",xaxis.toString().c_str(),yaxis.toString().c_str(),
             zaxis.toString().c_str());
         SDL_Log("XAXIS DOT EYE: %f,YAXIS DOT EYE: %f,ZAXIS DOT EYE: %f",-xaxis.dot(eye),-yaxis.dot(eye),-zaxis.dot(eye));
@@ -40,7 +42,7 @@ class MyAppListener: public ApplicationListener{
             xaxis.z,yaxis.z,zaxis.z,0,
             -xaxis.dot(eye),-yaxis.dot(eye),-zaxis.dot(eye),1.0f
         });
-    }
+    }*/
 public:
  bool create(){
      if(isCreated) return true;
@@ -52,11 +54,17 @@ public:
             
         if(!shaderProgram.isCompiled()) return false;
         
-        //Build proj,view matrices;
-        buildProj(near,far,fov,aspect);
-        buildView(eye,target,up);
+        center = Vector3(0,0,0);
+        camera = PerspectiveCamera(67,640,480,640,480);
+        camera.lookAt(center);
+        camera.far = 200;
+        camera.update(640,480);
         
-        SDL_Log("EYE: %s,VIEW: %s",eye.toString().c_str(),view.toString().c_str());
+        //Build proj,view matrices;
+        //buildProj(near,far,fov,aspect);
+        //buildView(eye,target,up);
+        
+        //SDL_Log("EYE: %s,VIEW: %s",eye.toString().c_str(),view.toString().c_str());
         //Setup instance.
         mesh = modelBuilder.build(2,2,2,20,20);
         mesh.init();
@@ -66,24 +74,29 @@ public:
 
  void resize(int width, int height){
     this->width = width;this->height = height;
-    aspect = ((float)width)/((float)height);
-    buildProj(near,far,fov,aspect);
+    //aspect = ((float)width)/((float)height);
+    //buildProj(near,far,fov,aspect);
+    camera.viewportWidth = width;
+    camera.viewportHeight = height;
+    camera.lookAt(center);
+    camera.update(width,height);
  }
 
  void render(){
     glViewport(0,0,width,height);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    eye.add(0.001f,0,0);
-    buildView(eye,target,up);
+    //eye.add(0.001f,0,0);
+    //buildView(eye,target,up);
 
     //Bind program
     shaderProgram.begin();
 
     //Set transform
-    SDL_Log("PROJ: %s,VIEW: %s",proj.toString().c_str(),view.toString().c_str());
-    shaderProgram.setUniformMatrix("u_proj",proj);
-    shaderProgram.setUniformMatrix("u_view",view);
+    //SDL_Log("PROJ: %s,VIEW: %s",proj.toString().c_str(),view.toString().c_str());
+    /*shaderProgram.setUniformMatrix("u_proj",proj);
+    shaderProgram.setUniformMatrix("u_view",view);*/
+    shaderProgram.setUniformMatrix("u_projView",camera.combined);
             
     //Enable vertex position
     shaderProgram.enableVertexAttribute(ShaderProgram::POSITION_ATTRIBUTE);

@@ -15,6 +15,11 @@
  ******************************************************************************/
 
 #pragma once
+#include <vector>
+#include <time.h>
+#include <cstdlib>
+#include <cstddef>
+#include <stdint.h>
 #include <limits.h>
 
 /** This class implements the xorshift128+ algorithm that is a very fast, top-quality 64-bit pseudo-random number generator. The
@@ -148,13 +153,13 @@ public:
 	 * length of the byte array.
 	 * <p>
 	 * This implementation uses {@link #nextLong()} internally. */
-	void nextBytes (std::vector<std::uint8_t>& bytes) {
+	void nextBytes (std::vector<uint8_t>& bytes) {
 		int n = 0;
 		int i = bytes.size();
 		while (i != 0) {
 			n = i < 8 ? i : 8; // min(i, 8);
 			for (long bits = nextLong(); n-- != 0; bits >>= 8)
-				bytes[--i] = (std::uint8_t)bits;
+				bytes[--i] = (uint8_t)bits;
 		}
 	}
 

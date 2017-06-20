@@ -16,6 +16,8 @@
  
 #pragma once
 
+#include <string>
+#include <sstream>
 #include "../Serializable.h"
 #include "MathUtils.h"
 

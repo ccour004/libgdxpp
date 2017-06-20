@@ -16,6 +16,10 @@
  
 #pragma once
 #include "../Serializable.h"
+#include "Quaternion.h"
+#include "Vector3.h"
+#include <string>
+#include <sstream>
 #include "MathUtils.h"
 
 /** Encapsulates a <a href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column major</a> 4 by 4 matrix. Like
@@ -155,7 +159,7 @@ class Matrix4:public Serializable {
 	 * @param position The translation
 	 * @param orientation The rotation, must be normalized
 	 * @return This matrix for chaining */
-	Matrix4 set (const Vector3& position, const Quaternion& orientation);
+	Matrix4& set (const Vector3& position, const Quaternion& orientation);
 
 	/** Sets the matrix to a rotation matrix representing the translation and quaternion.
 	 * 
@@ -791,7 +795,7 @@ class Matrix4:public Serializable {
 	 * @param other The other transform
 	 * @param w Weight of this transform; weight of the other transform is (1 - w)
 	 * @return This matrix for chaining */
-	Matrix4& avg (const Matrix4& other, float w);
+	Matrix4& avg (Matrix4& other, float w);
 
 	/** Averages the given transforms and stores the result in this matrix. Translations and scales are lerped while rotations are
 	 * slerped. Does not destroy the data contained in t.
@@ -1064,7 +1068,7 @@ class Matrix4:public Serializable {
 			&& MathUtils::isZero(val[M20]) && MathUtils::isZero(val[M21]));
 	}
     
-    void mul(std::vector<float>& mata, const std::vector<float>& matb) {
+    static void mul(std::vector<float>& mata, const std::vector<float>& matb) {
 		std::vector<float> tmp;
 		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
 		tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02] * matb[M21] + mata[M03] * matb[M31];
@@ -1085,7 +1089,7 @@ class Matrix4:public Serializable {
 		mata = tmp;
 	}
 	
-	static inline float matrix4_det(float* val) {
+	static inline float det(std::vector<float>& val) {
 		return val[M30] * val[M21] * val[M12] * val[M03] - val[M20] * val[M31] * val[M12] * val[M03] - val[M30] * val[M11]
 				* val[M22] * val[M03] + val[M10] * val[M31] * val[M22] * val[M03] + val[M20] * val[M11] * val[M32] * val[M03] - val[M10]
 				* val[M21] * val[M32] * val[M03] - val[M30] * val[M21] * val[M02] * val[M13] + val[M20] * val[M31] * val[M02] * val[M13]
@@ -1097,9 +1101,9 @@ class Matrix4:public Serializable {
 				* val[M33] - val[M10] * val[M01] * val[M22] * val[M33] + val[M00] * val[M11] * val[M22] * val[M33];
 	}
 	
-	static inline bool matrix4_inv(float* val) {
-		float tmp[16];
-		float l_det = matrix4_det(val);
+	static inline bool inv(std::vector<float>& val) {
+		std::vector<float> tmp(16);
+		float l_det = det(val);
 		if (l_det == 0) return false;
 		tmp[M00] = val[M12] * val[M23] * val[M31] - val[M13] * val[M22] * val[M31] + val[M13] * val[M21] * val[M32] - val[M11]
 			* val[M23] * val[M32] - val[M12] * val[M21] * val[M33] + val[M11] * val[M22] * val[M33];
@@ -1154,7 +1158,7 @@ class Matrix4:public Serializable {
 		return true;
 	}
 
-	static inline void matrix4_mulVec(float* mat, float* vec) {
+	static inline void mulVec(const std::vector<float>& mat, std::vector<float>& vec) {
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13];
 		float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22] + mat[M23];
@@ -1163,7 +1167,7 @@ class Matrix4:public Serializable {
 		vec[2] = z;
 	}
 	
-	static inline void matrix4_proj(float* mat, float* vec) {
+	static inline void proj(const std::vector<float>& mat, std::vector<float>& vec) {
 		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
 		float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03]) * inv_w;
 		float y = (vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13]) * inv_w; 
@@ -1173,7 +1177,7 @@ class Matrix4:public Serializable {
 		vec[2] = z;
 	}
 	
-	static inline void matrix4_rot(float* mat, float* vec) {
+	static inline void rot(const std::vector<float>& mat, std::vector<float>& vec) {
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12];
 		float z = vec[0] * mat[M20] + vec[1] * mat[M21] + vec[2] * mat[M22];

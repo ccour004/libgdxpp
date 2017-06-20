@@ -35,29 +35,30 @@ class PerspectiveCamera: public Camera {
 	 *           according to the aspect ratio.
 	 * @param viewportWidth the viewport width
 	 * @param viewportHeight the viewport height */
-	PerspectiveCamera (float fieldOfViewY, float viewportWidth, float viewportHeight) {
+	PerspectiveCamera (float fieldOfViewY, float viewportWidth, float viewportHeight,
+    float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
 		this->fieldOfView = fieldOfViewY;
 		this->viewportWidth = viewportWidth;
 		this->viewportHeight = viewportHeight;
-		update();
+		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight);
 	}
 
 	Vector3 tmp;
 
-	void update () {
-		update(true);
+	void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight,true);
 	}
 
-	void update (bool updateFrustum) {
+	void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight,bool updateFrustum) {
 		float aspect = viewportWidth / viewportHeight;
-		projection.setToProjection(Math.abs(near), Math.abs(far), fieldOfView, aspect);
+		projection.setToProjection(abs(near), abs(far), fieldOfView, aspect);
 		view.setToLookAt(position, tmp.set(position).add(direction), up);
 		combined.set(projection);
-		Matrix4.mul(combined.val, view.val);
+		Matrix4::mul(combined.val, view.val);
 
 		if (updateFrustum) {
 			invProjectionView.set(combined);
-			Matrix4.inv(invProjectionView.val);
+			Matrix4::inv(invProjectionView.val);
 			frustum.update(invProjectionView);
 		}
 	}

@@ -19,6 +19,7 @@
 #include "Vector3.h"
 #include "Vector2.h"
 #include "Affine2.h"
+#include "Matrix4.h"
 #include "../Serializable.h"
 
 class Vector2;
@@ -300,18 +301,7 @@ class Vector3;
 	/** Sets this 3x3 matrix to the top left 3x3 corner of the provided 4x4 matrix.
 	 * @param mat The matrix whose top left corner will be copied. This matrix will not be modified.
 	 * @return This matrix for the purpose of chaining operations. */
-	 Matrix3& set (const Matrix4& mat) {
-		val[M00] = mat.val[Matrix4::M00];
-		val[M10] = mat.val[Matrix4::M10];
-		val[M20] = mat.val[Matrix4::M20];
-		val[M01] = mat.val[Matrix4::M01];
-		val[M11] = mat.val[Matrix4::M11];
-		val[M21] = mat.val[Matrix4::M21];
-		val[M02] = mat.val[Matrix4::M02];
-		val[M12] = mat.val[Matrix4::M12];
-		val[M22] = mat.val[Matrix4::M22];
-		return *this;
-	}
+	 Matrix3& set (const Matrix4& mat);
 
 	/** Sets the matrix to the given matrix as a float array. The float array must have at least 9 elements; the first 9 will be
 	 * copied.
@@ -319,19 +309,7 @@ class Vector3;
 	 * @param values The matrix, in float form, that is to be copied. Remember that this matrix is in <a
 	 *           href="http://en.wikipedia.org/wiki/Row-major_order#Column-major_order">column major</a> order.
 	 * @return This matrix for the purpose of chaining methods together. */
-	 Matrix3& set (std::vector<float> values) {
-		val[M00] = values[Matrix4::M00];
-		val[M10] = values[Matrix4::M10];
-		val[M20] = values[Matrix4::M20];
-		val[M01] = values[Matrix4::M01];
-		val[M11] = values[Matrix4::M11];
-		val[M21] = values[Matrix4::M21];
-		val[M02] = values[Matrix4::M02];
-		val[M12] = values[Matrix4::M12];
-		val[M22] = values[Matrix4::M22];
-		return *this;
-	}
-
+	 Matrix3& set (std::vector<float> values);
 	/** Adds a translational component to the matrix in the 3rd column. The other columns are untouched.
 	 * @param vector The translation vector.
 	 * @return This matrix for the purpose of chaining. */

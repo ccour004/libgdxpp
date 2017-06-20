@@ -15,46 +15,49 @@
  ******************************************************************************/
 
 #pragma once
+#include "Vector3.h"
+#include "Matrix4.h"
+#include "collision/BoundingBox.h"
+#include "Plane.h"
 
 /** A truncated rectangular pyramid. Used to define the viewable region and its projection onto the screen.
  * @see Camera#frustum */
-public class Frustum {
-	protected static final Vector3[] clipSpacePlanePoints = {new Vector3(-1, -1, -1), new Vector3(1, -1, -1),
-		new Vector3(1, 1, -1), new Vector3(-1, 1, -1), // near clip
-		new Vector3(-1, -1, 1), new Vector3(1, -1, 1), new Vector3(1, 1, 1), new Vector3(-1, 1, 1)}; // far clip
-	protected static final float[] clipSpacePlanePointsArray = new float[8 * 3];
-
-	static {
-		int j = 0;
-		for (Vector3 v : clipSpacePlanePoints) {
-			clipSpacePlanePointsArray[j++] = v.x;
-			clipSpacePlanePointsArray[j++] = v.y;
-			clipSpacePlanePointsArray[j++] = v.z;
-		}
-	}
-	
-	private final static Vector3 tmpV = new Vector3();
-
+class Frustum {
+    static Vector3 tmpV;
+protected:
+	static const std::vector<Vector3> clipSpacePlanePoints;
+	static std::vector<float> clipSpacePlanePointsArray;
+    std::vector<float> planePointsArray = std::vector<float>(8 * 3);
+    static bool created;
+public:
 	/** the six clipping planes, near, far, left, right, top, bottom **/
-	public final Plane[] planes = new Plane[6];
+	std::vector<Plane> planes = std::vector<Plane>(6);
 
 	/** eight points making up the near and far clipping "rectangles". order is counter clockwise, starting at bottom left **/
-	public final Vector3[] planePoints = {new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(),
-		new Vector3(), new Vector3(), new Vector3()};
-	protected final float[] planePointsArray = new float[8 * 3];
+	std::vector<Vector3> planePoints = {Vector3(), Vector3(), Vector3(), Vector3(), Vector3(),
+		Vector3(), Vector3(), Vector3()};
 
-	public Frustum () {
+	Frustum () {
+        if(!created){
+            int j = 0;
+            for (Vector3 v : clipSpacePlanePoints) {
+                clipSpacePlanePointsArray[j++] = v.x;
+                clipSpacePlanePointsArray[j++] = v.y;
+                clipSpacePlanePointsArray[j++] = v.z;
+            }
+            created = true;
+        }
 		for (int i = 0; i < 6; i++) {
-			planes[i] = new Plane(new Vector3(), 0);
+			planes[i] = Plane(Vector3(), 0);
 		}
 	}
 
 	/** Updates the clipping plane's based on the given inverse combined projection and view matrix, e.g. from an
 	 * {@link OrthographicCamera} or {@link PerspectiveCamera}.
 	 * @param inverseProjectionView the combined projection and view matrices. */
-	public void update (Matrix4 inverseProjectionView) {
-		System.arraycopy(clipSpacePlanePointsArray, 0, planePointsArray, 0, clipSpacePlanePointsArray.length);
-		Matrix4.prj(inverseProjectionView.val, planePointsArray, 0, 8, 3);
+	void update (const Matrix4& inverseProjectionView) {
+        planePointsArray = clipSpacePlanePointsArray;
+		Matrix4::proj(inverseProjectionView.val, planePointsArray);
 		for (int i = 0, j = 0; i < 8; i++) {
 			Vector3 v = planePoints[i];
 			v.x = planePointsArray[j++];
@@ -74,10 +77,10 @@ public class Frustum {
 	 * 
 	 * @param point The point
 	 * @return Whether the point is in the frustum. */
-	public boolean pointInFrustum (Vector3 point) {
-		for (int i = 0; i < planes.length; i++) {
+	bool pointInFrustum (const Vector3& point) {
+		for (int i = 0; i < planes.size(); i++) {
 			PlaneSide result = planes[i].testPoint(point);
-			if (result == PlaneSide.Back) return false;
+			if (result == Back) return false;
 		}
 		return true;
 	}
@@ -88,10 +91,10 @@ public class Frustum {
 	 * @param y The Y coordinate of the point
 	 * @param z The Z coordinate of the point
 	 * @return Whether the point is in the frustum. */
-	public boolean pointInFrustum (float x, float y, float z) {
-		for (int i = 0; i < planes.length; i++) {
+	bool pointInFrustum (float x, float y, float z) {
+		for (int i = 0; i < planes.size(); i++) {
 			PlaneSide result = planes[i].testPoint(x, y, z);
-			if (result == PlaneSide.Back) return false;
+			if (result == Back) return false;
 		}
 		return true;
 	}
@@ -101,7 +104,7 @@ public class Frustum {
 	 * @param center The center of the sphere
 	 * @param radius The radius of the sphere
 	 * @return Whether the sphere is in the frustum */
-	public boolean sphereInFrustum (Vector3 center, float radius) {
+	bool sphereInFrustum (const Vector3& center, float radius) {
 		for (int i = 0; i < 6; i++)
 			if ((planes[i].normal.x * center.x + planes[i].normal.y * center.y + planes[i].normal.z * center.z) < (-radius - planes[i].d))
 				return false;
@@ -115,7 +118,7 @@ public class Frustum {
 	 * @param z The Z coordinate of the center of the sphere
 	 * @param radius The radius of the sphere
 	 * @return Whether the sphere is in the frustum */
-	public boolean sphereInFrustum (float x, float y, float z, float radius) {
+	bool sphereInFrustum (float x, float y, float z, float radius) {
 		for (int i = 0; i < 6; i++)
 			if ((planes[i].normal.x * x + planes[i].normal.y * y + planes[i].normal.z * z) < (-radius - planes[i].d)) return false;
 		return true;
@@ -126,7 +129,7 @@ public class Frustum {
 	 * @param center The center of the sphere
 	 * @param radius The radius of the sphere
 	 * @return Whether the sphere is in the frustum */
-	public boolean sphereInFrustumWithoutNearFar (Vector3 center, float radius) {
+	bool sphereInFrustumWithoutNearFar (const Vector3& center, float radius) {
 		for (int i = 2; i < 6; i++)
 			if ((planes[i].normal.x * center.x + planes[i].normal.y * center.y + planes[i].normal.z * center.z) < (-radius - planes[i].d))
 				return false;
@@ -140,7 +143,7 @@ public class Frustum {
 	 * @param z The Z coordinate of the center of the sphere
 	 * @param radius The radius of the sphere
 	 * @return Whether the sphere is in the frustum */
-	public boolean sphereInFrustumWithoutNearFar (float x, float y, float z, float radius) {
+	bool sphereInFrustumWithoutNearFar (float x, float y, float z, float radius) {
 		for (int i = 2; i < 6; i++)
 			if ((planes[i].normal.x * x + planes[i].normal.y * y + planes[i].normal.z * z) < (-radius - planes[i].d)) return false;
 		return true;
@@ -150,16 +153,16 @@ public class Frustum {
 	 * 
 	 * @param bounds The bounding box
 	 * @return Whether the bounding box is in the frustum */
-	public boolean boundsInFrustum (BoundingBox bounds) {
-		for (int i = 0, len2 = planes.length; i < len2; i++) {
-			if (planes[i].testPoint(bounds.getCorner000(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner001(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner010(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner011(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner100(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner101(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner110(tmpV)) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(bounds.getCorner111(tmpV)) != PlaneSide.Back) continue;
+	bool boundsInFrustum (BoundingBox& bounds) {
+		for (int i = 0, len2 = planes.size(); i < len2; i++) {
+			if (planes[i].testPoint(bounds.getCorner000(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner001(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner010(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner011(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner100(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner101(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner110(tmpV)) != Back) continue;
+			if (planes[i].testPoint(bounds.getCorner111(tmpV)) != Back) continue;
 			return false;
 		}
 
@@ -168,22 +171,22 @@ public class Frustum {
 
 	/** Returns whether the given bounding box is in the frustum.
 	 * @return Whether the bounding box is in the frustum */
-	public boolean boundsInFrustum (Vector3 center, Vector3 dimensions) {
+	bool boundsInFrustum (const Vector3& center,const Vector3& dimensions) {
 		return boundsInFrustum(center.x, center.y, center.z, dimensions.x / 2, dimensions.y / 2, dimensions.z / 2);
 	}
 
 	/** Returns whether the given bounding box is in the frustum.
 	 * @return Whether the bounding box is in the frustum */
-	public boolean boundsInFrustum (float x, float y, float z, float halfWidth, float halfHeight, float halfDepth) {
-		for (int i = 0, len2 = planes.length; i < len2; i++) {
-			if (planes[i].testPoint(x + halfWidth, y + halfHeight, z + halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x + halfWidth, y + halfHeight, z - halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x + halfWidth, y - halfHeight, z + halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x + halfWidth, y - halfHeight, z - halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x - halfWidth, y + halfHeight, z + halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x - halfWidth, y + halfHeight, z - halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x - halfWidth, y - halfHeight, z + halfDepth) != PlaneSide.Back) continue;
-			if (planes[i].testPoint(x - halfWidth, y - halfHeight, z - halfDepth) != PlaneSide.Back) continue;
+	bool boundsInFrustum (float x, float y, float z, float halfWidth, float halfHeight, float halfDepth) {
+		for (int i = 0, len2 = planes.size(); i < len2; i++) {
+			if (planes[i].testPoint(x + halfWidth, y + halfHeight, z + halfDepth) != Back) continue;
+			if (planes[i].testPoint(x + halfWidth, y + halfHeight, z - halfDepth) != Back) continue;
+			if (planes[i].testPoint(x + halfWidth, y - halfHeight, z + halfDepth) != Back) continue;
+			if (planes[i].testPoint(x + halfWidth, y - halfHeight, z - halfDepth) != Back) continue;
+			if (planes[i].testPoint(x - halfWidth, y + halfHeight, z + halfDepth) != Back) continue;
+			if (planes[i].testPoint(x - halfWidth, y + halfHeight, z - halfDepth) != Back) continue;
+			if (planes[i].testPoint(x - halfWidth, y - halfHeight, z + halfDepth) != Back) continue;
+			if (planes[i].testPoint(x - halfWidth, y - halfHeight, z - halfDepth) != Back) continue;
 			return false;
 		}
 
@@ -234,6 +237,11 @@ public class Frustum {
 // System.out.println(camOrtho.direction);
 // System.out.println(Arrays.toString(camOrtho.frustum.planes));
 // }
-}
+};
 
-
+Vector3 Frustum::tmpV = Vector3();
+std::vector<float> Frustum::clipSpacePlanePointsArray = std::vector<float>(8 * 3);
+const std::vector<Vector3> Frustum::clipSpacePlanePoints = {Vector3(-1, -1, -1), Vector3(1, -1, -1),
+		Vector3(1, 1, -1), Vector3(-1, 1, -1), // near clip
+		Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1), Vector3(-1, 1, 1)}; // far clip
+bool Frustum::created = false;
