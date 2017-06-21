@@ -3,10 +3,17 @@ cmake_minimum_required (VERSION 3.0.2)
 project (Core)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_executable(Core "${CMAKE_CURRENT_SOURCE_DIR}/core/src/main.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/core/src/LibGDXApplication.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/core/src/GL.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/core/src/MyAppListener.cpp"
+"${CMAKE_SOURCE_DIR}/core/src/ShaderProgram.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/Matrix4.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/Affine2.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/Vector2.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/Vector3.cpp"
+"${CMAKE_SOURCE_DIR}/core/src/math/Frustum.cpp"
+"${CMAKE_SOURCE_DIR}/core/src/math/MathUtils.cpp"
+"${CMAKE_SOURCE_DIR}/core/src/math/RandomXS128.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/collision/BoundingBox.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/collision/Ray.cpp"
 "${CMAKE_SOURCE_DIR}/core/src/math/Quaternion.cpp")

@@ -21,14 +21,7 @@
 class Sin {
         public:
 		std::vector<float> table;
-
-		Sin(int SIN_COUNT,int SIN_MASK,float radFull,float degToIndex,float degreesToRadians) {
-            table = std::vector<float>(SIN_COUNT);
-			for (int i = 0; i < SIN_COUNT; i++)
-				table[i] = sin((i + 0.5f) / SIN_COUNT * radFull);
-			for (int i = 0; i < 360; i += 90)
-				table[(int)(i * degToIndex) & SIN_MASK] = sin(i * degreesToRadians);
-		}
+		Sin(int SIN_COUNT,int SIN_MASK,float radFull,float degToIndex,float degreesToRadians);
 	};
 
 /** Utility and fast math functions.
@@ -71,115 +64,68 @@ public:
     static Sin SIN;
 
 	/** Returns the sine in radians from a lookup table. */
-	static float sin (float radians) {
-		return SIN.table[(int)(radians * radToIndex) & SIN_MASK];
-	}
+	static float sin (float radians);
 
 	/** Returns the cosine in radians from a lookup table. */
-	static float cos (float radians) {
-		return SIN.table[(int)((radians + PI / 2) * radToIndex) & SIN_MASK];
-	}
+	static float cos (float radians);
 
 	/** Returns the sine in radians from a lookup table. */
-	static float sinDeg (float degrees) {
-		return SIN.table[(int)(degrees * degToIndex) & SIN_MASK];
-	}
+	static float sinDeg (float degrees);
 
 	/** Returns the cosine in radians from a lookup table. */
-	static float cosDeg (float degrees) {
-		return SIN.table[(int)((degrees + 90) * degToIndex) & SIN_MASK];
-	}
-
+	static float cosDeg (float degrees);
 	// ---
 
 	/** Returns atan2 in radians, faster but less accurate than Math.atan2. Average error of 0.00231 radians (0.1323 degrees),
 	 * largest error of 0.00488 radians (0.2796 degrees). */
-	static float atan2 (float y, float x) {
-		if (x == 0.0f) {
-			if (y > 0.0f) return PI / 2;
-			if (y == 0.0f) return 0.0f;
-			return -PI / 2;
-		}
-		float atan, z = y / x;
-		if (abs(z) < 1.0f) {
-			atan = z / (1.0f + 0.28f * z * z);
-			if (x < 0.0f) return atan + (y < 0.0f ? -PI : PI);
-			return atan;
-		}
-		atan = PI / 2 - z / (z * z + 0.28f);
-		return y < 0.0f ? atan - PI : atan;
-	}
+	static float atan2 (float y, float x);
 
 	// ---
 
 	static RandomXS128 Random;
 
 	/** Returns a random number between 0 (inclusive) and the specified value (inclusive). */
-	static int random (int range) {
-		return Random.nextInt(range + 1);
-	}
+	static int random (int range);
 
 	/** Returns a random number between start (inclusive) and end (inclusive). */
-	static int random (int start, int end) {
-		return start + Random.nextInt(end - start + 1);
-	}
+	static int random (int start, int end);
 
 	/** Returns a random number between 0 (inclusive) and the specified value (inclusive). */
-	static long random (long range) {
-		return (long)(Random.nextDouble() * range);
-	}
+	static long random (long range);
 
 	/** Returns a random number between start (inclusive) and end (inclusive). */
-	static long random (long start, long end) {
-		return start + (long)(Random.nextDouble() * (end - start));
-	}
+	static long random (long start, long end);
 
 	/** Returns a random bool value. */
-	static bool randomBoolean () {
-		return Random.nextBoolean();
-	}
+	static bool randomBoolean ();
 
 	/** Returns true if a random value between 0 and 1 is less than the specified value. */
-	static bool randomBoolean (float chance) {
-		return random() < chance;
-	}
+	static bool randomBoolean (float chance);
 
 	/** Returns random number between 0.0 (inclusive) and 1.0 (exclusive). */
-	static float random () {
-		return Random.nextFloat();
-	}
+	static float random ();
 
 	/** Returns a random number between 0 (inclusive) and the specified value (exclusive). */
-	static float random (float range) {
-		return Random.nextFloat() * range;
-	}
+	static float random (float range);
 
 	/** Returns a random number between start (inclusive) and end (exclusive). */
-	static float random (float start, float end) {
-		return start + Random.nextFloat() * (end - start);
-	}
+	static float random (float start, float end);
 
 	/** Returns -1 or 1, randomly. */
-	static int randomSign () {
-		return 1 | (Random.nextInt() >> 31);
-	}
+	static int randomSign ();
 
 	/** Returns a triangularly distributed random number between -1.0 (exclusive) and 1.0 (exclusive), where values around zero are
 	 * more likely.
 	 * <p>
 	 * This is an optimized version of {@link #randomTriangular(float, float, float) randomTriangular(-1, 1, 0)} */
-	static float randomTriangular () {
-		return Random.nextFloat() - Random.nextFloat();
-	}
+	static float randomTriangular ();
 
 	/** Returns a triangularly distributed random number between {@code -max} (exclusive) and {@code max} (exclusive), where values
 	 * around zero are more likely.
 	 * <p>
 	 * This is an optimized version of {@link #randomTriangular(float, float, float) randomTriangular(-max, max, 0)}
 	 * @param max the upper limit */
-	static float randomTriangular (float max) {
-		return (Random.nextFloat() - Random.nextFloat()) * max;
-	}
+	static float randomTriangular (float max);
 
 	/** Returns a triangularly distributed random number between {@code min} (inclusive) and {@code max} (exclusive), where the
 	 * {@code mode} argument defaults to the midpoint between the bounds, giving a symmetric distribution.
@@ -187,21 +133,14 @@ public:
 	 * This method is equivalent of {@link #randomTriangular(float, float, float) randomTriangular(min, max, (min + max) * .5f)}
 	 * @param min the lower limit
 	 * @param max the upper limit */
-	static float randomTriangular (float min, float max) {
-		return randomTriangular(min, max, (min + max) * 0.5f);
-	}
+	static float randomTriangular (float min, float max);
 
 	/** Returns a triangularly distributed random number between {@code min} (inclusive) and {@code max} (exclusive), where values
 	 * around {@code mode} are more likely.
 	 * @param min the lower limit
 	 * @param max the upper limit
 	 * @param mode the point around which the values are more likely */
-	static float randomTriangular (float min, float max, float mode) {
-		float u = Random.nextFloat();
-		float d = max - min;
-		if (u <= (mode - min) / d) return min + sqrt(u * d * (mode - min));
-		return max - sqrt((1 - u) * d * (max - mode));
-	}
+	static float randomTriangular (float min, float max, float mode);
 
 	// ---
 
@@ -288,9 +227,7 @@ public:
 
 	/** Returns the largest integer less than or equal to the specified float. This method will only properly floor floats from
 	 * -(2^14) to (Float.MAX_VALUE - 2^14). */
-	static int floor (float value) {
-		return (int)(value + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
-	}
+	static int floor (float value);
 
 	/** Returns the largest integer less than or equal to the specified float. This method will only properly floor floats that are
 	 * positive. Note this method simply casts the float to int. */
@@ -300,21 +237,15 @@ public:
 
 	/** Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats from
 	 * -(2^14) to (Float.MAX_VALUE - 2^14). */
-	static int ceil (float value) {
-		return BIG_ENOUGH_INT - (int)(BIG_ENOUGH_FLOOR - value);
-	}
+	static int ceil (float value);
 
 	/** Returns the smallest integer greater than or equal to the specified float. This method will only properly ceil floats that
 	 * are positive. */
-	static int ceilPositive (float value) {
-		return (int)(value + CEIL);
-	}
+	static int ceilPositive (float value);
 
 	/** Returns the closest integer to the specified float. This method will only properly round floats from -(2^14) to
 	 * (Float.MAX_VALUE - 2^14). */
-	static int round (float value) {
-		return (int)(value + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
-	}
+	static int round (float value);
 
 	/** Returns the closest integer to the specified float. This method will only properly round floats that are positive. */
 	static int roundPositive (float value) {
@@ -322,22 +253,16 @@ public:
 	}
 
 	/** Returns true if the value is zero (using the default tolerance as upper bound) */
-	static bool isZero (float value) {
-		return abs(value) <= FLOAT_ROUNDING_ERROR;
-	}
+	static bool isZero (float value);
 
 	/** Returns true if the value is zero.
 	 * @param tolerance represent an upper bound below which the value is considered zero. */
-	static bool isZero (float value, float tolerance) {
-		return abs(value) <= tolerance;
-	}
+	static bool isZero (float value, float tolerance);
 
 	/** Returns true if a is nearly equal to b. The function uses the default floating error tolerance.
 	 * @param a the first value.
 	 * @param b the second value. */
-	static bool isEqual (float a, float b) {
-		return abs(a - b) <= FLOAT_ROUNDING_ERROR;
-	}
+	static bool isEqual (float a, float b);
 
 	/** Returns true if a is nearly equal to b.
 	 * @param a the first value.
@@ -357,36 +282,3 @@ public:
 		return log(2, value);
 	}
 };
-
-     const int MathUtils::BIG_ENOUGH_INT = 16 * 1024;
-	 const double MathUtils::BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-	 const double MathUtils::CEIL = 0.9999999;
-	 const double MathUtils::BIG_ENOUGH_CEIL = 16384.999999999996;
-	 const double MathUtils::BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5f;
-    
-     const float MathUtils::nanoToSec = 1 / 1000000000.0f;
-
-	// ---
-	 const float MathUtils::FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits
-	 const float MathUtils::PI = 3.1415927f;
-	 const float MathUtils::PI2 = PI * 2;
-
-	 const float MathUtils::E = 2.7182818f;
-
-	 const int MathUtils::SIN_BITS = 14; // 16KB. Adjust for accuracy.
-	 const int MathUtils::SIN_MASK = ~(-1 << SIN_BITS);
-	 const int MathUtils::SIN_COUNT = SIN_MASK + 1;
-
-	 const float MathUtils::radFull = PI * 2;
-	 const float MathUtils::degFull = 360;
-	 const float MathUtils::radToIndex = SIN_COUNT / radFull;
-	 const float MathUtils::degToIndex = SIN_COUNT / degFull;
-
-	/** multiply by this to convert from radians to degrees */
-	 const float MathUtils::radiansToDegrees = 180.0f / PI;
-	 const float MathUtils::radDeg = radiansToDegrees;
-	/** multiply by this to convert from degrees to radians */
-	 const float MathUtils::degreesToRadians = PI / 180;
-	 const float MathUtils::degRad = degreesToRadians;
-    
-    Sin MathUtils::SIN = Sin(SIN_COUNT,SIN_MASK,radFull,degToIndex,degreesToRadians);

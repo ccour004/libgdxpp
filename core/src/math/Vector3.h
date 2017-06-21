@@ -20,11 +20,13 @@
 #include "Matrix3.h"
 #include "Matrix4.h"
 #include "Quaternion.h"
+#include "MathUtils.h"
 #include "../Serializable.h"
 
 /** Encapsulates a 3D vector. Allows chaining operations by returning a reference to itself in all modification methods.
  * @author badlogicgames@gmail.com */
 
+class Vector2;
 class Vector3:public Serializable, public Vector<Vector3> {
     public:
 	static const long serialVersionUID = 3840054589595372522L;
@@ -72,9 +74,7 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 *
 	 * @param vector The vector
 	 * @param z The z-component */
-	Vector3 (const Vector2& vector, float z) {
-		this->set(vector.x, vector.y, z);
-	}
+	Vector3 (const Vector2& vector, float z);
 
 	/** Sets the vector to the given components
 	 *
@@ -107,34 +107,16 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	 * @param vector The vector
 	 * @param z The z-component
 	 * @return This vector for chaining */
-	Vector3& set (const Vector2& vector, float z) {
-		return this->set(vector.x, vector.y, z);
-	}
+	Vector3& set (const Vector2& vector, float z);
 
 	/** Sets the components from the given spherical coordinate
 	 * @param azimuthalAngle The angle between x-axis in radians [0, 2pi]
 	 * @param polarAngle The angle between z-axis in radians [0, pi]
 	 * @return This vector for chaining */
-	Vector3& setFromSpherical (float azimuthalAngle, float polarAngle) {
-		float cosPolar = MathUtils::cos(polarAngle);
-		float sinPolar = MathUtils::sin(polarAngle);
-
-		float cosAzim = MathUtils::cos(azimuthalAngle);
-		float sinAzim = MathUtils::sin(azimuthalAngle);
-
-		return this->set(cosAzim * sinPolar, sinAzim * sinPolar, cosPolar);
-	}
+	Vector3& setFromSpherical (float azimuthalAngle, float polarAngle);
 
 	
-	Vector3& setToRandomDirection () {
-		float u = random();
-		float v = random();
-
-		float theta = MathUtils::PI2 * u; // azimuthal angle
-		float phi = acos(2.0f * v - 1.0f); // polar angle
-
-		return this->setFromSpherical(theta, phi);
-	}
+	Vector3& setToRandomDirection ();
 
 	
 	Vector3 cpy () {
@@ -366,26 +348,16 @@ class Vector3:public Serializable, public Vector<Vector3> {
 	/** Left-multiplies the vector by the given matrix.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3& mul (const Matrix3& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return set(x * l_mat[Matrix3::M00] + y * l_mat[Matrix3::M01] + z * l_mat[Matrix3::M02], x * l_mat[Matrix3::M10] + y
-			* l_mat[Matrix3::M11] + z * l_mat[Matrix3::M12], x * l_mat[Matrix3::M20] + y * l_mat[Matrix3::M21] + z * l_mat[Matrix3::M22]);
-	}
+	Vector3& mul (const Matrix3& matrix);
 
 	/** Multiplies the vector by the transpose of the given matrix.
 	 * @param matrix The matrix
 	 * @return This vector for chaining */
-	Vector3& traMul (const Matrix3& matrix) {
-		std::vector<float> l_mat = matrix.val;
-		return set(x * l_mat[Matrix3::M00] + y * l_mat[Matrix3::M10] + z * l_mat[Matrix3::M20], x * l_mat[Matrix3::M01] + y
-			* l_mat[Matrix3::M11] + z * l_mat[Matrix3::M21], x * l_mat[Matrix3::M02] + y * l_mat[Matrix3::M12] + z * l_mat[Matrix3::M22]);
-	}
+	Vector3& traMul (const Matrix3& matrix);
 
 	/** Multiplies the vector by the given {@link Quaternion}.
 	 * @return This vector for chaining */
-	Vector3& mul (Quaternion& quat) {
-		return quat.transform(*this);
-	}
+	Vector3& mul (Quaternion& quat);
 
 	/** Multiplies this vector by the given matrix dividing by w, assuming the fourth (w) component of the vector is 1. This is
 	 * mostly used to project/unproject vectors via a perspective projection matrix.

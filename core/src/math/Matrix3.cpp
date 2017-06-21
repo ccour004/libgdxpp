@@ -27,6 +27,20 @@
 		return *this;
 	}
     
+	 Matrix3& Matrix3::set (const Affine2& affine) {
+		val[M00] = affine.m00;
+		val[M10] = affine.m10;
+		val[M20] = 0;
+		val[M01] = affine.m01;
+		val[M11] = affine.m11;
+		val[M21] = 0;
+		val[M02] = affine.m02;
+		val[M12] = affine.m12;
+		val[M22] = 1;
+
+		return *this;
+	}
+    
 	 Matrix3& Matrix3::set (std::vector<float> values) {
 		val[M00] = values[Matrix4::M00];
 		val[M10] = values[Matrix4::M10];

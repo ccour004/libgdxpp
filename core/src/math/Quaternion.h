@@ -123,10 +123,7 @@ class Quaternion:public Serializable {
 	 * @param pitch the rotation around the x axis in degrees
 	 * @param roll the rotation around the z axis degrees
 	 * @return this quaternion */
-	 Quaternion& setEulerAngles (float yaw, float pitch, float roll) {
-		return setEulerAnglesRad(yaw * MathUtils::degreesToRadians, pitch * MathUtils::degreesToRadians, roll
-			* MathUtils::degreesToRadians);
-	}
+	 Quaternion& setEulerAngles (float yaw, float pitch, float roll);
 
 	/** Sets the quaternion to the given euler angles in radians.
 	 * @param yaw the rotation around the y axis in radians
@@ -172,34 +169,23 @@ class Quaternion:public Serializable {
 
 	/** Get the roll euler angle in degrees, which is the rotation around the z axis. Requires that this quaternion is normalized.
 	 * @return the rotation around the z axis in degrees (between -180 and +180) */
-	 float getRoll () {
-		return getRollRad() * MathUtils::radiansToDegrees;
-	}
+	 float getRoll ();
 
 	/** Get the pitch euler angle in radians, which is the rotation around the x axis. Requires that this quaternion is normalized.
 	 * @return the rotation around the x axis in radians (between -(PI/2) and +(PI/2)) */
-	 float getPitchRad () {
-		const int pole = getGimbalPole();
-		return pole == 0 ? asin(MathUtils::clamp(2.0f * (w * x - z * y), -1.0f, 1.0f)) : (float)pole * M_PI * 0.5f;
-	}
+	 float getPitchRad ();
 
 	/** Get the pitch euler angle in degrees, which is the rotation around the x axis. Requires that this quaternion is normalized.
 	 * @return the rotation around the x axis in degrees (between -90 and +90) */
-	 float getPitch () {
-		return getPitchRad() * MathUtils::radiansToDegrees;
-	}
+	 float getPitch ();
 
 	/** Get the yaw euler angle in radians, which is the rotation around the y axis. Requires that this quaternion is normalized.
 	 * @return the rotation around the y axis in radians (between -PI and +PI) */
-	 float getYawRad () {
-		return getGimbalPole() == 0 ? atan2(2.0f * (y * w + x * z), 1.0f - 2.0f * (y * y + x * x)) : 0.0f;
-	}
+	 float getYawRad ();
 
 	/** Get the yaw euler angle in degrees, which is the rotation around the y axis. Requires that this quaternion is normalized.
 	 * @return the rotation around the y axis in degrees (between -180 and +180) */
-	 float getYaw () {
-		return getYawRad() * MathUtils::radiansToDegrees;
-	}
+	 float getYaw ();
 
 	 const static float len2 (const float x, const float y, const float z, const float w) {
 		return x * x + y * y + z * z + w * w;
@@ -212,17 +198,7 @@ class Quaternion:public Serializable {
 
 	/** Normalizes this quaternion to unit length
 	 * @return the quaternion for chaining */
-	 Quaternion& nor () {
-		float len = len2();
-		if (len != 0.f && !MathUtils::isEqual(len, 1.0f)) {
-			len = sqrt(len);
-			w /= len;
-			x /= len;
-			y /= len;
-			z /= len;
-		}
-		return *this;
-	}
+	 Quaternion& nor ();
 
 	/** Conjugate the quaternion.
 	 * 
@@ -342,15 +318,10 @@ class Quaternion:public Serializable {
 	}
 
 	/** @return If this quaternion is an identity Quaternion */
-	 bool isIdentity () {
-		return MathUtils::isZero(x) && MathUtils::isZero(y) && MathUtils::isZero(z) && MathUtils::isEqual(w, 1.0f);
-	}
+	 bool isIdentity ();
 
 	/** @return If this quaternion is an identity Quaternion */
-	 bool isIdentity (const float tolerance) {
-		return MathUtils::isZero(x, tolerance) && MathUtils::isZero(y, tolerance) && MathUtils::isZero(z, tolerance)
-			&& MathUtils::isEqual(w, 1.0f, tolerance);
-	}
+	 bool isIdentity (const float tolerance);
 
 	// todo : the setFromAxis(v3,float) method should replace the set(v3,float) method
 	/** Sets the quaternion components from the given axis and angle around that axis.
@@ -373,9 +344,7 @@ class Quaternion:public Serializable {
 	 * @param z Z direction of the axis
 	 * @param degrees The angle in degrees
 	 * @return This quaternion for chaining. */
-	 Quaternion& setFromAxis (const float x, const float y, const float z, const float degrees) {
-		return setFromAxisRad(x, y, z, degrees * MathUtils::degreesToRadians);
-	}
+	 Quaternion& setFromAxis (const float x, const float y, const float z, const float degrees);
 
 	/** Sets the quaternion components from the given axis and angle around that axis.
 	 * @param x X direction of the axis
@@ -449,7 +418,7 @@ class Quaternion:public Serializable {
 	 * @param v1 The base vector, which should be normalized.
 	 * @param v2 The target vector, which should be normalized.
 	 * @return This quaternion for chaining */
-	 Quaternion setFromCross (const Vector3& v1, const Vector3& v2);
+	 Quaternion& setFromCross (Vector3& v1, Vector3& v2);
 
 	/** Set this quaternion to the rotation between two vectors.
 	 * @param x1 The base vectors x value, which should be normalized.
@@ -459,7 +428,7 @@ class Quaternion:public Serializable {
 	 * @param y2 The target vector y value, which should be normalized.
 	 * @param z2 The target vector z value, which should be normalized.
 	 * @return This quaternion for chaining */
-	 Quaternion setFromCross (const float x1, const float y1, const float z1, const float x2, const float y2, const float z2);
+	 Quaternion& setFromCross (const float x1, const float y1, const float z1, const float x2, const float y2, const float z2);
 
 	/** Spherical linear interpolation between this quaternion and the other quaternion, based on the alpha value in the range
 	 * [0,1]. Taken from Bones framework for JPCT, see http://www.aptalkarga.com/bones/
@@ -615,13 +584,7 @@ class Quaternion:public Serializable {
 	/** Multiplies the components of this quaternion with the given scalar.
 	 * @param scalar the scalar.
 	 * @return this quaternion for chaining. */
-	 Quaternion& mul (float scalar) {
-		this->x *= scalar;
-		this->y *= scalar;
-		this->z *= scalar;
-		this->w *= scalar;
-		return *this;
-	}
+	 Quaternion& mul (float scalar);
 
 	/** Get the axis angle representation of the rotation in degrees. The supplied vector will receive the axis (x, y and z values)
 	 * of the rotation and the value returned is the angle in degrees around that axis. Note that this method will alter the
@@ -633,9 +596,7 @@ class Quaternion:public Serializable {
 	 * @return the angle in degrees
 	 * @see <a href="http://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation">wikipedia</a>
 	 * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle">calculation</a> */
-	 float getAxisAngle (const Vector3& axis) {
-		return getAxisAngleRad(axis) * MathUtils::radiansToDegrees;
-	}
+	 float getAxisAngle (Vector3& axis);
 
 	/** Get the axis-angle representation of the rotation in radians. The supplied vector will receive the axis (x, y and z values)
 	 * of the rotation and the value returned is the angle in radians around that axis. Note that this method will alter the
@@ -647,22 +608,18 @@ class Quaternion:public Serializable {
 	 * @return the angle in radians
 	 * @see <a href="http://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation">wikipedia</a>
 	 * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle">calculation</a> */
-	 float getAxisAngleRad (const Vector3& axis);
+	 float getAxisAngleRad (Vector3& axis);
 
 	/** Get the angle in radians of the rotation this quaternion represents. Does not normalize the quaternion. Use
 	 * {@link #getAxisAngleRad(Vector3)} to get both the axis and the angle of this rotation. Use
 	 * {@link #getAngleAroundRad(Vector3)} to get the angle around a specific axis.
 	 * @return the angle in radians of the rotation */
-	 float getAngleRad () {
-		return (float)(2.0 * acos((this->w > 1) ? (this->w / len()) : this->w));
-	}
+	 float getAngleRad ();
 
 	/** Get the angle in degrees of the rotation this quaternion represents. Use {@link #getAxisAngle(Vector3)} to get both the axis
 	 * and the angle of this rotation. Use {@link #getAngleAround(Vector3)} to get the angle around a specific axis.
 	 * @return the angle in degrees of the rotation */
-	 float getAngle () {
-		return getAngleRad() * MathUtils::radiansToDegrees;
-	}
+	 float getAngle ();
 
 	/** Get the swing rotation and twist rotation for the specified axis. The twist rotation represents the rotation around the
 	 * specified axis. The swing rotation represents the rotation of the specified axis itself, which is the rotation around an
@@ -675,8 +632,8 @@ class Quaternion:public Serializable {
 	 * @param swing will receive the swing rotation: the rotation around an axis perpendicular to the specified axis
 	 * @param twist will receive the twist rotation: the rotation around the specified axis
 	 * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/for/decomposition">calculation</a> */
-	 void getSwingTwist (const float axisX, const float axisY, const float axisZ, const Quaternion& swing,
-		const Quaternion& twist);
+	 void getSwingTwist (const float axisX, const float axisY, const float axisZ, Quaternion& swing,
+		Quaternion& twist);
 
 	/** Get the swing rotation and twist rotation for the specified axis. The twist rotation represents the rotation around the
 	 * specified axis. The swing rotation represents the rotation of the specified axis itself, which is the rotation around an
@@ -687,7 +644,7 @@ class Quaternion:public Serializable {
 	 * @param swing will receive the swing rotation: the rotation around an axis perpendicular to the specified axis
 	 * @param twist will receive the twist rotation: the rotation around the specified axis
 	 * @see <a href="http://www.euclideanspace.com/maths/geometry/rotations/for/decomposition">calculation</a> */
-	 void getSwingTwist (const Vector3& axis, const Quaternion& swing, const Quaternion& twist);
+	 void getSwingTwist (const Vector3& axis, Quaternion& swing, Quaternion& twist);
 
 	/** Get the angle in radians of the rotation around the specified axis. The axis must be normalized.
 	 * @param axisX the x component of the normalized axis for which to get the angle
@@ -706,9 +663,7 @@ class Quaternion:public Serializable {
 	 * @param axisY the y component of the normalized axis for which to get the angle
 	 * @param axisZ the z component of the normalized axis for which to get the angle
 	 * @return the angle in degrees of the rotation around the specified axis */
-	 float getAngleAround (const float axisX, const float axisY, const float axisZ) {
-		return getAngleAroundRad(axisX, axisY, axisZ) * MathUtils::radiansToDegrees;
-	}
+	 float getAngleAround (const float axisX, const float axisY, const float axisZ);
 
 	/** Get the angle in degrees of the rotation around the specified axis. The axis must be normalized.
 	 * @param axis the normalized axis for which to get the angle

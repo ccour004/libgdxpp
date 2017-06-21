@@ -17,10 +17,18 @@
 #pragma once
 
 #include "GL.h"
+#include "math/Vector2.h"
+#include "math/Vector3.h"
+#include "math/Matrix3.h"
+#include "math/Matrix4.h"
 #include <limits>
 #include <vector>
 #include <map>
 
+class Vector3;
+class Vector2;
+class Matrix3;
+class Matrix4;
 class ShaderProgram
 {
     std::vector<ShaderProgram> managedResources = std::vector<ShaderProgram>();
@@ -63,83 +71,26 @@ public:
 		return _compiled;
 	}
 ShaderProgram(){}
-ShaderProgram (const std::string& vertexShader,const std::string& fragmentShader,const std::string& app) {
-        std::stringstream vs,fs;
-		if (prependVertexCode.length() > 0) vs<< prependVertexCode; 
-        vs << vertexShader;
-		if (prependFragmentCode.length() > 0) fs<< prependFragmentCode;
-        fs << fragmentShader;
-
-		vertexShaderSource = vs.str();
-		fragmentShaderSource = fs.str();
-		log = "";
-        refCount = 0;
-
-		compileShaders(vertexShader, fragmentShader);
-		if (isCompiled()) {
-			fetchAttributes();
-			fetchUniforms();
-            SDL_Log("Shader fetched all variables!");
-			addManagedShader(app, *this);
-		}
-	}
+ShaderProgram (const std::string& vertexShader,const std::string& fragmentShader,const std::string& app);
     
-	/** @return the log info for the shader compilation and program linking stage. The shader needs to be bound for this method to
-	 *         have an effect. */
-	std::string getLog () {
-		if (_compiled) {
-            GLsizei* length;
-            GLchar* cLog;
-			glGetProgramInfoLog(program,std::numeric_limits<GLchar>::max(),length,cLog);
-			log = cLog;
-			return log;
-		} else {
-			return log;
-		}
-	}
-    
-int fetchUniformLocation (const std::string& name, bool pedantic) {
-        int location;
-        try{
-            location = uniforms.at(name);
-        }catch(...){
-            location = glGetUniformLocation(program, name.c_str());
-			if (location == -1 && pedantic) SDL_Log("no uniform with name '%s' in shader",name.c_str());
-			uniforms[name] = location;
-        }
-		return location;
-	}
+int fetchUniformLocation (const std::string& name, bool pedantic);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
 	 * @param name the name of the uniform
 	 * @param value the value */
-	void setUniformi (const std::string& name, int value) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform1i(location, value);
-	}
+	void setUniformi (const std::string& name, int value);
 
-	void setUniformi (int location, int value) {
-		checkManaged();
-		glUniform1i(location, value);
-	}
+	void setUniformi (int location, int value);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
 	 * @param name the name of the uniform
 	 * @param value1 the first value
 	 * @param value2 the second value */
-	void setUniformi (const std::string& name, int value1, int value2) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform2i(location, value1, value2);
-	}
+	void setUniformi (const std::string& name, int value1, int value2);
 
-	void setUniformi (int location, int value1, int value2) {
-		checkManaged();
-		glUniform2i(location, value1, value2);
-	}
+	void setUniformi (int location, int value1, int value2);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -147,11 +98,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic) {
 	 * @param value1 the first value
 	 * @param value2 the second value
 	 * @param value3 the third value */
-	void setUniformi (const std::string& name, int value1, int value2, int value3) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform3i(location, value1, value2, value3);
-	}
+	void setUniformi (const std::string& name, int value1, int value2, int value3);
 
 	void setUniformi (int location, int value1, int value2, int value3) {
 		checkManaged();
@@ -308,10 +255,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic) {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	void setUniformMatrix (int location, const Matrix4& matrix, bool transpose) {
-		checkManaged();
-		glUniformMatrix4fv(location, 1, transpose, matrix.val.data());
-	}
+	void setUniformMatrix (int location, const Matrix4& matrix, bool transpose);
 
 	/** Sets the uniform matrix with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -334,10 +278,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic) {
 		setUniformMatrix(location, matrix, false);
 	}
 
-	void setUniformMatrix (int location, const Matrix3& matrix, bool transpose) {
-		checkManaged();
-		glUniformMatrix3fv(location, 1, transpose, matrix.val.data());
-	}
+	void setUniformMatrix (int location, const Matrix3& matrix, bool transpose);
 
 	/** Sets an array of uniform matrices with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -374,11 +315,11 @@ int fetchUniformLocation (const std::string& name, bool pedantic) {
 	 * 
 	 * @param name the name of the uniform
 	 * @param values x and y as the first and second values respectively */
-	void setUniformf (const std::string& name, Vector2 values) {
+	void setUniformf (const std::string& name, const Vector2& values) {
 		setUniformf(name, values.x, values.y);
 	}
 
-	void setUniformf (int location, Vector2 values) {
+	void setUniformf (int location, const Vector2& values) {
 		setUniformf(location, values.x, values.y);
 	}
 
@@ -386,7 +327,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic) {
 	 * 
 	 * @param name the name of the uniform
 	 * @param values x, y and z as the first, second and third values respectively */
-	void setUniformf (const std::string& name, Vector3 values) {
+	void setUniformf (const std::string& name, const Vector3& values) {
 		setUniformf(name, values.x, values.y, values.z);
 	}
 
@@ -833,19 +774,4 @@ private:
 		}
 	}
 };
-
-//Initialize
-bool ShaderProgram::pedantic = true;
-std::string ShaderProgram::prependVertexCode = "";
-std::string ShaderProgram::prependFragmentCode = "";
-
-std::map<std::string, std::vector<ShaderProgram>> ShaderProgram::shaders = std::map<std::string, std::vector<ShaderProgram>>();
-
-const std::string ShaderProgram::POSITION_ATTRIBUTE = "a_position";
-const std::string ShaderProgram::NORMAL_ATTRIBUTE = "a_normal";
-const std::string ShaderProgram::COLOR_ATTRIBUTE = "a_color";
-const std::string ShaderProgram::TEXCOORD_ATTRIBUTE = "a_texCoord";
-const std::string ShaderProgram::TANGENT_ATTRIBUTE = "a_tangent";
-const std::string ShaderProgram::BINORMAL_ATTRIBUTE = "a_binormal";
-const std::string ShaderProgram::BONEWEIGHT_ATTRIBUTE = "a_boneWeight";
 

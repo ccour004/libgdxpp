@@ -1,6 +1,16 @@
 #include "Matrix4.h"
 
-    std::vector<float> Matrix4::tmp(16);
+std::vector<float> Matrix4::tmp(16);
+Vector3 Matrix4::tmpVec;
+Matrix4 Matrix4::tmpMat;
+Vector3 Matrix4::l_vez;
+Vector3 Matrix4::l_vex;
+Vector3 Matrix4::l_vey;
+Vector3 Matrix4::right;
+Vector3 Matrix4::tmpForward;
+Vector3 Matrix4::tmpUp;
+Quaternion Matrix4::quat;
+Quaternion Matrix4::quat2;
 
 	Matrix4& Matrix4::set (const Quaternion& quaternion) {
 		return set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
@@ -100,7 +110,7 @@
 		return set(quat.setFromAxisRad(axisX, axisY, axisZ, radians));
 	}
     
-	Matrix4& Matrix4::setToRotation (const Vector3& v1, const Vector3& v2) {
+	Matrix4& Matrix4::setToRotation (Vector3& v1, Vector3& v2) {
 		return set(quat.setFromCross(v1, v2));
 	}
     
@@ -179,7 +189,7 @@
 		return *this;
 	}
     
-	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t) {
+	Matrix4& Matrix4::avg (std::vector<Matrix4>& t) {
 		const float w = 1.0f / t.size();
 
 		tmpVec.set(t[0].getScale(tmpUp).scl(w));
@@ -200,12 +210,12 @@
 		return *this;
 	}
     
-	Matrix4& Matrix4::avg (const std::vector<Matrix4>& t, std::vector<float> w) {
+	Matrix4& Matrix4::avg (std::vector<Matrix4>& t, std::vector<float> w) {
 		tmpVec.set(t[0].getScale(tmpUp).scl(w[0]));
 		quat.set(t[0].getRotation(quat2).exp(w[0]));
 		tmpForward.set(t[0].getTranslation(tmpUp).scl(w[0]));
 
-		for (int i = 1; i < t.length; i++) {
+		for (int i = 1; i < t.size(); i++) {
 			tmpVec.add(t[i].getScale(tmpUp).scl(w[i]));
 			quat.mul(t[i].getRotation(quat2).exp(w[i]));
 			tmpForward.add(t[i].getTranslation(tmpUp).scl(w[i]));
@@ -284,11 +294,11 @@
 	}
     
 	Quaternion& Matrix4::getRotation (Quaternion& rotation, bool normalizeAxes) {
-		return rotation.setFromMatrix(normalizeAxes, this);
+		return rotation.setFromMatrix(normalizeAxes, *this);
 	}
     
 	Quaternion& Matrix4::getRotation (Quaternion& rotation) {
-		return rotation.setFromMatrix(this);
+		return rotation.setFromMatrix(*this);
 	}
     
 	Vector3& Matrix4::getScale (Vector3 scale) {
@@ -329,6 +339,6 @@
 		return *this;
 	}
     
-	Matrix4& Matrix4::rotate (const Vector3& v1, const Vector3& v2) {
+	Matrix4& Matrix4::rotate (Vector3& v1, Vector3& v2) {
 		return rotate(quat.setFromCross(v1, v2));
 	}

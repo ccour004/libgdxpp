@@ -697,7 +697,7 @@ class Matrix4:public Serializable {
 	 * @param v1 The base vector
 	 * @param v2 The target vector
 	 * @return This matrix for the purpose of chaining methods together */
-	Matrix4& setToRotation (const Vector3& v1, const Vector3& v2);
+	Matrix4& setToRotation (Vector3& v1, Vector3& v2);
 
 	/** Set the matrix to a rotation matrix between two vectors.
 	 * @param x1 The base vectors x value
@@ -801,7 +801,7 @@ class Matrix4:public Serializable {
 	 * slerped. Does not destroy the data contained in t.
 	 * @param t List of transforms
 	 * @return This matrix for chaining */
-	Matrix4& avg (const std::vector<Matrix4>& t);
+	Matrix4& avg (std::vector<Matrix4>& t);
 
 	/** Averages the given transforms with the given weights and stores the result in this matrix. Translations and scales are
 	 * lerped while rotations are slerped. Does not destroy the data contained in t or w; Sum of w_i must be equal to 1, or
@@ -809,7 +809,7 @@ class Matrix4:public Serializable {
 	 * @param t List of transforms
 	 * @param w List of weights
 	 * @return This matrix for chaining */
-	Matrix4& avg (const std::vector<Matrix4>& t, std::vector<float> w);
+	Matrix4& avg (std::vector<Matrix4>& t, std::vector<float> w);
 
 	/** Sets this matrix to the given 3x3 matrix. The third column of this matrix is set to (0,0,1,0).
 	 * @param mat the matrix */
@@ -1008,13 +1008,13 @@ class Matrix4:public Serializable {
 	 * 
 	 * @param rotation
 	 * @return This matrix for the purpose of chaining methods together. */
-	Matrix4& rotate (const Quaternion& rotation);
+	Matrix4& rotate (Quaternion& rotation);
 
 	/** Postmultiplies this matrix by the rotation between two vectors.
 	 * @param v1 The base vector
 	 * @param v2 The target vector
 	 * @return This matrix for the purpose of chaining methods together */
-	Matrix4& rotate (const Vector3& v1, const Vector3& v2);
+	Matrix4& rotate (Vector3& v1, Vector3& v2);
 
 	/** Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x
 	 * glTranslate/glRotate/glScale.
@@ -1069,7 +1069,7 @@ class Matrix4:public Serializable {
 	}
     
     static void mul(std::vector<float>& mata, const std::vector<float>& matb) {
-		std::vector<float> tmp;
+		std::vector<float> tmp = std::vector<float>(16);
 		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
 		tmp[M01] = mata[M00] * matb[M01] + mata[M01] * matb[M11] + mata[M02] * matb[M21] + mata[M03] * matb[M31];
 		tmp[M02] = mata[M00] * matb[M02] + mata[M01] * matb[M12] + mata[M02] * matb[M22] + mata[M03] * matb[M32];

@@ -413,13 +413,7 @@ class Vector2;
 	 * @param scaleX The scale in the x-axis.
 	 * @param scaleY The scale in the y-axis.
 	 * @return This matrix for the purpose of chaining. */
-	 Affine2& scale (float scaleX, float scaleY) {
-		m00 *= scaleX;
-		m01 *= scaleY;
-		m10 *= scaleX;
-		m11 *= scaleY;
-		return *this;
-	}
+	 Affine2& scale (const float& scaleX,const float& scaleY);
 
 	/** Postmultiplies this matrix with a scale matrix.
 	 * @param scale The scale vector.
@@ -594,7 +588,7 @@ class Vector2;
 	/** Get the x-y translation component of the matrix.
 	 * @param position Output vector.
 	 * @return Filled position. */
-	 Vector2& getTranslation (const Vector2& position);
+	 Vector2& getTranslation (Vector2& position);
 
 	/** Check if the this is a plain translation matrix.
 	 * @return True if scale is 1 and rotation is 0. */
@@ -609,7 +603,7 @@ class Vector2;
 	}
 
 	/** Applies the affine transformation on a vector. */
-	 void applyTo (const Vector2& point);
+	 void applyTo (Vector2& point);
 
 	
 	 std::string toString () {

@@ -1,21 +1,98 @@
 #include "Quaternion.h"
+#include "Vector3.h"
+#include "MathUtils.h"
 
-static Quaternion::tmp1 =  Quaternion(0, 0, 0, 0);
-static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
+Quaternion Quaternion::tmp1 =  Quaternion(0, 0, 0, 0);
+Quaternion Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
+
+	 bool Quaternion::isIdentity () {
+		return MathUtils::isZero(x) && MathUtils::isZero(y) && MathUtils::isZero(z) && MathUtils::isEqual(w, 1.0f);
+	}
+    
+	 bool Quaternion::isIdentity (const float tolerance) {
+		return MathUtils::isZero(x, tolerance) && MathUtils::isZero(y, tolerance) && MathUtils::isZero(z, tolerance)
+			&& MathUtils::isEqual(w, 1.0f, tolerance);
+	}
 
     Quaternion& Quaternion::set (const Vector3& axis, float angle) {
 		return setFromAxis(axis.x, axis.y, axis.z, angle);
 	}
     
+	 Quaternion& Quaternion::mul (float scalar) {
+		this->x *= scalar;
+		this->y *= scalar;
+		this->z *= scalar;
+		this->w *= scalar;
+		return *this;
+	}
+    
+	 float Quaternion::getAngleRad () {
+		return (float)(2.0f * acos((this->w > 1) ? (this->w / len()) : this->w));
+	}
+    
+	 float Quaternion::getAngleAround (const float axisX, const float axisY, const float axisZ) {
+		return getAngleAroundRad(axisX, axisY, axisZ) * MathUtils::radiansToDegrees;
+	}
+    
+	 Quaternion& Quaternion::setFromAxis (const float x, const float y, const float z, const float degrees) {
+		return setFromAxisRad(x, y, z, degrees * MathUtils::degreesToRadians);
+	}
+    
+	 float Quaternion::getAngle () {
+		return getAngleRad() * MathUtils::radiansToDegrees;
+	}
+    
+	 float Quaternion::getAxisAngle (Vector3& axis) {
+		return getAxisAngleRad(axis) * MathUtils::radiansToDegrees;
+	}
+    
     Vector3& Quaternion::transform (Vector3& v) {
 		tmp2.set(*this);
 		tmp2.conjugate();
-		tmp2.mulLeft(tmp1.set(v.x, v.y, v.z, 0)).mulLeft(this);
+		tmp2.mulLeft(tmp1.set(v.x, v.y, v.z, 0)).mulLeft(*this);
 
 		v.x = tmp2.x;
 		v.y = tmp2.y;
 		v.z = tmp2.z;
 		return v;
+	}
+    
+	 float Quaternion::getRoll () {
+		return getRollRad() * MathUtils::radiansToDegrees;
+	}
+    
+	 float Quaternion::getPitchRad () {
+		const int pole = getGimbalPole();
+		return pole == 0 ? asin(MathUtils::clamp(2.0f * (w * x - z * y), -1.0f, 1.0f)) : (float)pole * M_PI * 0.5f;
+	}
+    
+	 float Quaternion::getPitch () {
+		return getPitchRad() * MathUtils::radiansToDegrees;
+	}
+    
+	 float Quaternion::getYawRad () {
+		return getGimbalPole() == 0 ? atan2(2.0f * (y * w + x * z), 1.0f - 2.0f * (y * y + x * x)) : 0.0f;
+	}
+    
+	 float Quaternion::getYaw () {
+		return getYawRad() * MathUtils::radiansToDegrees;
+	}
+    
+	 Quaternion& Quaternion::nor () {
+		float len = len2();
+		if (len != 0.f && !MathUtils::isEqual(len, 1.0f)) {
+			len = sqrt(len);
+			w /= len;
+			x /= len;
+			y /= len;
+			z /= len;
+		}
+		return *this;
+	}
+    
+	 Quaternion& Quaternion::setEulerAngles (float yaw, float pitch, float roll) {
+		return setEulerAnglesRad(yaw * MathUtils::degreesToRadians, pitch * MathUtils::degreesToRadians, roll
+			* MathUtils::degreesToRadians);
 	}
     
     Quaternion& Quaternion::setFromAxis (const Vector3& axis, const float degrees) {
@@ -28,24 +105,24 @@ static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
     
     Quaternion& Quaternion::setFromAxisRad (const float x, const float y, const float z, const float radians) {
 		float d = Vector3::len(x, y, z);
-		if (d == 0f) return idt();
-		d = 1f / d;
-		float l_ang = radians < 0 ? MathUtils::PI2 - (-radians % MathUtils::PI2) : radians % MathUtils::PI2;
+		if (d == 0.0f) return idt();
+		d = 1.0f / d;
+		float l_ang = radians < 0 ? MathUtils::PI2 - fmod(-radians,MathUtils::PI2) : fmod(radians,MathUtils::PI2);
 		float l_sin = sin(l_ang / 2);
 		float l_cos = cos(l_ang / 2);
 		return this->set(d * x * l_sin, d * y * l_sin, d * z * l_sin, l_cos).nor();
 	}
     
     Quaternion& Quaternion::setFromMatrix (bool normalizeAxes, const Matrix4& matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Matrix4.M00], matrix.val[Matrix4.M01], matrix.val[Matrix4.M02],
-			matrix.val[Matrix4.M10], matrix.val[Matrix4.M11], matrix.val[Matrix4.M12], matrix.val[Matrix4.M20],
-			matrix.val[Matrix4.M21], matrix.val[Matrix4.M22]);
+		return setFromAxes(normalizeAxes, matrix.val[Matrix4::M00], matrix.val[Matrix4::M01], matrix.val[Matrix4::M02],
+			matrix.val[Matrix4::M10], matrix.val[Matrix4::M11], matrix.val[Matrix4::M12], matrix.val[Matrix4::M20],
+			matrix.val[Matrix4::M21], matrix.val[Matrix4::M22]);
 	}
     
     Quaternion& Quaternion::setFromMatrix (bool normalizeAxes, const Matrix3& matrix) {
-		return setFromAxes(normalizeAxes, matrix.val[Matrix3.M00], matrix.val[Matrix3.M01], matrix.val[Matrix3.M02],
-			matrix.val[Matrix3.M10], matrix.val[Matrix3.M11], matrix.val[Matrix3.M12], matrix.val[Matrix3.M20],
-			matrix.val[Matrix3.M21], matrix.val[Matrix3.M22]);
+		return setFromAxes(normalizeAxes, matrix.val[Matrix3::M00], matrix.val[Matrix3::M01], matrix.val[Matrix3::M02],
+			matrix.val[Matrix3::M10], matrix.val[Matrix3::M11], matrix.val[Matrix3::M12], matrix.val[Matrix3::M20],
+			matrix.val[Matrix3::M21], matrix.val[Matrix3::M22]);
 	}
     
     Quaternion& Quaternion::setFromAxes (bool normalizeAxes, float xx, float xy, float xz, float yx, float yy, float yz, float zx,
@@ -99,17 +176,17 @@ static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
 			w = (yx - xy) * s;
 		}
 
-		return this;
+		return *this;
 	}
     
-    Quaternion Quaternion::setFromCross (const Vector3& v1, const Vector3& v2) {
+    Quaternion& Quaternion::setFromCross (Vector3& v1, Vector3& v2) {
 		const float dot = MathUtils::clamp(v1.dot(v2), -1.0f, 1.0f);
 		const float angle = acos(dot);
 		return setFromAxisRad(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x, angle);
 	}
     
-    Quaternion Quaternion::setFromCross (const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {
-		const float dot = MathUtils::clamp(Vector3.dot(x1, y1, z1, x2, y2, z2), -1f, 1f);
+    Quaternion& Quaternion::setFromCross (const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {
+		const float dot = MathUtils::clamp(Vector3::dot(x1, y1, z1, x2, y2, z2), -1.0f, 1.0f);
 		const float angle = acos(dot);
 		return setFromAxisRad(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2, angle);
 	}
@@ -132,23 +209,23 @@ static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
 		return angle;
 	}
     
-    void Quaternion::getSwingTwist (const float axisX, const float axisY, const float axisZ, const Quaternion& swing,
-		const Quaternion& twist) {
-		const float d = Vector3.dot(this->x, this->y, this->z, axisX, axisY, axisZ);
+    void Quaternion::getSwingTwist (const float axisX, const float axisY, const float axisZ, Quaternion& swing,
+		Quaternion& twist) {
+		const float d = Vector3::dot(this->x, this->y, this->z, axisX, axisY, axisZ);
 		twist.set(axisX * d, axisY * d, axisZ * d, this->w).nor();
-		if (d < 0) twist.mul(-1f);
-		swing.set(twist).conjugate().mulLeft(this);
+		if (d < 0) twist.mul(-1.0f);
+		swing.set(twist).conjugate().mulLeft(*this);
 	}
     
-    void Quaternion::getSwingTwist (const Vector3& axis, const Quaternion& swing, const Quaternion& twist) {
+    void Quaternion::getSwingTwist (const Vector3& axis, Quaternion& swing, Quaternion& twist) {
 		getSwingTwist(axis.x, axis.y, axis.z, swing, twist);
 	}
     
     float Quaternion::getAngleAroundRad (const float axisX, const float axisY, const float axisZ) {
-		const float d = Vector3.dot(this->x, this->y, this->z, axisX, axisY, axisZ);
-		const float l2 = Quaternion.len2(axisX * d, axisY * d, axisZ * d, this->w);
+		const float d = Vector3::dot(this->x, this->y, this->z, axisX, axisY, axisZ);
+		const float l2 = Quaternion::len2(axisX * d, axisY * d, axisZ * d, this->w);
 		return MathUtils::isZero(l2) ? 0.0f : (float)(2.0f * acos(MathUtils::clamp(
-			(float)((d < 0 ? -this->w : this->w) / Math.sqrt(l2)), -1.0f, 1.0f)));
+			(float)((d < 0 ? -this->w : this->w) / sqrt(l2)), -1.0f, 1.0f)));
 	}
     
     float Quaternion::getAngleAroundRad (const Vector3& axis) {
@@ -170,21 +247,21 @@ static Quaternion::tmp2 =  Quaternion(0, 0, 0, 0);
 		const float zz = z * z;
 		const float zw = z * w;
 		// Set matrix from quaternion
-		matrix[Matrix4.M00] = 1 - 2 * (yy + zz);
-		matrix[Matrix4.M01] = 2 * (xy - zw);
-		matrix[Matrix4.M02] = 2 * (xz + yw);
-		matrix[Matrix4.M03] = 0;
-		matrix[Matrix4.M10] = 2 * (xy + zw);
-		matrix[Matrix4.M11] = 1 - 2 * (xx + zz);
-		matrix[Matrix4.M12] = 2 * (yz - xw);
-		matrix[Matrix4.M13] = 0;
-		matrix[Matrix4.M20] = 2 * (xz - yw);
-		matrix[Matrix4.M21] = 2 * (yz + xw);
-		matrix[Matrix4.M22] = 1 - 2 * (xx + yy);
-		matrix[Matrix4.M23] = 0;
-		matrix[Matrix4.M30] = 0;
-		matrix[Matrix4.M31] = 0;
-		matrix[Matrix4.M32] = 0;
-		matrix[Matrix4.M33] = 1;
+		matrix[Matrix4::M00] = 1 - 2 * (yy + zz);
+		matrix[Matrix4::M01] = 2 * (xy - zw);
+		matrix[Matrix4::M02] = 2 * (xz + yw);
+		matrix[Matrix4::M03] = 0;
+		matrix[Matrix4::M10] = 2 * (xy + zw);
+		matrix[Matrix4::M11] = 1 - 2 * (xx + zz);
+		matrix[Matrix4::M12] = 2 * (yz - xw);
+		matrix[Matrix4::M13] = 0;
+		matrix[Matrix4::M20] = 2 * (xz - yw);
+		matrix[Matrix4::M21] = 2 * (yz + xw);
+		matrix[Matrix4::M22] = 1 - 2 * (xx + yy);
+		matrix[Matrix4::M23] = 0;
+		matrix[Matrix4::M30] = 0;
+		matrix[Matrix4::M31] = 0;
+		matrix[Matrix4::M32] = 0;
+		matrix[Matrix4::M33] = 1;
 	}
 

@@ -159,7 +159,7 @@ public:
 
 	/** Multiplies this vector by a scalar
 	 * @return This vector for chaining */
-	 Vector2& scl (float x, float y) {
+	 Vector2& scl (float x,float y) {
 		this->x *= x;
 		this->y *= y;
 		return *this;

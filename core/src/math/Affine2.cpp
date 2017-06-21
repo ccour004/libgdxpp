@@ -3,24 +3,24 @@
 Affine2& Affine2::set (const Matrix3& matrix) {
 		std::vector<float> other = matrix.val;
 
-		m00 = other[Matrix3.M00];
-		m01 = other[Matrix3.M01];
-		m02 = other[Matrix3.M02];
-		m10 = other[Matrix3.M10];
-		m11 = other[Matrix3.M11];
-		m12 = other[Matrix3.M12];
+		m00 = other[Matrix3::M00];
+		m01 = other[Matrix3::M01];
+		m02 = other[Matrix3::M02];
+		m10 = other[Matrix3::M10];
+		m11 = other[Matrix3::M11];
+		m12 = other[Matrix3::M12];
 		return *this;
 	}
     
     Affine2& Affine2::set (const Matrix4& matrix) {
 		std::vector<float> other = matrix.val;
 
-		m00 = other[Matrix4.M00];
-		m01 = other[Matrix4.M01];
-		m02 = other[Matrix4.M03];
-		m10 = other[Matrix4.M10];
-		m11 = other[Matrix4.M11];
-		m12 = other[Matrix4.M13];
+		m00 = other[Matrix4::M00];
+		m01 = other[Matrix4::M01];
+		m02 = other[Matrix4::M03];
+		m10 = other[Matrix4::M10];
+		m11 = other[Matrix4::M11];
+		m12 = other[Matrix4::M13];
 		return *this;
 	}
     
@@ -56,8 +56,16 @@ Affine2& Affine2::set (const Matrix3& matrix) {
 		return preTranslate(trn.x, trn.y);
 	}
     
+	 Affine2& Affine2::scale (const float& scaleX,const float& scaleY) {
+		m00 *= scaleX;
+		m01 *= scaleY;
+		m10 *= scaleX;
+		m11 *= scaleY;
+		return *this;
+	}
+    
     Affine2& Affine2::scale (const Vector2& scale) {
-		return scale(scale.x, scale.y);
+		return Affine2::scale(scale.x, scale.y);
 	}
     
     Affine2& Affine2::preScale (const Vector2& scale) {
@@ -65,20 +73,20 @@ Affine2& Affine2::set (const Matrix3& matrix) {
 	}
     
     Affine2& Affine2::shear (const Vector2& shear) {
-		return shear(shear.x, shear.y);
+		return Affine2::shear(shear.x, shear.y);
 	}
     
     Affine2& Affine2::preShear (const Vector2& shear) {
 		return preShear(shear.x, shear.y);
 	}
     
-    Vector2& Affine2::getTranslation (const Vector2& position) {
+    Vector2& Affine2::getTranslation (Vector2& position) {
 		position.x = m02;
 		position.y = m12;
 		return position;
 	}
     
-    void Affine2::applyTo (const Vector2& point) {
+    void Affine2::applyTo (Vector2& point) {
 		float x = point.x;
 		float y = point.y;
 		point.x = m00 * x + m01 * y + m02;

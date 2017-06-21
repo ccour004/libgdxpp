@@ -15,6 +15,8 @@
  ******************************************************************************/
 
 #pragma once
+#include "../Vector3.h"
+#include "../../Serializable.h"
 
 /** Encapsulates a ray having a starting position and a unit length direction.
  * 
