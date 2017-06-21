@@ -43,7 +43,7 @@ class PerspectiveCamera: public Camera {
 		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight);
 	}
 
-	Vector3 tmp;
+	Vector3 tmp = Vector3();
 
 	void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
 		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight,true);

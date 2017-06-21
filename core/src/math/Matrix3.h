@@ -408,9 +408,9 @@ class Vector3;
 		return val;
 	}
 
-	 Vector2& getTranslation (const Vector2& position);
+	 Vector2& getTranslation (Vector2& position);
 
-	 Vector2& getScale (const Vector2& scale);
+	 Vector2& getScale (Vector2& scale);
 
 	 float getRotation () {
 		return MathUtils::radiansToDegrees * MathUtils::atan2(val[M10], val[M00]);

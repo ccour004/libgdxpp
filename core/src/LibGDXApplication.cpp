@@ -55,7 +55,7 @@ int err(const char* fmt){
 		glClearDepthf(1.0f);
 		glDepthFunc(GL_LEQUAL);
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glClearColor( 0.f, 0.f, 0.f, 1.f );
+		glClearColor( 0.66f, 0.66f, 0.66f, 1.f );
 
 		if (window == NULL){
 			err("Could not create window: %s");

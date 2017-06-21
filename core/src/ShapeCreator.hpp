@@ -18,8 +18,16 @@ public:
     void init(){
         transform = Vector3(0,0,0);
         //VBO/IBO data
-        getVertices();
-        getIndices();
+        verticesGL = new GLfloat[vertices.size() * 3];
+        int index = 0;
+        for(int i = 0;i < vertices.size();i++){
+            verticesGL[index++] = vertices[i].x;
+            verticesGL[index++] = vertices[i].y;
+            verticesGL[index++] = vertices[i].z;
+        }
+        indicesGL = new GLuint[indices.size()];
+        for(int i = 0;i < indices.size();i++) 
+            indicesGL[i] = indices.at(i);
 
         //Create VBO
         glGenBuffers( 1, &gVBO );
@@ -33,28 +41,10 @@ public:
     }
 
     void render(){
+        //SDL_Log("VERTICES: %lui,INDICES: %lui",vertices.size(),indices.size());
         //Set index data and render
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, gIBO );
         glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL );
-    }
-
-    void getIndices(){
-        if(indicesGL == NULL){
-            indicesGL = new GLuint[indices.size()];
-            for(int i = 0;i < indices.size();i++) indicesGL[i] = indices.at(i);
-        }
-    }
-
-    void getVertices(){
-        if(verticesGL == NULL){
-            verticesGL = new GLfloat[vertices.size() * 3];
-            int index = 0;
-            for(int i = 0;i < vertices.size();i++){
-                verticesGL[index++] = vertices[i].x;
-                verticesGL[index++] = vertices[i].y;
-                verticesGL[index++] = vertices[i].z;
-            }
-        }
     }
 
     void printIndices(){
@@ -74,7 +64,7 @@ public:
 class MeshBuilder
 {
 public:
-    std::vector<Mesh> meshes;Mesh mesh;
+    std::vector<Mesh> meshes = std::vector<Mesh>();Mesh mesh = Mesh();
     float degreesToRadians = 3.1415927f / 180.0f;
 
     Mesh build(float width, float height,float depth, int divisionsU,int divisionsV){
@@ -108,11 +98,15 @@ public:
             for (int iu = 0; iu <= divisionsU; iu++) {
                 angleU = auo + stepU * iu;
                 // Fixme : wrong normal calculation if transform
+                //SDL_Log("NEW VERTEX: %s",Vector3(cos(angleU) * hw * t, h, sin(angleU) * hd * t).add(mesh.transform).toString().c_str());
                 mesh.vertices.push_back(Vector3(cos(angleU) * hw * t, h, sin(angleU) * hd * t).add(mesh.transform));
                 tmpIndices[tempOffset] = mesh.vertices.size()-1;
                 int o = tempOffset + s;
                 if ((iv > 0) && (iu > 0)) // FIXME don't duplicate lines and points
                 {
+                    //SDL_Log("NEW INDICES: %i,%i,%i,%i,%i,%i",
+                    //tmpIndices[tempOffset],tmpIndices[(o - 1) % s],tmpIndices[(o - (divisionsU + 2)) % s],
+                    //tmpIndices[(o - (divisionsU + 2)) % s],tmpIndices[(o - (divisionsU + 1)) % s],tmpIndices[tempOffset]);
                     mesh.indices.push_back(tmpIndices[tempOffset]);                 //corner00 = tmpIndices.get(tempOffset)
                     mesh.indices.push_back(tmpIndices[(o - 1) % s]);                //corner10 = tmpIndices.get((o - 1) % s)
                     mesh.indices.push_back(tmpIndices[(o - (divisionsU + 2)) % s]); //corner11 = tmpIndices.get((o - (divisionsU + 2)) % s)

@@ -125,13 +125,13 @@
 		return *this;
 	}
     
-	 Vector2& Matrix3::getTranslation (const Vector2& position) {
+	 Vector2& Matrix3::getTranslation (Vector2& position) {
 		position.x = val[M02];
 		position.y = val[M12];
 		return position;
 	}
     
-	 Vector2& Matrix3::getScale (const Vector2& scale) {
+	 Vector2& Matrix3::getScale (Vector2& scale) {
 		scale.x = sqrt(val[M00] * val[M00] + val[M01] * val[M01]);
 		scale.y = sqrt(val[M10] * val[M10] + val[M11] * val[M11]);
 		return scale;

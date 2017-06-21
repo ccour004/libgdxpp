@@ -35,10 +35,12 @@ model {
             cppFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
             cppFlags.addAll(["-I" + file("../bullet3/include/").absolutePath])
 	    cppFlags.addAll(["-std=c++11"])
+	    cppFlags.addAll(["-frtti"])
             cppFlags.addAll(["-fexceptions"])
             CFlags.addAll(["-I" + file("../SDL2/include/").absolutePath])
 	    CFlags.addAll(["-I" + file("../bullet3/src/").absolutePath])
-            stl "gnustl_static"
+	    stl "c++_static"
+            //stl "gnustl_static"
         }
 
         sources {
@@ -50,6 +52,8 @@ model {
                     }
                     source {
 			srcDirs 'src/'
+			srcDirs 'math/'
+			srcDirs 'math/collision'
                         srcDirs '../SDL2/src/main/android/'
                     }
                 }

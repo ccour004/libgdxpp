@@ -15,6 +15,7 @@
  ******************************************************************************/
  
 #pragma once
+#include <cstdlib>
 #include "Vector.h"
 #include "Vector2.h"
 #include "Matrix3.h"
@@ -47,6 +48,7 @@ class Vector3:public Serializable, public Vector<Vector3> {
 
 	/** Constructs a vector at (0,0,0) */
 	Vector3 () {
+        x = 0;y = 0;z = 0;
 	}
 
 	/** Creates a vector with the given components

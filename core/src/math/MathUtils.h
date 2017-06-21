@@ -273,12 +273,12 @@ public:
 	}
 
 	/** @return the logarithm of value with base a */
-	static float log (float a, float value) {
-		return (float)(std::log(value) / std::log(a));
+	static float Log (float a, float value) {
+		return (float)(log(value) / log(a));
 	}
 
 	/** @return the logarithm of value with base 2 */
 	static float log2 (float value) {
-		return log(2, value);
+		return Log(2, value);
 	}
 };

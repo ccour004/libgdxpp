@@ -2,8 +2,8 @@
 
 //Initialize
 bool ShaderProgram::pedantic = true;
-std::string ShaderProgram::prependVertexCode = "";
-std::string ShaderProgram::prependFragmentCode = "";
+std::string ShaderProgram::prependVertexCode;
+std::string ShaderProgram::prependFragmentCode;
 
 std::map<std::string, std::vector<ShaderProgram>> ShaderProgram::shaders = std::map<std::string, std::vector<ShaderProgram>>();
 
@@ -27,24 +27,33 @@ ShaderProgram::ShaderProgram (const std::string& vertexShader,const std::string&
 		log = "";
         refCount = 0;
 
-		compileShaders(vertexShader, fragmentShader);
+		compileShaders(vertexShaderSource, fragmentShaderSource);
 		if (isCompiled()) {
 			fetchAttributes();
 			fetchUniforms();
-            SDL_Log("Shader fetched all variables!");
 			addManagedShader(app, *this);
 		}
 	}
     
+	int ShaderProgram::fetchAttributeLocation (const std::string& name) {
+        if(attributes.find(name) != attributes.end())
+            return attributes.at(name);
+        char* cName;
+        int location = glGetAttribLocation(program, cName);
+        if(location == -1 && pedantic) SDL_Log("no attribute with name '%s' in shader",name.c_str());
+        attributes[std::string(cName)] = location;
+        delete cName;
+		return location;
+	}
+    
 int ShaderProgram::fetchUniformLocation (const std::string& name, bool pedantic) {
-        int location;
-        try{
-            location = uniforms.at(name);
-        }catch(...){
-            location = glGetUniformLocation(program, name.c_str());
-			if (location == -1 && pedantic) SDL_Log("no uniform with name '%s' in shader",name.c_str());
-			uniforms[name] = location;
-        }
+        if(uniforms.find(name) != uniforms.end())
+            return uniforms.at(name);
+        char* cName;
+        int location = glGetUniformLocation(program, cName);
+        if(location == -1 && pedantic) SDL_Log("no uniform with name '%s' in shader",name.c_str());
+        uniforms[std::string(cName)] = location;
+        delete cName;
 		return location;
 	}
     

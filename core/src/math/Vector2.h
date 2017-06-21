@@ -21,6 +21,7 @@
 
 /** Encapsulates a 2D vector. Allows chaining methods by returning a reference to itself
  * @author badlogicgames@gmail.com */
+class Matrix3;
 class Vector2: public Serializable,  Vector<Vector2> {
     public:
 	 static const long serialVersionUID = 913902788239530931L;
@@ -291,13 +292,7 @@ public:
 	/** Left-multiplies this vector by the given matrix
 	 * @param mat the matrix
 	 * @return this vector */
-	 Vector2& mul (const Matrix3& mat) {
-		float x = this->x * mat.val[0] + this->y * mat.val[3] + mat.val[6];
-		float y = this->x * mat.val[1] + this->y * mat.val[4] + mat.val[7];
-		this->x = x;
-		this->y = y;
-		return *this;
-	}
+	 Vector2& mul (const Matrix3& mat);
 
 	/** Calculates the 2D cross product between this and the given vector.
 	 * @param v the other vector
@@ -316,65 +311,35 @@ public:
 
 	/** @return the angle in degrees of this vector (point) relative to the x-axis. Angles are towards the positive y-axis (typically
 	 *         counter-clockwise) and between 0 and 360. */
-	 float angle () {
-		float angle = MathUtils::atan2(y, x) * MathUtils::radiansToDegrees;
-		if (angle < 0) angle += 360;
-		return angle;
-	}
+	 float angle ();
 
 	/** @return the angle in degrees of this vector (point) relative to the given vector. Angles are towards the positive y-axis
 	 *         (typically counter-clockwise.) between -180 and +180 */
-	 float angle (const Vector2& reference) {
-		return MathUtils::atan2(crs(reference), dot(reference)) * MathUtils::radiansToDegrees;
-	}
+	 float angle (const Vector2& reference);
 
 	/** @return the angle in radians of this vector (point) relative to the x-axis. Angles are towards the positive y-axis.
 	 *         (typically counter-clockwise) */
-	 float angleRad () {
-		return MathUtils::atan2(y, x);
-	}
+	 float angleRad ();
 
 	/** @return the angle in radians of this vector (point) relative to the given vector. Angles are towards the positive y-axis.
 	 *         (typically counter-clockwise.) */
-	 float angleRad (const Vector2& reference) {
-		return MathUtils::atan2(crs(reference), dot(reference));
-	}
+	 float angleRad (const Vector2& reference);
 
 	/** Sets the angle of the vector in degrees relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param degrees The angle in degrees to set. */
-	 Vector2& setAngle (float degrees) {
-		return setAngleRad(degrees * MathUtils::degreesToRadians);
-	}
+	 Vector2& setAngle (float degrees);
 
 	/** Sets the angle of the vector in radians relative to the x-axis, towards the positive y-axis (typically counter-clockwise).
 	 * @param radians The angle in radians to set. */
-	 Vector2& setAngleRad (float radians) {
-		this->set(len(), 0.0f);
-		this->rotateRad(radians);
-
-		return *this;
-	}
+	 Vector2& setAngleRad (float radians);
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param degrees the angle in degrees */
-	 Vector2& rotate (float degrees) {
-		return rotateRad(degrees * MathUtils::degreesToRadians);
-	}
+	 Vector2& rotate (float degrees);
 
 	/** Rotates the Vector2 by the given angle, counter-clockwise assuming the y-axis points up.
 	 * @param radians the angle in radians */
-	 Vector2& rotateRad (float radians) {
-		float cos = MathUtils::cos(radians);
-		float sin = MathUtils::sin(radians);
-
-		float X = this->x * cos - this->y * sin;
-		float Y = this->x * sin + this->y * cos;
-
-		this->x = X;
-		this->y = Y;
-
-		return *this;
-	}
+	 Vector2& rotateRad (float radians);
 
 	/** Rotates the Vector2 by 90 degrees in the specified direction, where >= 0 is counter-clockwise and < 0 is clockwise. */
 	 Vector2& rotate90 (int dir) {
@@ -403,10 +368,7 @@ public:
 	}
 
 	
-	 Vector2& setToRandomDirection () {
-		float theta = MathUtils::random(0.0f, MathUtils::PI2);
-		return this->set(cos(theta), sin(theta));
-	}
+	 Vector2& setToRandomDirection ();
 
 	
 	 int hashCode () {
@@ -458,60 +420,36 @@ public:
 	}
 
 	
-	 bool isOnLine (const Vector2& other) {
-		return MathUtils::isZero(x * other.y - y * other.x);
-	}
+	 bool isOnLine (const Vector2& other);
 
 	
-	 bool isOnLine (const Vector2& other, float epsilon) {
-		return MathUtils::isZero(x * other.y - y * other.x, epsilon);
-	}
+	 bool isOnLine (const Vector2& other, float epsilon);
 
 	
-	 bool isCollinear (const Vector2& other, float epsilon) {
-		return isOnLine(other, epsilon) && dot(other) > 0.0f;
-	}
+	 bool isCollinear (const Vector2& other, float epsilon);
 
 	
-	 bool isCollinear (const Vector2& other) {
-		return isOnLine(other) && dot(other) > 0.0f;
-	}
+	 bool isCollinear (const Vector2& other);
 
 	
-	 bool isCollinearOpposite (const Vector2& other, float epsilon) {
-		return isOnLine(other, epsilon) && dot(other) < 0.0f;
-	}
+	 bool isCollinearOpposite (const Vector2& other, float epsilon) ;
 
 	
-	 bool isCollinearOpposite (const Vector2& other) {
-		return isOnLine(other) && dot(other) < 0.0f;
-	}
+	 bool isCollinearOpposite (const Vector2& other);
 
 	
-	 bool isPerpendicular (const Vector2& vector) {
-		return MathUtils::isZero(dot(vector));
-	}
+	 bool isPerpendicular (const Vector2& vector);
 
 	
-	 bool isPerpendicular (const Vector2& vector, float epsilon) {
-		return MathUtils::isZero(dot(vector), epsilon);
-	}
+	 bool isPerpendicular (const Vector2& vector, float epsilon);
 
 	
-	 bool hasSameDirection (const Vector2& vector) {
-		return dot(vector) > 0;
-	}
+	 bool hasSameDirection (const Vector2& vector);
 
 	
-	 bool hasOppositeDirection (const Vector2& vector) {
-		return dot(vector) < 0;
-	}
+	 bool hasOppositeDirection (const Vector2& vector);
 
 	
-	 Vector2& setZero () {
-		this->x = 0;
-		this->y = 0;
-		return *this;
-	}
+	 Vector2& setZero ();
 };
 

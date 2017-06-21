@@ -24,24 +24,24 @@
 class Camera
 {
 private:
-	Vector3 tmpVec;
+	Vector3 tmpVec = Vector3();
 	Ray ray = Ray(Vector3(),Vector3());
 public:
 	/** the position of the camera **/
-    Vector3 position;
+    Vector3 position = Vector3();
 	/** the unit length direction vector of the camera **/
     Vector3 direction = Vector3(0, 0, -1);
 	/** the unit length up vector of the camera **/
     Vector3 up = Vector3(0, 1, 0);
 
 	/** the projection matrix **/
-    Matrix4 projection;
+    Matrix4 projection = Matrix4();
 	/** the view matrix **/
-    Matrix4 view;
+    Matrix4 view = Matrix4();
 	/** the combined projection and view matrix **/
-    Matrix4 combined;
+    Matrix4 combined = Matrix4();
 	/** the inverse combined projection and view matrix **/
-    Matrix4 invProjectionView;
+    Matrix4 invProjectionView = Matrix4();
 
 	/** the near clipping plane distance, has to be positive **/
 	float near = 1;
@@ -54,7 +54,7 @@ public:
 	float viewportHeight = 0;
 
 	/** the frustum **/
-    Frustum frustum;
+    Frustum frustum = Frustum();
 
 	/** Recalculates the projection and view matrix of this camera and the {@link Frustum} planes. Use this after you've manipulated
 	 * any of the attributes of the camera. */

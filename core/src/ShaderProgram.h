@@ -748,20 +748,7 @@ private:
 		this(vertexShader.readstd::string(), fragmentShader.readstd::string());
 	}*/
 
-	int fetchAttributeLocation (const std::string& name) {
-		// -2 == not yet cached
-		// -1 == cached but not found
-		int location;
-        try{
-            location = attributes.at(name);
-        }catch(std::out_of_range){
-            char* cName;
-			location = glGetAttribLocation(program, cName);
-			attributes[std::string(cName)] = location;
-            delete cName;
-        }
-		return location;
-	}
+	int fetchAttributeLocation (const std::string& name);
 
 	int fetchUniformLocation (const std::string& name) {
 		return fetchUniformLocation(name, pedantic);
