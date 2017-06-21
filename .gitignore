@@ -36,6 +36,14 @@
 /dependencies/*
 android/app/build/
 android/local.properties
+CMakeCache.txt
+CMakeFiles/*
+android/SDL2/build
+android/bullet3/build
+android/main/build
+Makefile
+Core
+cmake_install.cmake
 
 # Ignore Gradle GUI config
 gradle-app.setting
