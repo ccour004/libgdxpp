@@ -1,75 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Session Name="/home/colin/git/libgdxpp/Libgdxpp.workspace">
-  <int Value="1" Name="m_selectedTab"/>
+  <int Value="0" Name="m_selectedTab"/>
   <wxString Value="/home/colin/git/libgdxpp/Libgdxpp.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
       <wxString Value="/home/colin/git/libgdxpp/core/src/MyAppListener.cpp" Name="FileName"/>
-      <int Value="33" Name="FirstVisibleLine"/>
-      <int Value="40" Name="CurrentLine"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="2" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/glutils/VertexData.cpp" Name="FileName"/>
-      <int Value="84" Name="FirstVisibleLine"/>
-      <int Value="95" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/glutils/VertexData.h" Name="FileName"/>
-      <int Value="155" Name="FirstVisibleLine"/>
-      <int Value="170" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/ShapeCreator.hpp" Name="FileName"/>
-      <int Value="13" Name="FirstVisibleLine"/>
-      <int Value="37" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/glutils/ShaderProgram.h" Name="FileName"/>
-      <int Value="369" Name="FirstVisibleLine"/>
-      <int Value="379" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/VertexAttributes.h" Name="FileName"/>
-      <int Value="42" Name="FirstVisibleLine"/>
-      <int Value="45" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/VertexAttributes.cpp" Name="FileName"/>
-      <int Value="56" Name="FirstVisibleLine"/>
-      <int Value="70" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/VertexAttribute.h" Name="FileName"/>
-      <int Value="90" Name="FirstVisibleLine"/>
-      <int Value="103" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/Mesh.h" Name="FileName"/>
-      <int Value="430" Name="FirstVisibleLine"/>
-      <int Value="439" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-      <IntVector Name="CollapsedFolds"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/colin/git/libgdxpp/core/src/graphics/Mesh.cpp" Name="FileName"/>
-      <int Value="25" Name="FirstVisibleLine"/>
-      <int Value="41" Name="CurrentLine"/>
+      <wxString Value="/home/colin/git/libgdxpp/core/src/MyAppListener.h" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="15" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
       <IntVector Name="CollapsedFolds"/>
     </TabInfo>
