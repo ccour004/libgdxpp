@@ -34,6 +34,12 @@ class Plane:public Serializable {
 public:
 	Vector3 normal = Vector3();
 	float d = 0;
+    
+    friend std::ostream& operator<<(std::ostream& os, Plane &p)  
+    {  
+        os << "PLANE{"<<p.normal<<","<<p.d<<"}";  
+        return os;  
+    } 
 	
 	/**
 	 * Constructs a new plane with all values set to 0

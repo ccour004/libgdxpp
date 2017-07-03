@@ -58,11 +58,11 @@ public:
 
 	/** Recalculates the projection and view matrix of this camera and the {@link Frustum} planes. Use this after you've manipulated
 	 * any of the attributes of the camera. */
-	virtual void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) = 0;
+	virtual void update () = 0;
 
 	/** Recalculates the projection and view matrix of this camera and the {@link Frustum} planes if <code>updateFrustum</code> is
 	 * true. Use this after you've manipulated any of the attributes of the camera. */
-	virtual void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight,bool updateFrustum) = 0;
+	virtual void update (bool updateFrustum) = 0;
 
 /** Recalculates the direction of the camera to look at the point (x, y, z). This function assumes the up vector is normalized.
 	 * @param x the x-coordinate of the point to look at
@@ -132,7 +132,7 @@ public:
 	 * orthogonalized.
 	 * 
 	 * @param quat The quaternion */
-	void rotate ( Quaternion& quat) {
+	void rotate (Quaternion& quat) {
 		quat.transform(direction);
 		quat.transform(up);
 	}

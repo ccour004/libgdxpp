@@ -90,6 +90,12 @@ class Matrix4:public Serializable {
 		val[M22] = 1.0f;
 		val[M33] = 1.0f;
 	}
+    
+    bool isZero(){
+        for(float value:val)
+            if(value != 0) return false;
+        return true;
+    }
 
 	/** Constructs a matrix from the given matrix.
 	 * 

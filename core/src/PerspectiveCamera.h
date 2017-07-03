@@ -35,21 +35,20 @@ class PerspectiveCamera: public Camera {
 	 *           according to the aspect ratio.
 	 * @param viewportWidth the viewport width
 	 * @param viewportHeight the viewport height */
-	PerspectiveCamera (float fieldOfViewY, float viewportWidth, float viewportHeight,
-    float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
+	PerspectiveCamera (float fieldOfViewY, float viewportWidth, float viewportHeight) {
 		this->fieldOfView = fieldOfViewY;
 		this->viewportWidth = viewportWidth;
 		this->viewportHeight = viewportHeight;
-		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight);
+		update();
 	}
 
-	Vector3 tmp = Vector3();
+	Vector3 tmp;
 
-	void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight) {
-		update(Gdx_graphics_getWidth,Gdx_graphics_getHeight,true);
+	void update () {
+		update(true);
 	}
 
-	void update (float Gdx_graphics_getWidth,float Gdx_graphics_getHeight,bool updateFrustum) {
+	void update (bool updateFrustum) {
 		float aspect = viewportWidth / viewportHeight;
 		projection.setToProjection(abs(near), abs(far), fieldOfView, aspect);
 		view.setToLookAt(position, tmp.set(position).add(direction), up);
@@ -61,5 +60,9 @@ class PerspectiveCamera: public Camera {
 			Matrix4::inv(invProjectionView.val);
 			frustum.update(invProjectionView);
 		}
+        //SDL_Log("FRUSTUM: %s",frustum.toString().c_str());
+        //SDL_Log("POS: %s,DIR: %s,UP: %s,PROJ: %s,VIEW: %s,COMB: %s,INV_PROJ: %s",
+        //    position.toString().c_str(),direction.toString().c_str(),up.toString().c_str(),
+        //    projection.toString().c_str(),view.toString().c_str(),combined.toString().c_str(),invProjectionView.toString().c_str());
 	}
 };

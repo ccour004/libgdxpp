@@ -1,26 +1,84 @@
 #include "MyAppListener.h"
+#include <iostream>
+#include <chrono>
 
 bool MyAppListener::create(){
      if(isCreated) return true;
         //Setup shader program.
         ShaderProgram::prependVertexCode = "#version 300 es\n";
         ShaderProgram::prependFragmentCode = "#version 300 es\n";
-        shaderProgram = ShaderProgram(
-            fileToString("assets/default.vert"),fileToString("assets/default.frag"),"default");
+        shaderProgram.push_back(ShaderProgram(
+            fileToString("assets/default.vert"),fileToString("assets/default.frag"),"default"));
+        shaderProgram.push_back(ShaderProgram(
+            fileToString("assets/alt.vert"),fileToString("assets/alt.frag"),"default"));
             
-        if(!shaderProgram.isCompiled()) return false;
+        for(ShaderProgram program:shaderProgram)
+            if(!program.isCompiled()) return false;
+            
+        shaderProgram[1].setAttributef("a_color",0,1,0,1);
         
         center = Vector3(0,0,0);
-        camera = PerspectiveCamera(67,640,480,640,480);
+        camera = PerspectiveCamera(67,640,480);
+        camera.near = 0.01f;
+        camera.far = 200;
         camera.position.set(0,0,3);
         camera.lookAt(center);
-        camera.far = 200;
-        camera.update(640,480);
+        camera.update();
+        
+        std::vector<VertexAttribute> attr{VertexAttribute::position()};
+        std::vector<GLfloat> vertices = std::vector<GLfloat>{
+    -1.0f,-1.0f,-1.0f, // triangle 1 : begin
+    -1.0f,-1.0f, 1.0f,
+    -1.0f, 1.0f, 1.0f, // triangle 1 : end
+    1.0f, 1.0f,-1.0f, // triangle 2 : begin
+    -1.0f,-1.0f,-1.0f,
+    -1.0f, 1.0f,-1.0f, // triangle 2 : end
+    1.0f,-1.0f, 1.0f,
+    -1.0f,-1.0f,-1.0f,
+    1.0f,-1.0f,-1.0f,
+    1.0f, 1.0f,-1.0f,
+    1.0f,-1.0f,-1.0f,
+    -1.0f,-1.0f,-1.0f,
+    -1.0f,-1.0f,-1.0f,
+    -1.0f, 1.0f, 1.0f,
+    -1.0f, 1.0f,-1.0f,
+    1.0f,-1.0f, 1.0f,
+    -1.0f,-1.0f, 1.0f,
+    -1.0f,-1.0f,-1.0f,
+    -1.0f, 1.0f, 1.0f,
+    -1.0f,-1.0f, 1.0f,
+    1.0f,-1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f,-1.0f,-1.0f,
+    1.0f, 1.0f,-1.0f,
+    1.0f,-1.0f,-1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f,-1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f,-1.0f,
+    -1.0f, 1.0f,-1.0f,
+    1.0f, 1.0f, 1.0f,
+    -1.0f, 1.0f,-1.0f,
+    -1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    -1.0f, 1.0f, 1.0f,
+    1.0f,-1.0f, 1.0f
+};
+
+        std::vector<GLuint> indices(vertices.size());
+        for(int i = 0;i < vertices.size();i++){
+            vertices[i] -= 0.5f;
+            indices[i] = i;
+        }
+        tempMeshes.push_back(Mesh(VertexData(VERTEX_BUFFER_OBJECT,true,vertices.size(),attr),
+                        IndexData(INDEX_BUFFER_OBJECT,true,indices.size()),vertices,indices,true));
         
         //Setup instance.
-        mesh = modelBuilder.build(2,2,2,20,20);
-        mesh.init();
+        modelBuilder = MeshBuilder();
+        modelBuilder.build(2,2,2,20,20);
+        tempMeshes.push_back(modelBuilder.meshes[0]);
         isCreated = true;
+        //SDL_Log("MESH: %s",modelBuilder.meshes[0].toString().c_str());
         return true;
  }
  
@@ -28,29 +86,38 @@ bool MyAppListener::create(){
     glViewport(0,0,width,height);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    //camera.transform(0.001f,0,0);
+    /*camera.translate(0.0f,0.0f,0.1f);
+      camera.update();*/
+      std::chrono::time_point<std::chrono::system_clock> now =
+        std::chrono::system_clock::now();
+    std::chrono::duration<double> delta = now - lastTime;lastTime = now;
+      camera.rotateAround(Vector3(0,0,0),Vector3(0,1,0),
+        std::chrono::duration_cast<std::chrono::milliseconds>(delta).count() * 0.1f);
+    camera.update();
 
     //Bind program
-    shaderProgram.begin();
+    shaderProgram[0].begin();
 
     //Set transform
-    shaderProgram.setUniformMatrix("u_projView",camera.combined);
-            
-    //Enable vertex position
-    shaderProgram.enableVertexAttribute(ShaderProgram::POSITION_ATTRIBUTE);
-
-    //Set vertex data
-    glBindBuffer( GL_ARRAY_BUFFER, mesh.gVBO );
-    shaderProgram.setVertexAttribute(ShaderProgram::POSITION_ATTRIBUTE,3, GL_FLOAT, GL_FALSE,3 * sizeof(GLfloat));
-
-    //Render mesh one time.
-    mesh.render();
-
-    //Disable vertex position
-    shaderProgram.disableVertexAttribute(ShaderProgram::POSITION_ATTRIBUTE);
+    shaderProgram[0].setUniformMatrix("u_projView",camera.combined);
+        
+    //Render mesh w/ auto-bind.
+    modelBuilder.meshes[0].render(shaderProgram[0],GL_TRIANGLES);
 
     //Unbind program
-    shaderProgram.end();
+    shaderProgram[0].end();
+    
+        //Bind program
+    shaderProgram[1].begin();
+
+    //Set transform
+    shaderProgram[1].setUniformMatrix("u_projView",camera.combined);
+        
+    //Render mesh w/ auto-bind.
+    tempMeshes[0].render(shaderProgram[1],GL_TRIANGLES);
+
+    //Unbind program
+    shaderProgram[1].end();
  }
  
  void MyAppListener::resize(int width, int height){
@@ -58,7 +125,7 @@ bool MyAppListener::create(){
     camera.viewportWidth = width;
     camera.viewportHeight = height;
     camera.lookAt(center);
-    camera.update(width,height);
+    camera.update();
  }
  
  

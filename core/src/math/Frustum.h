@@ -30,6 +30,31 @@ protected:
     std::vector<float> planePointsArray = std::vector<float>(8 * 3);
     static bool created;
 public:
+    std::string toString(){
+        std::stringstream ss;
+        ss<<"CLIP SPACE PLANE POINTS: [";
+        for(Vector3 cspp:clipSpacePlanePoints)
+            ss<< cspp<<",";
+        ss<<"]";
+        ss<<"CLIP SPACE POINTS ARRAY: [";
+        for(float cspa:clipSpacePlanePointsArray)
+            ss<< cspa<<",";
+        ss<<"]";
+        ss<<"PLANE POINTS ARRAY: [";
+        
+        for(float ppa:planePointsArray)
+            ss<< ppa<<",";
+        ss<<"]";
+        ss<<"PLANES: [";
+        for(Plane plane:planes)
+            ss<< plane<<",";
+        ss<<"]";
+        ss<<"PLANE POINTS: [";
+        for(Vector3 pp:planePoints)
+            ss<< pp<<",";
+        ss<<"]";
+        return ss.str();
+    }
 	/** the six clipping planes, near, far, left, right, top, bottom **/
 	std::vector<Plane> planes = std::vector<Plane>(6);
 

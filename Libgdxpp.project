@@ -11,7 +11,6 @@
       <File Name="core/src/ShapeCreator.hpp"/>
       <File Name="core/src/main.cpp"/>
       <File Name="core/src/BulletSim.hpp"/>
-      <File Name="core/src/ShaderProgram.h"/>
       <File Name="core/src/GL.h"/>
       <File Name="core/src/Camera.h"/>
       <File Name="core/src/PerspectiveCamera.h"/>
@@ -49,7 +48,21 @@
       <File Name="core/src/MyAppListener.h"/>
       <File Name="core/src/MyAppListener.cpp"/>
       <File Name="core/src/LibGDXApplication.cpp"/>
-      <File Name="core/src/ShaderProgram.cpp"/>
+      <VirtualDirectory Name="graphics">
+        <File Name="core/src/graphics/Mesh.h"/>
+        <File Name="core/src/graphics/Mesh.cpp"/>
+        <VirtualDirectory Name="glutils">
+          <File Name="core/src/ShaderProgram.h"/>
+          <File Name="core/src/ShaderProgram.cpp"/>
+          <File Name="core/src/graphics/glutils/VertexData.h"/>
+          <File Name="core/src/graphics/glutils/IndexData.h"/>
+          <File Name="core/src/graphics/glutils/IndexData.cpp"/>
+          <File Name="core/src/graphics/glutils/VertexData.cpp"/>
+        </VirtualDirectory>
+        <File Name="core/src/graphics/VertexAttributes.h"/>
+        <File Name="core/src/graphics/VertexAttributes.cpp"/>
+        <File Name="core/src/graphics/VertexAttribute.h"/>
+      </VirtualDirectory>
     </VirtualDirectory>
   </VirtualDirectory>
   <Description/>

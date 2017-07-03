@@ -16,6 +16,7 @@
  
 #pragma once
 #include <cstdlib>
+#include <ostream>
 #include "Vector.h"
 #include "Vector2.h"
 #include "Matrix3.h"
@@ -45,6 +46,12 @@ class Vector3:public Serializable, public Vector<Vector3> {
     static Vector3 Zero;
 
 	static Matrix4 tmpMat;
+    
+    friend std::ostream& operator<<(std::ostream& os, Vector3 &v)  
+    {  
+        os << "VECTOR3{"<<v.toString().c_str()<<"}";  
+        return os;  
+    } 
 
 	/** Constructs a vector at (0,0,0) */
 	Vector3 () {

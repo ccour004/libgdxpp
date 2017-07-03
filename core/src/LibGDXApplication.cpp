@@ -40,7 +40,6 @@ int err(const char* fmt){
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
-
 		//Use Vsync
 		if( SDL_GL_SetSwapInterval( 1 ) < 0 )
 		{
@@ -90,7 +89,7 @@ int err(const char* fmt){
 				    if (e.window.windowID == SDL_GetWindowID(window)) {
 				        switch (e.window.event) {
 				            case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                                SDL_Log("RESIZE WINDOW EVENT");
+                                SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
                                                 listener->resize(e.window.data1,e.window.data2);
 				                break;
 				            }
