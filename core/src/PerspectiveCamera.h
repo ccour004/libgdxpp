@@ -14,8 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
  
- #pragma once
- #include "Camera.h"
+#pragma once
+#include "Camera.h"
 
 /** A Camera with perspective projection.
  * 

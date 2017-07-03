@@ -63,6 +63,7 @@
         <File Name="core/src/graphics/VertexAttributes.cpp"/>
         <File Name="core/src/graphics/VertexAttribute.h"/>
       </VirtualDirectory>
+      <File Name="core/src/OrthographicCamera.h"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <Description/>

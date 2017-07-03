@@ -1,6 +1,7 @@
 #include "MyAppListener.h"
 #include <iostream>
 #include <chrono>
+#include "OrthographicCamera.h"
 
 bool MyAppListener::create(){
      if(isCreated) return true;
