@@ -49,7 +49,6 @@
       <File Name="core/src/MyAppListener.cpp"/>
       <File Name="core/src/LibGDXApplication.cpp"/>
       <VirtualDirectory Name="graphics">
-        <File Name="core/src/graphics/Mesh.h"/>
         <File Name="core/src/graphics/Mesh.cpp"/>
         <VirtualDirectory Name="glutils">
           <File Name="core/src/ShaderProgram.h"/>
@@ -62,6 +61,31 @@
         <File Name="core/src/graphics/VertexAttributes.h"/>
         <File Name="core/src/graphics/VertexAttributes.cpp"/>
         <File Name="core/src/graphics/VertexAttribute.h"/>
+        <VirtualDirectory Name="g3d">
+          <File Name="core/src/graphics/g3d/Shader.h"/>
+          <File Name="core/src/graphics/g3d/Renderable.h"/>
+          <File Name="core/src/graphics/g3d/Model.h"/>
+          <File Name="core/src/graphics/g3d/Model.cpp"/>
+          <VirtualDirectory Name="attributes">
+            <File Name="core/src/graphics/g3d/attributes/BlendingAttribute.h"/>
+            <File Name="core/src/graphics/g3d/attributes/BlendingAttribute.cpp"/>
+          </VirtualDirectory>
+          <File Name="core/src/graphics/g3d/Attribute.h"/>
+          <File Name="core/src/graphics/g3d/Material.h"/>
+          <File Name="core/src/graphics/g3d/Material.cpp"/>
+          <File Name="core/src/graphics/g3d/Attributes.h"/>
+          <File Name="core/src/graphics/g3d/Attributes.cpp"/>
+          <VirtualDirectory Name="model">
+            <File Name="core/src/graphics/g3d/model/Node.h"/>
+            <File Name="core/src/graphics/g3d/model/Node.cpp"/>
+            <File Name="core/src/graphics/g3d/model/NodePart.h"/>
+            <File Name="core/src/graphics/g3d/model/NodePart.cpp"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <File Name="core/src/graphics/GLTexture.h"/>
+        <File Name="core/src/graphics/Texture.h"/>
+        <File Name="core/src/graphics/Texture.cpp"/>
+        <File Name="core/src/graphics/Mesh.h"/>
       </VirtualDirectory>
       <File Name="core/src/OrthographicCamera.h"/>
     </VirtualDirectory>

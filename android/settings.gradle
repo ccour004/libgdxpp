@@ -1,4 +1,1 @@
 include ':app'
-include ':bullet3'
-include ':SDL2'
-include ':main'

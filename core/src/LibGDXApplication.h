@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "GL.h"
 
 class ApplicationListener{
@@ -15,10 +16,10 @@ int err(const char* fmt);
 
 class LibGDX_Application{
 private:
-    ApplicationListener* listener;
+    std::shared_ptr<ApplicationListener> listener;
     SDL_Window* window;
     SDL_GLContext glContext;
     void dispose();
 public:
-	LibGDX_Application(ApplicationListener* listener);
+	LibGDX_Application(std::shared_ptr<ApplicationListener> listener);
 };

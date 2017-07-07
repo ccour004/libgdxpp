@@ -5,6 +5,28 @@ VertexData::VertexData (int type,int numVertices,const std::vector<VertexAttribu
 		VertexData(type,true, numVertices,VertexAttributes(attributes)){
 }
 
+VertexData::VertexData (int type,bool isStatic, int numVertices, const VertexAttributes& attributes) {
+        this->type = type;
+		this->isStatic = isStatic;
+		this->attributes = attributes;
+        buffer = std::vector<GLfloat>(attributes.vertexSize * numVertices);
+        usage = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+        
+        switch(type){
+            case VERTEX_BUFFER_OBJECT:
+                glGenBuffers(1,&bufferHandle);
+                setBuffer(buffer, true, attributes);
+            break;
+            case VERTEX_BUFFER_OBJECT_WITH_VAO:
+                glGenBuffers(1,&bufferHandle);
+                glGenVertexArrays(1,&vaoHandle);
+            break;
+            case VERTEX_BUFFER_OBJECT_SUB_DATA:
+                isDirect = true;
+            break;
+        }
+	}
+
 void VertexData::bindAttributes (ShaderProgram& shader,const std::vector<int>&  locations) {
 		bool stillValid = this->cachedLocations.size() != 0;
 		const int numAttributes = attributes.size();
@@ -168,7 +190,7 @@ void VertexData::invalidate(){
     }
 }
 
-void VertexData::dispose(){
+VertexData::~VertexData(){SDL_Log("VERTEX DATA DESTROY!");
     if(type == VERTEX_BUFFER_OBJECT || type == VERTEX_BUFFER_OBJECT_SUB_DATA ||
         type == VERTEX_BUFFER_OBJECT_WITH_VAO){
             glBindBuffer(GL_ARRAY_BUFFER, 0);

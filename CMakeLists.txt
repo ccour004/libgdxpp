@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.0.2)
 
+if (ANDROID)
+    message(STATUS "Hello from Android build!")
+endif()
+
 project (Core)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_executable(Core "${CMAKE_CURRENT_SOURCE_DIR}/core/src/main.cpp"
@@ -50,11 +54,18 @@ if(SDL2_FOUND)
     target_link_libraries(Core ${SDL2_LIBRARY})
 endif()
 
+#SDL_image
+find_package(SDL2_image REQUIRED)
+if(SDL2IMAGE_FOUND)
+    include_directories(${SDL2IMAGE_INCLUDE_DIR})
+    target_link_libraries(Core ${SDL2IMAGE_LIBRARY})
+endif()
+
 #Bullet Physics (v.3., but only using v.2 CPU-based code)
-include_directories(${CMAKE_SOURCE_DIR}/dependencies/bullet3/src)
-target_link_libraries(Core 
-        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/BulletDynamics/libBulletDynamics.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/BulletCollision/libBulletCollision.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/LinearMath/libLinearMath.a)
+#include_directories(${CMAKE_SOURCE_DIR}/dependencies/bullet3/src)
+#target_link_libraries(Core 
+#        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/BulletDynamics/libBulletDynamics.a
+#        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/BulletCollision/libBulletCollision.a
+#        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bullet3-build/src/LinearMath/libLinearMath.a)
 
 target_compile_definitions(Core PRIVATE DESKTOP=1)

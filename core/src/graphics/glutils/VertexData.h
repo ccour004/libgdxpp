@@ -21,6 +21,7 @@
 #define VERTEX_BUFFER_OBJECT_SUB_DATA 3
 #define VERTEX_BUFFER_OBJECT_WITH_VAO 4
 
+#include "../../GL.h"
 #include <vector>
 #include "../VertexAttributes.h"
 #include "ShaderProgram.h"
@@ -79,6 +80,7 @@ private:
     void disableAllVertexAttributes(ShaderProgram& shader,const std::vector<int>& locations);
 public:
     VertexData(){}
+    ~VertexData();
     bool operator== (VertexData& obj){
         return isDirty == obj.isDirty && isBound == obj.isBound && isStatic == obj.isStatic &&
             isDirect == obj.isDirect && ownsBuffer == obj.ownsBuffer && bufferHandle == obj.bufferHandle &&
@@ -119,27 +121,7 @@ public:
     
 	VertexData (int type,int numVertices,const std::vector<VertexAttribute>& attributes);
 
-	VertexData (int type,bool isStatic, int numVertices, const VertexAttributes& attributes) {
-        this->type = type;
-		this->isStatic = isStatic;
-		this->attributes = attributes;
-        buffer = std::vector<GLfloat>(attributes.vertexSize * numVertices);
-        usage = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-        
-        switch(type){
-            case VERTEX_BUFFER_OBJECT:
-                glGenBuffers(1,&bufferHandle);
-                setBuffer(buffer, true, attributes);
-            break;
-            case VERTEX_BUFFER_OBJECT_WITH_VAO:
-                glGenBuffers(1,&bufferHandle);
-                glGenVertexArrays(1,&vaoHandle);
-            break;
-            case VERTEX_BUFFER_OBJECT_SUB_DATA:
-                isDirect = true;
-            break;
-        }
-	}
+	VertexData (int type,bool isStatic, int numVertices, const VertexAttributes& attributes);
     
 	/** @return the number of vertices this VertexData stores */
 	int getNumVertices (){return buffer.size() / attributes.vertexSize;}
@@ -188,7 +170,4 @@ public:
 	
 	/** Invalidates the VertexData if applicable. Use this in case of a context loss. */
 	void invalidate ();
-
-	/** Disposes this VertexData and all its associated OpenGL resources. */
-	void dispose ();
 };

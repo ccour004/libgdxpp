@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 #include <sstream>
 
 #include "glutils/IndexData.h"
@@ -56,11 +57,11 @@ protected:
 	// TODO: Protected for now, because transforming a portion works but still copies all vertices
 	void transformUV (Matrix3& matrix, const int start, const int count);
 private:
-    VertexData makeVertexBuffer (bool isGL30,bool isStatic, int maxVertices, const VertexAttributes& vertexAttributes) {
+    VertexData* makeVertexBuffer (bool isGL30,bool isStatic, int maxVertices, const VertexAttributes& vertexAttributes) {
 		if (isGL30) {
-			return VertexData(VERTEX_BUFFER_OBJECT_WITH_VAO,isStatic, maxVertices, vertexAttributes);
+			return new VertexData(VERTEX_BUFFER_OBJECT_WITH_VAO,isStatic, maxVertices, vertexAttributes);
 		} else {
-			return VertexData(VERTEX_BUFFER_OBJECT,isStatic, maxVertices, vertexAttributes);
+			return new VertexData(VERTEX_BUFFER_OBJECT,isStatic, maxVertices, vertexAttributes);
 		}
 	}
     
@@ -68,9 +69,11 @@ private:
     
 	Vector3 tmpV = Vector3();
 public:
+    Mesh(){}
+    ~Mesh(){SDL_Log("MESH DESTROY!");}
     std::string toString(){
         std::stringstream ss;
-		ss<< "VERTICES:"<<vertices<<",INDICES:"<<indices;
+		ss<< "VERTICES:"<<vertices.get()<<",INDICES:"<<indices.get();
         return ss.str();
 	}
     
@@ -78,11 +81,8 @@ public:
 		VertexArray, VertexBufferObject, VertexBufferObjectSubData, VertexBufferObjectWithVAO
 	};
 
-	/** list of all meshes **/
-	static std::map<std::string, std::vector<Mesh>> meshes;
-
-	VertexData vertices;
-	IndexData indices;
+	std::unique_ptr<VertexData> vertices;
+	std::unique_ptr<IndexData> indices;
 	bool autoBind = true;
 	bool isVertexArray;
     
@@ -91,18 +91,24 @@ public:
             indices == obj.indices && autoBind == obj.autoBind && isVertexArray == obj.isVertexArray;
     }
     
-    Mesh (const VertexData& vertices, const IndexData& indices, bool isVertexArray) :
-        vertices(vertices), indices(indices), isVertexArray(isVertexArray){
-		addManagedMesh("default", *this);
+    Mesh (int vertType,const std::vector<GLfloat>& vertexValues,
+        const std::vector<VertexAttribute>& attributes,int indexType,const std::vector<GLuint>& indexValues, 
+        bool isStatic,bool isVertexArray);
+    
+    /*Mesh (VertexData* vertices,IndexData* indices, bool isVertexArray){
+            this->vertices = vertices;
+            this->indices = indices;
+            this->isVertexArray = isVertexArray;
 	}
     
-    Mesh (const VertexData& vertices, const IndexData& indices, 
-        const std::vector<GLfloat>& vertexValues,const std::vector<GLuint>& indexValues,bool isVertexArray) :
-        vertices(vertices), indices(indices), isVertexArray(isVertexArray){
+    Mesh (VertexData* vertices,IndexData* indices, 
+        const std::vector<GLfloat>& vertexValues,const std::vector<GLuint>& indexValues,bool isVertexArray){
+        this->vertices = vertices;
+        this->indices = indices;
+        this->isVertexArray = isVertexArray;
         setVertices(vertexValues);
         setIndices(indexValues);
-		addManagedMesh("default", *this);
-	}
+	}*/
     
 	/** Creates a new Mesh with the given attributes.
 	 * 
@@ -164,56 +170,56 @@ public:
 
 	/** Sets the vertices of this Mesh. The attributes are assumed to be given in float format.
 	 * 
-	 * @param vertices the vertices.
+	 * @param vertices the vertices->
 	 * @return the mesh for invocation chaining. */
 	Mesh& setVertices (const std::vector<GLfloat>& vertices) {
-		this->vertices.setVertices(vertices, 0, vertices.size());
+		this->vertices->setVertices(vertices, 0, vertices.size());
 		return *this;
 	}
 
 	/** Sets the vertices of this Mesh. The attributes are assumed to be given in float format.
 	 * 
-	 * @param vertices the vertices.
+	 * @param vertices the vertices->
 	 * @param offset the offset into the vertices array
 	 * @param count the number of floats to use
 	 * @return the mesh for invocation chaining. */
 	Mesh& setVertices (const std::vector<GLfloat>& vertices, int offset, int count) {
-		this->vertices.setVertices(vertices, offset, count);
+		this->vertices->setVertices(vertices, offset, count);
 		return *this;
 	}
 
-	/** Update (a portion of) the vertices. Does not resize the backing buffer.
+	/** Update (a portion of) the vertices-> Does not resize the backing buffer.
 	 * @param targetOffset the offset in number of floats of the mesh part.
 	 * @param source the vertex data to update the mesh part with */
 	Mesh& updateVertices (int targetOffset, const std::vector<GLfloat>& source) {
 		return updateVertices(targetOffset, source, 0, source.size());
 	}
 
-	/** Update (a portion of) the vertices. Does not resize the backing buffer.
+	/** Update (a portion of) the vertices-> Does not resize the backing buffer.
 	 * @param targetOffset the offset in number of floats of the mesh part.
 	 * @param source the vertex data to update the mesh part with
 	 * @param sourceOffset the offset in number of floats within the source array
 	 * @param count the number of floats to update */
 	Mesh& updateVertices (int targetOffset, const std::vector<GLfloat>& source, int sourceOffset, int count) {
-		this->vertices.updateVertices(targetOffset, source, sourceOffset, count);
+		this->vertices->updateVertices(targetOffset, source, sourceOffset, count);
 		return *this;
 	}
 
-	/** Copies the vertices from the Mesh to the float array. The float array must be large enough to hold all the Mesh's vertices.
+	/** Copies the vertices from the Mesh to the float array. The float array must be large enough to hold all the Mesh's vertices->
 	 * @param vertices the array to copy the vertices to */
 	const std::vector<GLfloat>& getVertices (std::vector<GLfloat>& vertices) {
 		return getVertices(0, -1, vertices);
 	}
 
 	/** Copies the the remaining vertices from the Mesh to the float array. The float array must be large enough to hold the
-	 * remaining vertices.
+	 * remaining vertices->
 	 * @param srcOffset the offset (in number of floats) of the vertices in the mesh to copy
 	 * @param vertices the array to copy the vertices to */
 	const std::vector<GLfloat>& getVertices (int srcOffset, std::vector<GLfloat>& vertices) {
 		return getVertices(srcOffset, -1, vertices);
 	}
 
-	/** Copies the specified vertices from the Mesh to the float array. The float array must be large enough to hold count vertices.
+	/** Copies the specified vertices from the Mesh to the float array. The float array must be large enough to hold count vertices->
 	 * @param srcOffset the offset (in number of floats) of the vertices in the mesh to copy
 	 * @param count the amount of floats to copy
 	 * @param vertices the array to copy the vertices to */
@@ -222,7 +228,7 @@ public:
 	}
 
 	/** Copies the specified vertices from the Mesh to the float array. The float array must be large enough to hold
-	 * destOffset+count vertices.
+	 * destOffset+count vertices->
 	 * @param srcOffset the offset (in number of floats) of the vertices in the mesh to copy
 	 * @param count the amount of floats to copy
 	 * @param vertices the array to copy the vertices to
@@ -250,7 +256,7 @@ public:
 	 * @param indices the indices
 	 * @return the mesh for invocation chaining. */
 	Mesh& setIndices (const std::vector<GLuint>& indices) {
-		this->indices.setIndices(indices, 0, indices.size());
+		this->indices->setIndices(indices, 0, indices.size());
 		return *this;
 	}
 
@@ -261,18 +267,18 @@ public:
 	 * @param count the number of indices to copy
 	 * @return the mesh for invocation chaining. */
 	Mesh& setIndices (const std::vector<GLuint>& indices, int offset, int count) {
-		this->indices.setIndices(indices, offset, count);
+		this->indices->setIndices(indices, offset, count);
 		return *this;
 	}
 
-	/** Copies the indices from the Mesh to the short array. The short array must be large enough to hold all the Mesh's indices.
+	/** Copies the indices from the Mesh to the short array. The short array must be large enough to hold all the Mesh's indices->
 	 * @param indices the array to copy the indices to */
 	void getIndices (std::vector<GLuint>& indices) {
 		getIndices(indices, 0);
 	}
 
 	/** Copies the indices from the Mesh to the short array. The short array must be large enough to hold destOffset + all the
-	 * Mesh's indices.
+	 * Mesh's indices->
 	 * @param indices the array to copy the indices to
 	 * @param destOffset the offset in the indices array to start copying */
 	void getIndices (std::vector<GLuint>& indices, int destOffset) {
@@ -280,7 +286,7 @@ public:
 	}
 
 	/** Copies the remaining indices from the Mesh to the short array. The short array must be large enough to hold destOffset + all
-	 * the remaining indices.
+	 * the remaining indices->
 	 * @param srcOffset the zero-based offset of the first index to fetch
 	 * @param indices the array to copy the indices to
 	 * @param destOffset the offset in the indices array to start copying */
@@ -289,7 +295,7 @@ public:
 	}
 
 	/** Copies the indices from the Mesh to the short array. The short array must be large enough to hold destOffset + count
-	 * indices.
+	 * indices->
 	 * @param srcOffset the zero-based offset of the first index to fetch
 	 * @param count the total amount of indices to copy
 	 * @param indices the array to copy the indices to
@@ -309,27 +315,27 @@ public:
 
 	/** @return the number of defined indices */
 	int getNumIndices () {
-		return indices.getNumIndices();
+		return indices->getNumIndices();
 	}
 
 	/** @return the number of defined vertices */
 	int getNumVertices () {
-		return vertices.getNumVertices();
+		return vertices->getNumVertices();
 	}
 
 	/** @return the maximum number of vertices this mesh can hold */
 	int getMaxVertices () {
-		return vertices.getNumMaxVertices();
+		return vertices->getNumMaxVertices();
 	}
 
 	/** @return the maximum number of indices this mesh can hold */
 	int getMaxIndices () {
-		return indices.getNumMaxIndices();
+		return indices->getNumMaxIndices();
 	}
 
 	/** @return the size of a single vertex in bytes */
 	int getVertexSize () {
-		return vertices.getAttributes().vertexSize;
+		return vertices->getAttributes().vertexSize;
 	}
 
 	/** Sets whether to bind the underlying {@link VertexArray} or {@link VertexBufferObject} automatically on a call to one of the
@@ -369,8 +375,8 @@ public:
 	 * @param shader the shader (does not unbind the shader)
 	 * @param locations array containing the attribute locations. */
 	void unbind (ShaderProgram&  shader, const std::vector<int>& locations) {
-		vertices.unbind(shader, locations);
-		if (indices.getNumIndices() > 0) indices.unbind();
+		vertices->unbind(shader, locations);
+		if (indices->getNumIndices() > 0) indices->unbind();
 	}
 
 	/** <p>
@@ -393,7 +399,7 @@ public:
 	 * 
 	 * @param primitiveType the primitive type */
 	void render (ShaderProgram& shader, int primitiveType) {
-		render(shader, primitiveType, 0, indices.getNumMaxIndices() > 0 ? getNumIndices() : getNumVertices(), autoBind);
+		render(shader, primitiveType, 0, indices->getNumMaxIndices() > 0 ? getNumIndices() : getNumVertices(), autoBind);
 	}
 
 	/** <p>
@@ -447,32 +453,7 @@ public:
 	 * @param offset the offset into the vertex or index buffer
 	 * @param count number of vertices or indices to use
 	 * @param autoBind overrides the autoBind member of this Mesh */
-	void render (ShaderProgram& shader, int primitiveType, int offset, int count, bool autoBind) {
-		if (count == 0) return;
-
-		if (autoBind) bind(shader);
-
-        int dataOffset = offset;
-        if(!isVertexArray) dataOffset = offset * 2;
-        
-        if(indices.getNumIndices() > 0){
-            if(!isVertexArray && count + offset > indices.getNumMaxIndices())
-                SDL_Log("Mesh attempting to access memory outside of the index buffer (count: %i, offset: %i, max: %i)",count,dataOffset,indices.getNumMaxIndices());
-            glDrawElements(primitiveType, count, /*GL_UNSIGNED_SHORT*/GL_UNSIGNED_INT, /*&indices.getBuffer().data()[dataOffset]*/0);
-        }else glDrawArrays(primitiveType, offset, count);
-        
-		if (autoBind) unbind(shader);
-	}
-
-	/** Frees all resources associated with this Mesh */
-	void dispose () {
-        /*if(meshes.find("default") != meshes.end()){
-            std::vector<Mesh> meshList = meshes["default"];
-            meshList.erase(std::find(meshList.begin(),meshList.end(),*this));
-        }*/
-		vertices.dispose();
-		indices.dispose();
-	}
+	void render (ShaderProgram& shader, int primitiveType, int offset, int count, bool autoBind);
 
 	/** Returns the first {@link VertexAttribute} having the given {@link Usage}.
 	 * 
@@ -482,12 +463,12 @@ public:
 
 	/** @return the vertex attributes of this Mesh */
 	VertexAttributes& getVertexAttributes () {
-		return vertices.getAttributes();
+		return vertices->getAttributes();
 	}
 
-	/** @return the backing FloatBuffer holding the vertices. Does not have to be a direct buffer on Android! */
+	/** @return the backing FloatBuffer holding the vertices-> Does not have to be a direct buffer on Android! */
 	std::vector<GLfloat>& getVerticesBuffer () {
-		return vertices.getBuffer();
+		return vertices->getBuffer();
 	}
 
 	/** Calculates the {@link BoundingBox} of the vertices contained in this mesh. In case no vertices are defined yet a
@@ -597,40 +578,12 @@ public:
 		return calculateRadius(center.x, center.y, center.z, 0, getNumIndices(), Matrix4());
 	}
 
-	/** @return the backing shortbuffer holding the indices. Does not have to be a direct buffer on Android! */
+	/** @return the backing shortbuffer holding the indices-> Does not have to be a direct buffer on Android! */
 	std::vector<GLuint>& getIndicesBuffer () {
-		return indices.getBuffer();
-	}
-
-	/** Invalidates all meshes so the next time they are rendered new VBO handles are generated.
-	 * @param app */
-	static void invalidateAllMeshes (std::string app) {
-		std::vector<Mesh> meshesArray = meshes[app];
-		if (meshesArray.size() == 0) return;
-		for (int i = 0; i < meshesArray.size(); i++) {
-			meshesArray[i].vertices.invalidate();
-			meshesArray[i].indices.invalidate();
-		}
-	}
-
-	/** Will clear the managed mesh cache. I wouldn't use this if i was you :) */
-	static void clearAllMeshes (std::string app) {
-		meshes.erase(app);
+		return indices->getBuffer();
 	}
     
     bool hasVertexAttribute (int usage);
-
-	static std::string getManagedStatus () {
-		std::stringstream builder;
-		int i = 0;
-		builder<<"Managed meshes/app: { ";
-		for ( const auto& sm_pair : meshes) {
-			builder<<sm_pair.second.size();
-			builder<<" ";
-		}
-		builder<<"}";
-		return builder.str();
-	}
 
 	/** Method to scale the positions in the mesh. Normals will be kept as is. This is a potentially slow operation, use with care.
 	 * It will also create a temporary const std::vector<GLfloat>& which will be garbage collected.

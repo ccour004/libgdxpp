@@ -1,8 +1,10 @@
 #include "LibGDXApplication.h"
 #include "MyAppListener.h"
+#include <memory>
 
 int main(int argc, char* argv[])
 {    
-    LibGDX_Application* app = new LibGDX_Application(new MyAppListener());
+    std::unique_ptr<LibGDX_Application> app = std::make_unique<LibGDX_Application>(
+        std::make_shared<MyAppListener>());
     return 0;
 }

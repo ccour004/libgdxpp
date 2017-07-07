@@ -6,7 +6,7 @@ int err(const char* fmt){
     return 1;
 }
 
-	LibGDX_Application::LibGDX_Application(ApplicationListener* listener){
+	LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
         this->listener = listener;
 		//Initialization flag
 		bool success = true;

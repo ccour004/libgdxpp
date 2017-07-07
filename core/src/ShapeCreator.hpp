@@ -8,19 +8,13 @@
 class MeshBuilder
 {
 public:
-    std::vector<Mesh> meshes;
-    float degreesToRadians = M_PI / 180.0f;
-    
-    MeshBuilder(){
-        meshes = std::vector<Mesh>();
+    static void build(std::vector<GLfloat>& vertexValues,std::vector<GLuint>& indices,float width, float height,float depth, int divisionsU,int divisionsV){
+        build(vertexValues,indices,width,height,depth,divisionsU,divisionsV,0,360,0,180);
     }
 
-    void build(float width, float height,float depth, int divisionsU,int divisionsV){
-        build(width,height,depth,divisionsU,divisionsV,0,360,0,180);
-    }
-
-    void build(float width, float height, float depth,
+    static void build(std::vector<GLfloat>& vertexValues,std::vector<GLuint>& indices,float width, float height, float depth,
                           int divisionsU, int divisionsV, float angleUFrom, float angleUTo, float angleVFrom, float angleVTo) {
+        float degreesToRadians = M_PI / 180.0f;
         float hw = width * 0.5f;
         float hh = height * 0.5f;
         float hd = depth * 0.5f;
@@ -40,8 +34,6 @@ public:
         int tempOffset = 0;
         
         std::vector<Vector3> vertices;
-        std::vector<GLfloat> vertexValues;
-        std::vector<GLuint> indices;
 
         for (int iv = 0; iv <= divisionsV; iv++) {
             angleV = avo + stepV * iv;
@@ -76,11 +68,5 @@ public:
             vertexValues.push_back(vec3.y);
             vertexValues.push_back(vec3.z);
         }
-        
-        std::vector<VertexAttribute> attr{VertexAttribute::position()};
-        meshes.push_back(Mesh(VertexData(VERTEX_BUFFER_OBJECT,true,vertexValues.size(),attr),
-                        IndexData(INDEX_BUFFER_OBJECT,true,indices.size()),true));
-        meshes[meshes.size()-1].setVertices(vertexValues);
-        meshes[meshes.size()-1].setIndices(indices);
     }
 };

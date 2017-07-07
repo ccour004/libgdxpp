@@ -42,12 +42,15 @@ public:
     } 
     
     IndexData(){isDirty = false;isBound = false;isDirect = false;}
+    ~IndexData();
     bool operator== (IndexData& obj){
         return bufferHandle == obj.bufferHandle && isDirty == obj.isDirty && isBound == obj.isBound && 
             isDirect == obj.isDirect && buffer == obj.buffer && type == obj.type && usage == obj.usage;
     }
     IndexData(int type,bool isStatic, int maxIndices);
     IndexData(int type,int maxIndices);
+    
+    IndexData(int type,bool isStatic,const std::vector<GLuint>& data);
     
 	/** @return the number of indices currently stored in this buffer */
 	int getNumIndices () {return buffer.size();}
@@ -101,7 +104,4 @@ public:
 
 	/** Invalidates the IndexBufferObject so a new OpenGL buffer handle is created. Use this in case of a context loss. */
 	void invalidate();
-
-	/** Disposes this IndexDatat and all its associated OpenGL resources. */
-	void dispose();
 };

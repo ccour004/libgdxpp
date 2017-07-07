@@ -15,7 +15,6 @@
  ******************************************************************************/
 
 #pragma once
-
 #include "../../GL.h"
 #include "../../math/Vector2.h"
 #include "../../math/Vector3.h"
@@ -33,10 +32,7 @@ class ShaderProgram
 {
     std::vector<ShaderProgram> managedResources = std::vector<ShaderProgram>();
 protected:
-    int createProgram () {
-		int program = glCreateProgram();
-		return program != 0 ? program : -1;
-	}
+    int createProgram ();
 public:
     int getProgramID(){
         return program;
@@ -100,10 +96,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param value3 the third value */
 	void setUniformi (const std::string& name, int value1, int value2, int value3);
 
-	void setUniformi (int location, int value1, int value2, int value3) {
-		checkManaged();
-		glUniform3i(location, value1, value2, value3);
-	}
+	void setUniformi (int location, int value1, int value2, int value3);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -112,47 +105,26 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param value2 the second value
 	 * @param value3 the third value
 	 * @param value4 the fourth value */
-	void setUniformi (const std::string& name, int value1, int value2, int value3, int value4) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform4i(location, value1, value2, value3, value4);
-	}
+	void setUniformi (const std::string& name, int value1, int value2, int value3, int value4);
 
-	void setUniformi (int location, int value1, int value2, int value3, int value4) {
-		checkManaged();
-		glUniform4i(location, value1, value2, value3, value4);
-	}
+	void setUniformi (int location, int value1, int value2, int value3, int value4);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
 	 * @param name the name of the uniform
 	 * @param value the value */
-	void setUniformf (const std::string& name, float value) {		
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform1f(location, value);
-	}
+	void setUniformf (const std::string& name, float value);
 
-	void setUniformf (int location, float value) {		
-		checkManaged();
-		glUniform1f(location, value);
-	}
+	void setUniformf (int location, float value);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
 	 * @param name the name of the uniform
 	 * @param value1 the first value
 	 * @param value2 the second value */
-	void setUniformf (const std::string& name, float value1, float value2) {		
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform2f(location, value1, value2);
-	}
+	void setUniformf (const std::string& name, float value1, float value2);
 
-	void setUniformf (int location, float value1, float value2) {		
-		checkManaged();
-		glUniform2f(location, value1, value2);
-	}
+	void setUniformf (int location, float value1, float value2);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -160,16 +132,9 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param value1 the first value
 	 * @param value2 the second value
 	 * @param value3 the third value */
-	void setUniformf (const std::string& name, float value1, float value2, float value3) {		
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform3f(location, value1, value2, value3);
-	}
+	void setUniformf (const std::string& name, float value1, float value2, float value3);
 
-	void setUniformf (int location, float value1, float value2, float value3) {		
-		checkManaged();
-		glUniform3f(location, value1, value2, value3);
-	}
+	void setUniformf (int location, float value1, float value2, float value3);
 
 	/** Sets the uniform with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -178,61 +143,25 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param value2 the second value
 	 * @param value3 the third value
 	 * @param value4 the fourth value */
-	void setUniformf (const std::string& name, float value1, float value2, float value3, float value4) {		
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform4f(location, value1, value2, value3, value4);
-	}
+	void setUniformf (const std::string& name, float value1, float value2, float value3, float value4);
 
-	void setUniformf (int location, float value1, float value2, float value3, float value4) {
-		
-		checkManaged();
-		glUniform4f(location, value1, value2, value3, value4);
-	}
+	void setUniformf (int location, float value1, float value2, float value3, float value4);
 
-	void setUniform1fv (const std::string& name, float* values,int length) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform1fv(location, length, values);
-	}
+	void setUniform1fv (const std::string& name, float* values,int length);
 
-	void setUniform1fv (int location, float* values, int length) {
-		checkManaged();
-		glUniform1fv(location, length, values);
-	}
+	void setUniform1fv (int location, float* values, int length);
 
-	void setUniform2fv (const std::string& name, float* values, int length) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform2fv(location, length / 2, values);
-	}
+	void setUniform2fv (const std::string& name, float* values, int length);
 
-	void setUniform2fv (int location, float* values, int length) {
-		checkManaged();
-		glUniform2fv(location, length / 2, values);
-	}
+	void setUniform2fv (int location, float* values, int length);
 
-	void setUniform3fv (const std::string& name, float* values, int length) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform3fv(location, length / 3, values);
-	}
+	void setUniform3fv (const std::string& name, float* values, int length);
 
-	void setUniform3fv (int location, float* values,int length) {
-		checkManaged();
-		glUniform3fv(location, length / 3, values);
-	}
+	void setUniform3fv (int location, float* values,int length);
 
-	void setUniform4fv (const std::string& name, float* values, int length) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniform4fv(location, length / 4, values);
-	}
+	void setUniform4fv (const std::string& name, float* values, int length);
 
-	void setUniform4fv (int location, float* values,int length) {
-		checkManaged();
-		glUniform4fv(location, length / 4, values);
-	}
+	void setUniform4fv (int location, float* values,int length);
 
 	/** Sets the uniform matrix with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -285,27 +214,16 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param name the name of the uniform
 	 * @param buffer buffer containing the matrix data
 	 * @param transpose whether the uniform matrix should be transposed */
-	void setUniformMatrix3fv (const std::string& name, const std::vector<float>& buffer, int count, bool transpose) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniformMatrix3fv(location, count, transpose, buffer.data());
-	}
+	void setUniformMatrix3fv (const std::string& name, const std::vector<float>& buffer, int count, bool transpose);
 
 	/** Sets an array of uniform matrices with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
 	 * @param name the name of the uniform
 	 * @param buffer buffer containing the matrix data
 	 * @param transpose whether the uniform matrix should be transposed */
-	void setUniformMatrix4fv (const std::string& name, std::vector<float>& buffer, int count, bool transpose) {
-		checkManaged();
-		int location = fetchUniformLocation(name);
-		glUniformMatrix4fv(location, count, transpose, buffer.data());
-	}
+	void setUniformMatrix4fv (const std::string& name, std::vector<float>& buffer, int count, bool transpose);
 
-	void setUniformMatrix4fv (int location, float* values,int length) {
-		checkManaged();
-		glUniformMatrix4fv(location, length / 16, false, values);
-	}
+	void setUniformMatrix4fv (int location, float* values,int length);
 
 	void setUniformMatrix4fv (const std::string& name, float* values,int length) {
 		setUniformMatrix4fv(fetchUniformLocation(name), values, length);
@@ -356,17 +274,9 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param normalize whether fixed point data should be normalized. Will not work on the desktop
 	 * @param stride the stride in bytes between successive attributes
 	 * @param buffer the buffer containing the vertex attributes. */
-	void setVertexAttribute (const std::string& name, int size, int type, bool normalize, int stride, int buffer) {
-		checkManaged();
-		int location = fetchAttributeLocation(name);
-		if (location == -1) return;
-		glVertexAttribPointer(location, size, type, normalize, stride, ((char *)NULL + (buffer)));
-	}
+	void setVertexAttribute (const std::string& name, int size, int type, bool normalize, int stride, int buffer);
 
-	void setVertexAttribute (int location, int size, int type, bool normalize, int stride, int buffer) {
-		checkManaged();
-		glVertexAttribPointer(location, size, type, normalize, stride, ((char *)NULL + (buffer)));
-	}
+	void setVertexAttribute (int location, int size, int type, bool normalize, int stride, int buffer);
 
 	/** Sets the vertex attribute with the given name. The {@link ShaderProgram} must be bound for this to work.
 	 * 
@@ -377,68 +287,34 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param normalize whether fixed point data should be normalized. Will not work on the desktop
 	 * @param stride the stride in bytes between successive attributes
 	 * @param offset byte offset into the vertex buffer object bound to GL_ARRAY_BUFFER. */
-	void setVertexAttribute (const std::string& name, int size, int type, bool normalize, int stride) {		
-		checkManaged();
-		int location = fetchAttributeLocation(name);
-		if (location == -1) return;
-		glVertexAttribPointer(location, size, type, normalize, stride,((char *)NULL + (0)));
-	}
+	void setVertexAttribute (const std::string& name, int size, int type, bool normalize, int stride);
 
-	void setVertexAttribute (int location, int size, int type, bool normalize, int stride) {
-		checkManaged();
-		glVertexAttribPointer(location, size, type, normalize, stride,((char *)NULL + (0)));
-	}
+	void setVertexAttribute (int location, int size, int type, bool normalize, int stride);
 
 	/** Makes OpenGL ES 2.0 use this vertex and fragment shader pair. When you are done with this shader you have to call
 	 * {@link ShaderProgram#end()}. */
-	void begin () {
-		checkManaged();
-		glUseProgram(program);
-	}
+	void begin ();
 
 	/** Disables this shader. Must be called when one is done with the shader. Don't mix it with dispose, that will release the
 	 * shader resources. */
-	void end () {
-		glUseProgram(0);
-	}
+	void end ();
 
 	/** Disposes all resources associated with this shader. Must be called when the shader is no longer used. */
-	~ShaderProgram() {
-		glUseProgram(0);
-		glDeleteShader(vertexShaderHandle);
-		glDeleteShader(fragmentShaderHandle);
-		glDeleteProgram(program);
-	}
+	~ShaderProgram();
 
 	/** Disables the vertex attribute with the given name
 	 * 
 	 * @param name the vertex attribute name */
-	void disableVertexAttribute (const std::string& name) {
-		checkManaged();
-		int location = fetchAttributeLocation(name);
-		if (location == -1) return;
-		glDisableVertexAttribArray(location);
-	}
+	void disableVertexAttribute (const std::string& name);
 
-	void disableVertexAttribute (int location) {
-		checkManaged();
-		glDisableVertexAttribArray(location);
-	}
+	void disableVertexAttribute (int location);
 
 	/** Enables the vertex attribute with the given name
 	 * 
 	 * @param name the vertex attribute name */
-	void enableVertexAttribute (const std::string& name) {
-		checkManaged();
-		int location = fetchAttributeLocation(name);
-		if (location == -1) return;
-		glEnableVertexAttribArray(location);
-	}
+	void enableVertexAttribute (const std::string& name);
 
-	void enableVertexAttribute (int location) {
-		checkManaged();
-		glEnableVertexAttribArray(location);
-	}
+	void enableVertexAttribute (int location);
 
 	/** Invalidates all shaders so the next time they are used new handles are generated
 	 * @param app */
@@ -475,10 +351,7 @@ int fetchUniformLocation (const std::string& name, bool pedantic);
 	 * @param value2 the second value
 	 * @param value3 the third value
 	 * @param value4 the fourth value */
-	void setAttributef (const std::string& name, float value1, float value2, float value3, float value4) {
-		int location = fetchAttributeLocation(name);
-		glVertexAttrib4f(location, value1, value2, value3, value4);
-	}
+	void setAttributef (const std::string& name, float value1, float value2, float value3, float value4);
 
 	/** @param name the name of the attribute
 	 * @return whether the attribute is available in the shader */
@@ -617,73 +490,11 @@ private:
 	/** reference count **/
     int refCount;
     
-    void compileShaders (const std::string& vertexShader,const std::string& fragmentShader) {
-		vertexShaderHandle = loadShader(GL_VERTEX_SHADER, vertexShader);
-		fragmentShaderHandle = loadShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
-			_compiled = false;
-			return;
-		}
-
-		program = linkProgram(createProgram());
-		if (program == -1) {
-			_compiled = false;
-			return;
-		}
-
-		_compiled = true;
-	}
+    void compileShaders (const std::string& vertexShader,const std::string& fragmentShader);
     
-    void fetchUniforms () {
-        GLint params;
-		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &params);
-		int numUniforms = params;
+    void fetchUniforms ();
 
-        const GLsizei bufSize = 256;
-        GLint sizes;
-        GLenum typeParams;
-        GLchar names[bufSize];
-		uniformNames = std::vector<std::string>(numUniforms);
-
-		for (int i = 0; i < numUniforms; i++) {
-            GLsizei length;
-            glGetActiveUniform(program, i,bufSize,&length, &sizes,&typeParams,names);
-            SDL_Log("Uniform #%d Type: %u Name: %s\n", i, typeParams, names);
-			int location = glGetUniformLocation(program, names);
-            std::string name(names);
-            
-			uniforms[name] = location;
-			uniformTypes[name] = typeParams;
-			uniformSizes[name] = sizes;
-			uniformNames[i] = name;
-		}
-	}
-
-	void fetchAttributes () {
-		GLint params;
-		glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &params);
-		int numAttributes = params;
-
-        const GLsizei bufSize = 256;
-        GLint sizes;
-        GLenum typeParams;
-        GLchar names[bufSize];
-		attributeNames = std::vector<std::string>(numAttributes);
-
-		for (int i = 0; i < numAttributes; i++) {
-            GLsizei length;
-            glGetActiveAttrib(program, i,bufSize,&length, &sizes,&typeParams,names);
-            SDL_Log("Attribute #%d Type: %u Name: %s\n", i, typeParams, names);
-			int location = glGetAttribLocation(program, names);
-            std::string name(names);
-            
-			attributes[name] = location;
-			attributeTypes[name] = typeParams;
-			attributeSizes[name] = sizes;
-			attributeNames[i] = name;
-		}
-	}
+	void fetchAttributes ();
     
     void addManagedShader (const std::string& app, const ShaderProgram& shaderProgram) {
         auto search = shaders.find(app);
@@ -693,54 +504,9 @@ private:
 		shaders[app] = managedResources;
 	}
     
-    int loadShader (int type,const std::string& source) {
-		GLuint shader = glCreateShader(type);
-		if (shader == 0) return -1;
-        GLint params;
-
-        const GLchar* ob1 = source.c_str();
-        glShaderSource(shader, 1, &ob1, NULL);
-        //delete ob1;
-		glCompileShader(shader);
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &params);
-
-		if (params == GL_FALSE) {
-            GLint logLength = 0;
-            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
-            GLchar* cLog = new char[logLength + 1];
-			glGetShaderInfoLog(shader,logLength,NULL,cLog);
-            std::string infoLog = cLog;
-			log += type == GL_VERTEX_SHADER ? "Vertex shader\n" : "Fragment shader:\n";
-			log += infoLog;
-            SDL_Log("SHADER FAIL LOG: %s <SOURCE: %s",log.c_str(),source.c_str());
-            delete cLog;
-			return -1;
-		}
-
-		return shader;
-	}
+    int loadShader (int type,const std::string& source);
     
-    int linkProgram (int program) {
-		if (program == -1) return -1;
-
-		glAttachShader(program, vertexShaderHandle);
-		glAttachShader(program, fragmentShaderHandle);
-		glLinkProgram(program);
-
-		GLint params;
-		glGetProgramiv(program, GL_LINK_STATUS,&params);
-		if (params == GL_FALSE) {
-            GLsizei* length;
-            GLchar* cLog;
-			glGetProgramInfoLog(program,std::numeric_limits<GLchar>::max(),length,cLog);
-            log = cLog;
-            delete length;
-            delete cLog;
-			return -1;
-		}
-
-		return program;
-	}
+    int linkProgram (int program);
     
     /*ShaderProgram (FileHandle vertexShader, FileHandle fragmentShader) {
 		this(vertexShader.readstd::string(), fragmentShader.readstd::string());

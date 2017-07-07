@@ -7,6 +7,14 @@ void IndexData::createBufferObject(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+IndexData::IndexData(int type,bool isStatic,const std::vector<GLuint>& data){
+    isDirty = false;isBound = false;isDirect = false;
+    this->type = INDEX_BUFFER_OBJECT;
+    usage = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+    buffer = data;
+    isDirect = true;
+    glGenBuffers(1, &bufferHandle);
+}
 IndexData::IndexData (int type,int maxIndices):IndexData(type,true,maxIndices){}
 IndexData::IndexData (int type,bool isStatic, int maxIndices){
         isDirty = false;isBound = false;isDirect = false;
@@ -124,7 +132,7 @@ void IndexData::unbind(){
     }
 }
 
-void IndexData::dispose(){
+IndexData::~IndexData(){
     if(type != INDEX_ARRAY){
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glDeleteBuffers(1,&bufferHandle);
