@@ -108,7 +108,7 @@
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/home/colin/git/libgdxpp/Core" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/home/colin/git/libgdxpp/build/Core" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
@@ -119,7 +119,10 @@
         <StartupCommands/>
       </Debugger>
       <PreBuild>
-        <Command Enabled="yes">cmake .</Command>
+        <Command Enabled="yes">mkdir build</Command>
+        <Command Enabled="yes">cd build</Command>
+        <Command Enabled="yes">cmake ..</Command>
+        <Command Enabled="yes">ln -s ../assets assets</Command>
       </PreBuild>
       <PostBuild/>
       <CustomBuild Enabled="yes">

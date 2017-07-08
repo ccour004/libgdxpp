@@ -1,5 +1,8 @@
 
 echo Executing Pre Build commands ...
-cmake .
+mkdir build
+cd build
+cmake ..
+ln -s ../assets assets
 echo Done
 make
