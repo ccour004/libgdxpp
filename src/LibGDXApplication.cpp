@@ -11,7 +11,7 @@ int err(const char* fmt){
 		//Initialization flag
 		bool success = true;
 		SDL_Log("++START SDL++");
-		SDL_Init(SDL_INIT_VIDEO);
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_AUDIO);
 
 		window = SDL_CreateWindow(
 		        "Test Window",
