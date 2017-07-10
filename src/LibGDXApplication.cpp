@@ -1,5 +1,9 @@
 #include "LibGDXApplication.h"
 
+SDL_Window* LibGDX_Application::window = 0;
+SDL_GLContext LibGDX_Application::glContext;
+std::shared_ptr<ApplicationListener> LibGDX_Application::listener;
+
 int err(const char* fmt){
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,fmt, SDL_GetError());
     //dispose();
@@ -8,12 +12,13 @@ int err(const char* fmt){
 
 LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
         LibGDX_Application::listener = listener;
+
 		//Initialization flag
 		bool success = true;
 		SDL_Log("++START SDL++");
 		SDL_Init(SDL_INIT_VIDEO);
 
-		window = SDL_CreateWindow(
+		LibGDX_Application::window = SDL_CreateWindow(
 		        "Test Window",
 		        SDL_WINDOWPOS_UNDEFINED,           // initial x position
 		        SDL_WINDOWPOS_UNDEFINED,           // initial y position
@@ -22,7 +27,7 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
 		        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 		);
 
-		glContext = SDL_GL_CreateContext(window);
+		LibGDX_Application::glContext = SDL_GL_CreateContext(LibGDX_Application::window);
 
 		#ifdef DESKTOP
 		GLenum glewError = glewInit(); 
@@ -56,7 +61,7 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearColor( 0.66f, 0.66f, 0.66f, 1.f );
 
-		if (window == NULL){
+		if (LibGDX_Application::window == NULL){
 			err("Could not create window: %s");
 		    }
 
@@ -104,7 +109,7 @@ int LibGDX_Application::event_filter(void* data,SDL_Event* event){
 }
     
 void LibGDX_Application::dispose(){
-	   listener->dispose();
+	   if(listener != NULL) listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
        SDL_GL_DeleteContext(LibGDX_Application::glContext);
 	   SDL_DestroyWindow(LibGDX_Application::window);
