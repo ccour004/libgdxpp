@@ -83,7 +83,7 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
         }
 	}
 
-int LibGDX_Application::event_filter(void* data,SDL_Event* event){
+int SDLCALL LibGDX_Application::event_filter(void* data,SDL_Event* event){
     SDL_Log("EVENT!");
     switch(event->type){
 				case SDL_QUIT:
@@ -106,11 +106,13 @@ int LibGDX_Application::event_filter(void* data,SDL_Event* event){
 				        }
 				    }break;
 			    }
+    return 1;
 }
     
 void LibGDX_Application::dispose(){
 	   LibGDX_Application::listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
+       SDL_DelEventWatch(event_filter, NULL);
        SDL_GL_DeleteContext(LibGDX_Application::glContext);
 	   SDL_DestroyWindow(LibGDX_Application::window);
 	   SDL_Quit();

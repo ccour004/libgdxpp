@@ -22,7 +22,7 @@ int err(const char* fmt);
 class LibGDX_Application{
 private:
     static std::shared_ptr<ApplicationListener> listener;
-    static int event_filter(void* data,SDL_Event* event);
+    static int SDLCALL event_filter(void* data,SDL_Event* event);
     static SDL_Window* window;
     static SDL_GLContext glContext;
     static void dispose();
