@@ -1,24 +1,19 @@
 #include "LibGDXApplication.h"
 
-SDL_Window* LibGDX_Application::window = 0;
-SDL_GLContext LibGDX_Application::glContext;
-std::shared_ptr<ApplicationListener> LibGDX_Application::listener;
-
 int err(const char* fmt){
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,fmt, SDL_GetError());
     //dispose();
     return 1;
 }
 
-LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
-        LibGDX_Application::listener = listener;
-
+	LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
+        this->listener = listener;
 		//Initialization flag
 		bool success = true;
 		SDL_Log("++START SDL++");
 		SDL_Init(SDL_INIT_VIDEO);
 
-		LibGDX_Application::window = SDL_CreateWindow(
+		window = SDL_CreateWindow(
 		        "Test Window",
 		        SDL_WINDOWPOS_UNDEFINED,           // initial x position
 		        SDL_WINDOWPOS_UNDEFINED,           // initial y position
@@ -27,7 +22,7 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
 		        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 		);
 
-		LibGDX_Application::glContext = SDL_GL_CreateContext(LibGDX_Application::window);
+		glContext = SDL_GL_CreateContext(window);
 
 		#ifdef DESKTOP
 		GLenum glewError = glewInit(); 
@@ -61,59 +56,81 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearColor( 0.66f, 0.66f, 0.66f, 1.f );
 
-		if (LibGDX_Application::window == NULL){
+		if (window == NULL){
 			err("Could not create window: %s");
 		    }
 
-        //SDL_StartTextInput();
+		    //Main loop.
+		    SDL_Event e;
+		    bool quit = false;
+		    //SDL_StartTextInput();
 
 		//Let listener know that we're created now.
-        if(!LibGDX_Application::listener->create()){
+        if(!listener->create()){
             this->dispose();
             return;	
         }
-        
-        SDL_AddEventWatch(event_filter,NULL);
-        LibGDX_Application::listener->resize(640,480);
+		listener->resize(640,480);
 
 		//Enter main loop.
-		while(true){
-			LibGDX_Application::listener->render();
+		while(!quit){
+			while(SDL_PollEvent(&e) != 0){
+                //System events first.
+                if(e.type == SDL_QUIT){quit = true; continue;}
+			    switch(e.type){
+                    case SDL_WINDOWEVENT:
+                        if (e.window.windowID == SDL_GetWindowID(window)) {
+                            switch (e.window.event) {
+                                case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                                    SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
+                                                    listener->resize(e.window.data1,e.window.data2);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+			    }
+                
+                //Now touch events, if an input processor is set.
+                if(listener->getRawInputProcessor().get() != nullptr)
+                switch(e.type){
+                    case SDL_CONTROLLERAXISMOTION:listener->getRawInputProcessor()->controllerAxisEvent((const SDL_ControllerAxisEvent&)e); break;
+                    case SDL_CONTROLLERBUTTONDOWN:
+                    case SDL_CONTROLLERBUTTONUP:
+                        listener->getRawInputProcessor()->controllerButtonEvent((const SDL_ControllerButtonEvent&)e); break;
+                    case SDL_CONTROLLERDEVICEADDED:
+                    case SDL_CONTROLLERDEVICEREMOVED:
+                    case SDL_CONTROLLERDEVICEREMAPPED:
+                        listener->getRawInputProcessor()->controllerDeviceEvent((const SDL_ControllerDeviceEvent&)e); break;
+                    case SDL_FINGERMOTION: 
+                    case SDL_FINGERDOWN:
+                    case SDL_FINGERUP:
+                        listener->getRawInputProcessor()->touchFingerEvent((const SDL_TouchFingerEvent&)e); break;
+                    case SDL_KEYDOWN: 
+                    case SDL_KEYUP:
+                        listener->getRawInputProcessor()->keyboardEvent((const SDL_KeyboardEvent&)e); break;
+                    case SDL_MOUSEMOTION: listener->getRawInputProcessor()->mouseMotionEvent((const SDL_MouseMotionEvent&)e); break;
+                    case SDL_MOUSEBUTTONDOWN:
+                    case SDL_MOUSEBUTTONUP:
+                        listener->getRawInputProcessor()->mouseButtonEvent((const SDL_MouseButtonEvent&)e); break;
+                    case SDL_MOUSEWHEEL: listener->getRawInputProcessor()->mouseWheelEvent((const SDL_MouseWheelEvent&)e); break;
+                    case SDL_MULTIGESTURE: listener->getRawInputProcessor()->multiGestureEvent((const SDL_MultiGestureEvent&)e); break;
+                    case SDL_TEXTINPUT:
+                        if(e.text.text[0] == 'q') quit = true;
+                        break;
+                }
+			}
+
+			listener->render();
 			SDL_GL_SwapWindow(window);
         }
+		this->dispose();
 	}
-
-int SDLCALL LibGDX_Application::event_filter(void* data,SDL_Event* event){
-    SDL_Log("EVENT!");
-    switch(event->type){
-				case SDL_QUIT:
-				    dispose();
-				    break;
-				case SDL_TEXTINPUT:
-				    SDL_Log("text input!");
-				    if(event->text.text[0] == 'q')
-				        dispose();
-				    break;
-				case SDL_WINDOWEVENT:
-				    //SDL_Log("WINDOW EVENT");
-				    if (event->window.windowID == SDL_GetWindowID(window)) {
-				        switch (event->window.event) {
-				            case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                                SDL_Log("RESIZE WINDOW EVENT: %i,%i",event->window.data1,event->window.data2);
-                                    LibGDX_Application::listener->resize(event->window.data1,event->window.data2);
-				                break;
-				            }
-				        }
-				    }break;
-			    }
-    return 1;
-}
     
 void LibGDX_Application::dispose(){
-	   LibGDX_Application::listener->dispose();
+	   listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
-       SDL_DelEventWatch(event_filter, NULL);
-       SDL_GL_DeleteContext(LibGDX_Application::glContext);
-	   SDL_DestroyWindow(LibGDX_Application::window);
+       SDL_GL_DeleteContext(glContext);
+	   SDL_DestroyWindow(window);
 	   SDL_Quit();
 }

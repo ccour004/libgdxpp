@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
 #include "GL.h"
-#include "InputProcessor.h"
+#include "RawInputProcessor.h"
 
 class ApplicationListener{
-    std::shared_ptr<InputProcessor> input;
+    std::shared_ptr<RawInputProcessor> input;
 public:
 	virtual bool create() = 0;
 	virtual void resize(int width, int height) = 0;
@@ -13,19 +13,18 @@ public:
 	virtual void resume() = 0;
 	virtual void dispose() = 0;
 
-	//Note: These are under the GDX singleton in LibGDX.
-	void setInputProcessor(const std::shared_ptr<InputProcessor> input){this->input = input;};
+	void setRawInputProcessor(std::shared_ptr<RawInputProcessor> input){this->input = input;};
+    std::shared_ptr<RawInputProcessor> getRawInputProcessor(){return input;}
 };
 
 int err(const char* fmt);
 
 class LibGDX_Application{
 private:
-    static std::shared_ptr<ApplicationListener> listener;
-    static int SDLCALL event_filter(void* data,SDL_Event* event);
-    static SDL_Window* window;
-    static SDL_GLContext glContext;
-    static void dispose();
+    std::shared_ptr<ApplicationListener> listener;
+    SDL_Window* window;
+    SDL_GLContext glContext;
+    void dispose();
 public:
 	LibGDX_Application(std::shared_ptr<ApplicationListener> listener);
 };
