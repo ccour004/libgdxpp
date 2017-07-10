@@ -6,7 +6,7 @@ int err(const char* fmt){
     return 1;
 }
 
-	LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
+LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
         this->listener = listener;
 		//Initialization flag
 		bool success = true;
@@ -60,49 +60,48 @@ int err(const char* fmt){
 			err("Could not create window: %s");
 		    }
 
-		    //Main loop.
-		    SDL_Event e;
-		    bool quit = false;
-		    //SDL_StartTextInput();
+        //SDL_StartTextInput();
 
 		//Let listener know that we're created now.
         if(!listener->create()){
             this->dispose();
             return;	
         }
-		listener->resize(640,480);
+        
+        SDL_AddEventWatch(event_filter,NULL);
+        listener->resize(640,480);
 
 		//Enter main loop.
-		while(!quit){
-			while(SDL_PollEvent(&e) != 0){
-			    switch(e.type){
+		while(true){
+			listener->render();
+			SDL_GL_SwapWindow(window);
+        }
+	}
+
+int LibGDX_Application::event_filter(void* data,SDL_Event* event){
+    SDL_Log("EVENT!");
+    switch(event->type){
 				case SDL_QUIT:
-				    quit = true;
+				    dispose();
 				    break;
 				case SDL_TEXTINPUT:
 				    SDL_Log("text input!");
-				    if(e.text.text[0] == 'q')
-				        quit = true;
+				    if(event->text.text[0] == 'q')
+				        dispose();
 				    break;
 				case SDL_WINDOWEVENT:
 				    //SDL_Log("WINDOW EVENT");
-				    if (e.window.windowID == SDL_GetWindowID(window)) {
-				        switch (e.window.event) {
+				    if (event->window.windowID == SDL_GetWindowID(window)) {
+				        switch (event->window.event) {
 				            case SDL_WINDOWEVENT_SIZE_CHANGED: {
-                                SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
-                                                listener->resize(e.window.data1,e.window.data2);
+                                SDL_Log("RESIZE WINDOW EVENT: %i,%i",event->window.data1,event->window.data2);
+                                                listener->resize(event->window.data1,event->window.data2);
 				                break;
 				            }
 				        }
 				    }break;
 			    }
-			}
-
-			listener->render();
-			SDL_GL_SwapWindow(window);
-		    }
-		this->dispose();
-	}
+}
     
 void LibGDX_Application::dispose(){
 	   listener->dispose();
