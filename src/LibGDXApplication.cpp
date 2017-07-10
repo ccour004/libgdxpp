@@ -7,7 +7,7 @@ int err(const char* fmt){
 }
 
 LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
-        this->listener = listener;
+        LibGDX_Application::listener = listener;
 		//Initialization flag
 		bool success = true;
 		SDL_Log("++START SDL++");
@@ -63,17 +63,17 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
         //SDL_StartTextInput();
 
 		//Let listener know that we're created now.
-        if(!listener->create()){
+        if(!LibGDX_Application::listener->create()){
             this->dispose();
             return;	
         }
         
         SDL_AddEventWatch(event_filter,NULL);
-        listener->resize(640,480);
+        LibGDX_Application::listener->resize(640,480);
 
 		//Enter main loop.
 		while(true){
-			listener->render();
+			LibGDX_Application::listener->render();
 			SDL_GL_SwapWindow(window);
         }
 	}
@@ -106,7 +106,7 @@ int LibGDX_Application::event_filter(void* data,SDL_Event* event){
 void LibGDX_Application::dispose(){
 	   listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
-       SDL_GL_DeleteContext(glContext);
-	   SDL_DestroyWindow(window);
+       SDL_GL_DeleteContext(LibGDX_Application::glContext);
+	   SDL_DestroyWindow(LibGDX_Application::window);
 	   SDL_Quit();
 }
