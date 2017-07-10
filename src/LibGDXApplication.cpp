@@ -100,7 +100,7 @@ int LibGDX_Application::event_filter(void* data,SDL_Event* event){
 				        switch (event->window.event) {
 				            case SDL_WINDOWEVENT_SIZE_CHANGED: {
                                 SDL_Log("RESIZE WINDOW EVENT: %i,%i",event->window.data1,event->window.data2);
-                                                listener->resize(event->window.data1,event->window.data2);
+                                    LibGDX_Application::listener->resize(event->window.data1,event->window.data2);
 				                break;
 				            }
 				        }
@@ -109,7 +109,7 @@ int LibGDX_Application::event_filter(void* data,SDL_Event* event){
 }
     
 void LibGDX_Application::dispose(){
-	   if(listener != NULL) listener->dispose();
+	   LibGDX_Application::listener->dispose();
 	   SDL_Log("~~STOP SDL~~");
        SDL_GL_DeleteContext(LibGDX_Application::glContext);
 	   SDL_DestroyWindow(LibGDX_Application::window);
