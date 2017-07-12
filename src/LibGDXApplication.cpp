@@ -73,6 +73,7 @@ int err(const char* fmt){
 		listener->resize(640,480);
 
 		//Enter main loop.
+        bool isPaused = false;
 		while(!quit){
 			while(SDL_PollEvent(&e) != 0){
                 //System events first.
@@ -81,11 +82,18 @@ int err(const char* fmt){
                     case SDL_WINDOWEVENT:
                         if (e.window.windowID == SDL_GetWindowID(window)) {
                             switch (e.window.event) {
-                                case SDL_WINDOWEVENT_SIZE_CHANGED: {
+                                case SDL_WINDOWEVENT_SIZE_CHANGED:
                                     SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
                                                     listener->resize(e.window.data1,e.window.data2);
                                     break;
-                                }
+                                case SDL_WINDOWEVENT_MINIMIZED:
+                                    listener->pause();
+                                    isPaused = true;
+                                    break;
+                                case SDL_WINDOWEVENT_RESTORED:
+                                    listener->resume();
+                                    isPaused = false;
+                                    break;
                             }
                         }
                         break;
@@ -121,7 +129,7 @@ int err(const char* fmt){
                 }
 			}
 
-			listener->render();
+			if(!isPaused) listener->render();
 			SDL_GL_SwapWindow(window);
         }
 		this->dispose();
