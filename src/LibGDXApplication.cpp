@@ -129,8 +129,10 @@ int err(const char* fmt){
                 }
 			}
 
-			if(!isPaused) listener->render();
-			SDL_GL_SwapWindow(window);
+			if(!isPaused){
+                listener->render();
+                SDL_GL_SwapWindow(window);
+            }
         }
 		this->dispose();
 	}
