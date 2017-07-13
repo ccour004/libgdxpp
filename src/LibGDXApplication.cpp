@@ -91,54 +91,6 @@ int err(const char* fmt){
                                     isPaused = true;
                                     break;
                                 case SDL_WINDOWEVENT_RESTORED:
-        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
-
-		window = SDL_CreateWindow(
-		        "Test Window",
-		        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-		        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-		        640,                               // width, in pixels
-		        480,                               // height, in pixels
-		        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-		);
-
-		glContext = SDL_GL_CreateContext(window);
-
-		#ifdef DESKTOP
-		GLenum glewError = glewInit(); 
-		if( glewError != GLEW_OK ) { 
-		SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }
-		#endif
-
-		//Use OpenGL 3.0 core
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-
-		// Turn on double buffering with a 24bit Z buffer.
-		// You may need to change this to 16 or 32 for your system
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
-		//Use Vsync
-		if( SDL_GL_SetSwapInterval( 1 ) < 0 )
-		{
-		    SDL_Log( "Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError() );
-		}
-
-		//Initialize OpenGL
-		SDL_Log("++INIT GL++");
-
-		//Setup gl settings.
-		glEnable(GL_DEPTH_TEST);
-		glClearDepthf(1.0f);
-		glDepthFunc(GL_LEQUAL);
-		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glClearColor( 0.66f, 0.66f, 0.66f, 1.f );
-
-		if (window == NULL){
-			err("Could not create window: %s");
-		    }
                                     listener->resume();
                                     isPaused = false;
                                     break;
