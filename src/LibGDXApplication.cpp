@@ -14,16 +14,16 @@ int err(const char* fmt){
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
         
         //Use OpenGL 3.0 core
-        #ifdef DESKTOP
+       /* #ifdef DESKTOP
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         #else
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        #endif
-		/*SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+        #endif*/
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );*/
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
 		// Turn on double buffering with a 24bit Z buffer.
 		// You may need to change this to 16 or 32 for your system
@@ -40,14 +40,6 @@ int err(const char* fmt){
         );
         glContext = SDL_GL_CreateContext(window);   
         SDL_GL_MakeCurrent(window, glContext);
-        
-                #ifdef DESKTOP
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        #else
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        #endif
 
         #ifdef DESKTOP
             GLenum glewError = glewInit(); 
@@ -106,7 +98,7 @@ int err(const char* fmt){
                                     continue;
                                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                                     SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
-                                                    listener->resize(e.window.data1,e.window.data2);
+                                    listener->resize(e.window.data1,e.window.data2);
                                     break;
                                 case SDL_WINDOWEVENT_MINIMIZED:
                                     listener->pause();
