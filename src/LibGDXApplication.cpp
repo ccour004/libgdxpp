@@ -78,9 +78,16 @@ int err(const char* fmt){
                 //System events first.
                 if(e.type == SDL_QUIT){quit = true; continue;}
 			    switch(e.type){
+                    case SDL_APP_TERMINATING:
+                    case SDL_APP_LOWMEMORY:
+                        quit = true;
+                        continue;
                     case SDL_WINDOWEVENT:
                         if (e.window.windowID == SDL_GetWindowID(window)) {
                             switch (e.window.event) {
+                                case SDL_WINDOWEVENT_CLOSE:
+                                    quit = true;
+                                    continue;
                                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                                     SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
                                                     listener->resize(e.window.data1,e.window.data2);
