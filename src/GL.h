@@ -6,7 +6,7 @@
 	#include <GL/glu.h>
 #else
     //#include <SDL_opengl.h>
-    //#include <video/android/SDL_androidvideo.h>
+    #include <../../SDL2/src/video/android/SDL_androidvideo.h>
     #include <GLES3/gl3.h>
 #endif
 
