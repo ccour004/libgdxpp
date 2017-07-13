@@ -97,7 +97,7 @@ int err(const char* fmt){
                                     isPaused = true;
                                     break;
                                 case SDL_WINDOWEVENT_RESTORED:
-                                    SDL_GL_MakeCurrent(window,glContext);
+                                    //SDL_GL_MakeCurrent(window,glContext);
                                     listener->resume();
                                     isPaused = false;
                                     break;
