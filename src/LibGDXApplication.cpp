@@ -13,22 +13,24 @@ int err(const char* fmt){
 		SDL_Log("++START SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
 
-		window = SDL_CreateWindow(
-		        "Test Window",
-		        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-		        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-		        640,                               // width, in pixels
-		        480,                               // height, in pixels
-		        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-		);
+        #ifdef DESKTOP
+             window = SDL_CreateWindow(
+                    "Test Window",
+                    SDL_WINDOWPOS_UNDEFINED,           // initial x position
+                    SDL_WINDOWPOS_UNDEFINED,           // initial y position
+                    640,                               // width, in pixels
+                    480,                               // height, in pixels
+                    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+            );
+            glContext = SDL_GL_CreateContext(window);         
 
-		glContext = SDL_GL_CreateContext(window);
+            GLenum glewError = glewInit(); 
+            if( glewError != GLEW_OK ) { 
+            SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }  
+        #else
+            glContext = SDL_GL_CreateContext(Android_Window);
 
-		#ifdef DESKTOP
-		GLenum glewError = glewInit(); 
-		if( glewError != GLEW_OK ) { 
-		SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }
-		#endif
+        #endif
 
 		//Use OpenGL 3.0 core
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
