@@ -88,10 +88,22 @@ int err(const char* fmt){
                                     break;
                                 case SDL_WINDOWEVENT_MINIMIZED:
                                     listener->pause();
+                                    SDL_GL_DeleteContext(glContext);
+                                    SDL_DestroyWindow(window);
                                     isPaused = true;
                                     break;
                                 case SDL_WINDOWEVENT_RESTORED:
                                     listener->resume();
+                                    window = SDL_CreateWindow(
+                                            "Test Window",
+                                            SDL_WINDOWPOS_UNDEFINED,           // initial x position
+                                            SDL_WINDOWPOS_UNDEFINED,           // initial y position
+                                            640,                               // width, in pixels
+                                            480,                               // height, in pixels
+                                            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+                                    );
+
+                                    glContext = SDL_GL_CreateContext(window);
                                     isPaused = false;
                                     break;
                             }
