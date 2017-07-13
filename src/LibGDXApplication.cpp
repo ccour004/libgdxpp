@@ -31,7 +31,8 @@ int err(const char* fmt){
                 480,                               // height, in pixels
                 SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
         );
-        glContext = SDL_GL_CreateContext(window);         
+        glContext = SDL_GL_CreateContext(window);   
+        SDL_GL_MakeCurrent(window, glContext);
 
         #ifdef DESKTOP
             GLenum glewError = glewInit(); 
