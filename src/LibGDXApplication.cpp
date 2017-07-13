@@ -13,23 +13,20 @@ int err(const char* fmt){
 		SDL_Log("++START SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
 
-        #ifdef DESKTOP
-             window = SDL_CreateWindow(
-                    "Test Window",
-                    SDL_WINDOWPOS_UNDEFINED,           // initial x position
-                    SDL_WINDOWPOS_UNDEFINED,           // initial y position
-                    640,                               // width, in pixels
-                    480,                               // height, in pixels
-                    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-            );
-            glContext = SDL_GL_CreateContext(window);         
+        window = SDL_CreateWindow(
+                "Test Window",
+                SDL_WINDOWPOS_UNDEFINED,           // initial x position
+                SDL_WINDOWPOS_UNDEFINED,           // initial y position
+                640,                               // width, in pixels
+                480,                               // height, in pixels
+                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        );
+        glContext = SDL_GL_CreateContext(window);         
 
+        #ifdef DESKTOP
             GLenum glewError = glewInit(); 
             if( glewError != GLEW_OK ) { 
             SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }  
-        #else
-            glContext = SDL_GL_CreateContext(Android_Window);
-
         #endif
 
 		//Use OpenGL 3.0 core
@@ -90,22 +87,11 @@ int err(const char* fmt){
                                     break;
                                 case SDL_WINDOWEVENT_MINIMIZED:
                                     listener->pause();
-                                    SDL_GL_DeleteContext(glContext);
-                                    SDL_DestroyWindow(window);
                                     isPaused = true;
                                     break;
                                 case SDL_WINDOWEVENT_RESTORED:
+                                    SDL_GL_MakeCurrent(window,context);
                                     listener->resume();
-                                    window = SDL_CreateWindow(
-                                            "Test Window",
-                                            SDL_WINDOWPOS_UNDEFINED,           // initial x position
-                                            SDL_WINDOWPOS_UNDEFINED,           // initial y position
-                                            640,                               // width, in pixels
-                                            480,                               // height, in pixels
-                                            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-                                    );
-
-                                    glContext = SDL_GL_CreateContext(window);
                                     isPaused = false;
                                     break;
                             }
