@@ -12,6 +12,16 @@ int err(const char* fmt){
 		bool success = true;
 		SDL_Log("++START SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
+        
+        //Use OpenGL 3.0 core
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+
+		// Turn on double buffering with a 24bit Z buffer.
+		// You may need to change this to 16 or 32 for your system
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
         window = SDL_CreateWindow(
                 "Test Window",
@@ -28,16 +38,6 @@ int err(const char* fmt){
             if( glewError != GLEW_OK ) { 
             SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }  
         #endif
-
-		//Use OpenGL 3.0 core
-		/*SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );*/
-
-		// Turn on double buffering with a 24bit Z buffer.
-		// You may need to change this to 16 or 32 for your system
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
 		//Use Vsync
 		if( SDL_GL_SetSwapInterval( 1 ) < 0 )
