@@ -19,11 +19,6 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
         
         #ifdef DESKTOP
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            GLenum glewError = glewInit(); 
-            if(glewError != GLEW_OK){
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
-                return;
-            }
         #else
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
@@ -31,6 +26,14 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
         //Set OpenGL version.
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
+        
+        #ifdef DESKTOP
+            GLenum glewError = glewInit(); 
+            if(glewError != GLEW_OK){
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
+                return;
+            }
+        #endif
         
         //Build window and context.
         SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
