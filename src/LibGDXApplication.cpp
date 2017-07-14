@@ -27,14 +27,6 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
         
-        #ifdef DESKTOP
-            GLenum glewError = glewInit(); 
-            if(glewError != GLEW_OK){
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
-                return;
-            }
-        #endif
-        
         //Build window and context.
         SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
         window = SDL_CreateWindow(
@@ -50,6 +42,14 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
             return;
         }
         glContext = SDL_GL_CreateContext(window); 
+        
+        #ifdef DESKTOP
+            GLenum glewError = glewInit(); 
+            if(glewError != GLEW_OK){
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
+                return;
+            }
+        #endif
 
 		//Use Vsync
 		if(SDL_GL_SetSwapInterval(1) < 0){
