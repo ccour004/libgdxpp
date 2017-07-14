@@ -30,16 +30,12 @@ public:
     int x = -1,y = -1;
     bool fullscreen = false,resizable = true;
     std::string title = "Test Window";
-    DesktopConfiguration(){
-        gl_major_version = 4;
-        gl_minor_version = 3;
-    }
+    DesktopConfiguration(){}
 };
 
 class MobileConfiguration: public Configuration{
 public:
-    MobileConfiguration(){
-    }
+    MobileConfiguration(){}
 };
 
 class LibGDX_Application{
