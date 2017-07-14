@@ -1,47 +1,56 @@
 #include "LibGDXApplication.h"
 
-bool LibGDX_Application::setOpenGL(){
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);   
+bool LibGDX_Application::setAttributes(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile){
+    #ifdef DESKTOP
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,desktop->gl_major_version);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,desktop->gl_minor_version);  
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, desktop->depth);  
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, desktop->stencil); 
+    #else
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,mobile->gl_major_version);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,mobile->gl_minor_version);  
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, mobile->depth);  
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, mobile->stencil); 
+    #endif
+    
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    
+    //Build window and context.
+    SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
+    int params = SDL_WINDOW_OPENGL;
+    #ifdef DESKTOP
+        if(desktop->resizable) params |= SDL_WINDOW_RESIZABLE;
+        if(desktop->fullscreen) params |= SDL_WINDOW_FULLSCREEN;
+        window = SDL_CreateWindow(desktop->title.c_str(),
+            desktop->x > -1 ? desktop->x : SDL_WINDOWPOS_UNDEFINED,
+            desktop->y > -1 ? desktop->y : SDL_WINDOWPOS_UNDEFINED,
+            desktop->width,desktop->height,params);
+    #else
+        window = SDL_CreateWindow("",
+            SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
+            640,480,params);        
+    #endif
+    if (window == NULL){
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create window: %s", SDL_GetError());
+        return false;
+    }
+    glContext = SDL_GL_CreateContext(window);
+    if(glContext == NULL){
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create context: %s", SDL_GetError());
+        return false;        
+    }
 }
 
-LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
+LibGDX_Application::LibGDX_Application(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile,std::shared_ptr<ApplicationListener> listener){
         this->listener = listener;
 		//Initialization flag
 		SDL_Log("++INITIALIZE SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
 
         SDL_Log("++SET OPENGL ATTRIBUTES++");
-		// Turn on double buffering with a 24bit Z buffer.
-		// You may need to change this to 16 or 32 for your system
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);  
-        
-        #ifdef DESKTOP
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        #else
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        #endif
-        
-        //Set OpenGL version.
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
-        
-        //Build window and context.
-        SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
-        window = SDL_CreateWindow(
-                "Test Window",
-                SDL_WINDOWPOS_UNDEFINED,           // initial x position
-                SDL_WINDOWPOS_UNDEFINED,           // initial y position
-                640,                               // width, in pixels
-                480,                               // height, in pixels
-                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-        );
-        if (window == NULL){
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create window: %s", SDL_GetError());
-            return;
-        }
-        glContext = SDL_GL_CreateContext(window); 
+		setAttributes(desktop,mobile);
         
         #ifdef DESKTOP
             GLenum glewError = glewInit(); 

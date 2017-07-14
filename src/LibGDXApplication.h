@@ -19,11 +19,27 @@ public:
 };
 
 class Configuration{
-    std::map<SDL_GLattr,int> desktopConfig,mobileConfig,universalConfig;
 public:
-    std::map<SDL_GLattr,int> getRawDesktopConfig(){return desktopConfig;}
-    std::map<SDL_GLattr,int> getRawMobileConfig(){return mobileConfig;}
-    std::map<SDL_GLattr,int> getRawUniversalConfig(){return universalConfig;}
+    int depth = 16,stencil = 0;
+    int gl_major_version = 3,gl_minor_version = 0;
+};
+
+class DesktopConfiguration: public Configuration{
+public:
+    int width = 640,height = 480;
+    int x = -1,y = -1;
+    bool fullscreen = false,resizable = true;
+    std::string title = "Test Window";
+    DesktopConfiguration(){
+        gl_major_version = 4;
+        gl_minor_version = 3;
+    }
+};
+
+class MobileConfiguration: public Configuration{
+public:
+    MobileConfiguration(){
+    }
 };
 
 class LibGDX_Application{
@@ -33,7 +49,14 @@ private:
     SDL_GLContext glContext;
     
     void dispose();
-    bool setOpenGL();
+    bool setAttributes(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile);
 public:
-	LibGDX_Application(std::shared_ptr<ApplicationListener> listener);
+	LibGDX_Application(std::shared_ptr<ApplicationListener> listener):
+        LibGDX_Application(std::make_shared<DesktopConfiguration>(),std::make_shared<MobileConfiguration>(),listener){};
+	LibGDX_Application(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<ApplicationListener> listener):
+        LibGDX_Application(desktop,std::make_shared<MobileConfiguration>(),listener){};
+	LibGDX_Application(std::shared_ptr<MobileConfiguration> mobile,std::shared_ptr<ApplicationListener> listener):
+        LibGDX_Application(std::make_shared<DesktopConfiguration>(),mobile,listener){};
+	LibGDX_Application(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile,
+        std::shared_ptr<ApplicationListener> listener);
 };
