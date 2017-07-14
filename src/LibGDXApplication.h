@@ -17,8 +17,6 @@ public:
     std::shared_ptr<RawInputProcessor> getRawInputProcessor(){return input;}
 };
 
-int err(const char* fmt);
-
 class LibGDX_Application{
 private:
     std::shared_ptr<ApplicationListener> listener;

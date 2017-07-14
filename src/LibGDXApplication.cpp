@@ -1,35 +1,13 @@
 #include "LibGDXApplication.h"
 
-int err(const char* fmt){
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,fmt, SDL_GetError());
-    //dispose();
-    return 1;
-}
-
-	LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
+LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
         this->listener = listener;
 		//Initialization flag
-		bool success = true;
-		SDL_Log("++START SDL++");
+		SDL_Log("++INITIALIZE SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
         
-        //Use OpenGL 3.0 core
-       /* #ifdef DESKTOP
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        #else
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        #endif*/
-		/*SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-
-		// Turn on double buffering with a 24bit Z buffer.
-		// You may need to change this to 16 or 32 for your system
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);*/
-
+        //Build window and context.
+        SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
         window = SDL_CreateWindow(
                 "Test Window",
                 SDL_WINDOWPOS_UNDEFINED,           // initial x position
@@ -38,61 +16,51 @@ int err(const char* fmt){
                 480,                               // height, in pixels
                 SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
         );
-        glContext = SDL_GL_CreateContext(window);   
-        
-        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
-        #ifdef DESKTOP
-            SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-        #else
-            SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES );
-        #endif
+        if (window == NULL){
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create window: %s", SDL_GetError());
+            return;
+        }
+        glContext = SDL_GL_CreateContext(window); 
 
+        SDL_Log("++SET OPENGL ATTRIBUTES++");
 		// Turn on double buffering with a 24bit Z buffer.
 		// You may need to change this to 16 or 32 for your system
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);  
+ 
+        //Set OpenGL version.
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
+        
         #ifdef DESKTOP
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
             GLenum glewError = glewInit(); 
-            if( glewError != GLEW_OK ) { 
-            SDL_Log( "Error initializing GLEW! %s\n", glewGetErrorString( glewError ) ); }  
+            if(glewError != GLEW_OK){
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
+                return;
+            }
+        #else
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
 
 		//Use Vsync
-		if( SDL_GL_SetSwapInterval( 1 ) < 0 )
-		{
-		    SDL_Log( "Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError() );
-		}
-
-		//Initialize OpenGL
-		SDL_Log("++INIT GL++");
-
-		//Setup gl settings.
-		glEnable(GL_DEPTH_TEST);
-		glClearDepthf(1.0f);
-		glDepthFunc(GL_LEQUAL);
-		//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glClearColor( 0.66f, 0.66f, 0.66f, 1.f );
-
-		if (window == NULL){
-			err("Could not create window: %s");
-		    }
-
-		    //Main loop.
-		    SDL_Event e;
-		    bool quit = false;
-		    //SDL_StartTextInput();
+		if(SDL_GL_SetSwapInterval(1) < 0){
+		    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
+            return;
+        }
 
 		//Let listener know that we're created now.
+        SDL_Log("++CREATE GDXPP APPLISTENER++");
         if(!listener->create()){
-            this->dispose();
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"GDXPP AppListener create failed!");
             return;	
         }
 		listener->resize(640,480);
 
-		//Enter main loop.
-        bool isPaused = false;
+        //Main loop.
+        SDL_Log("++START GAME LOOP++");
+        SDL_Event e;
+        bool isPaused = false,quit = false;
 		while(!quit){
 			while(SDL_PollEvent(&e) != 0){
                 //System events first.
@@ -109,7 +77,6 @@ int err(const char* fmt){
                                     quit = true;
                                     continue;
                                 case SDL_WINDOWEVENT_SIZE_CHANGED:
-                                    SDL_Log("RESIZE WINDOW EVENT: %i,%i",e.window.data1,e.window.data2);
                                     listener->resize(e.window.data1,e.window.data2);
                                     break;
                                 case SDL_WINDOWEVENT_MINIMIZED:
@@ -117,7 +84,6 @@ int err(const char* fmt){
                                     isPaused = true;
                                     break;
                                 case SDL_WINDOWEVENT_RESTORED:
-                                    //SDL_GL_MakeCurrent(window,glContext);
                                     listener->resume();
                                     isPaused = false;
                                     break;
@@ -160,13 +126,10 @@ int err(const char* fmt){
                 listener->render();
                 SDL_GL_SwapWindow(window);
             }
-        }
-		this->dispose();
-	}
-    
-void LibGDX_Application::dispose(){
-	   listener->dispose();
-	   SDL_Log("~~STOP SDL~~");
+       }
+        
+	   SDL_Log("--STOP GAME LOOP AND TEAR DOWN--");
+       listener->dispose();
        SDL_GL_DeleteContext(glContext);
 	   SDL_DestroyWindow(window);
 	   SDL_Quit();
