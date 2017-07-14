@@ -7,12 +7,16 @@ bool LibGDX_Application::setAttributes(std::shared_ptr<DesktopConfiguration> des
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,desktop->gl_minor_version);  
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, desktop->depth);  
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, desktop->stencil); 
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, desktop->multiSampleBuffer);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, desktop->multiSampleSamples);
     #else
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,mobile->gl_major_version);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,mobile->gl_minor_version);  
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, mobile->depth);  
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, mobile->stencil); 
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, mobile->multiSampleBuffer);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, mobile->multiSampleSamples);
     #endif
     
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

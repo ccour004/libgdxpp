@@ -22,6 +22,9 @@ class Configuration{
 public:
     int depth = 16,stencil = 0;
     int gl_major_version = 3,gl_minor_version = 0;
+    int multiSampleBuffer = 0,multiSampleSamples = 0;
+    void setAntiAlias(){multiSampleBuffer = 1;multiSampleSamples = 2;}
+    void setBetterAntiAlias(){multiSampleBuffer = 1;multiSampleSamples = 4;}
 };
 
 class DesktopConfiguration: public Configuration{
