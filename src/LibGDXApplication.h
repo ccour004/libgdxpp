@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <map>
 #include "GL.h"
 #include "RawInputProcessor.h"
 
@@ -17,12 +18,22 @@ public:
     std::shared_ptr<RawInputProcessor> getRawInputProcessor(){return input;}
 };
 
+class Configuration{
+    std::map<SDL_GLattr,int> desktopConfig,mobileConfig,universalConfig;
+public:
+    std::map<SDL_GLattr,int> getRawDesktopConfig(){return desktopConfig;}
+    std::map<SDL_GLattr,int> getRawMobileConfig(){return mobileConfig;}
+    std::map<SDL_GLattr,int> getRawUniversalConfig(){return universalConfig;}
+};
+
 class LibGDX_Application{
 private:
     std::shared_ptr<ApplicationListener> listener;
     SDL_Window* window;
     SDL_GLContext glContext;
+    
     void dispose();
+    bool setOpenGL();
 public:
 	LibGDX_Application(std::shared_ptr<ApplicationListener> listener);
 };

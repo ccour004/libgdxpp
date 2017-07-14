@@ -1,10 +1,36 @@
 #include "LibGDXApplication.h"
 
+bool LibGDX_Application::setOpenGL(){
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);   
+}
+
 LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> listener){
         this->listener = listener;
 		//Initialization flag
 		SDL_Log("++INITIALIZE SDL++");
         SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO);
+
+        SDL_Log("++SET OPENGL ATTRIBUTES++");
+		// Turn on double buffering with a 24bit Z buffer.
+		// You may need to change this to 16 or 32 for your system
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);  
+        
+        #ifdef DESKTOP
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+            GLenum glewError = glewInit(); 
+            if(glewError != GLEW_OK){
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
+                return;
+            }
+        #else
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+        #endif
+        
+        //Set OpenGL version.
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
         
         //Build window and context.
         SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
@@ -21,27 +47,6 @@ LibGDX_Application::LibGDX_Application(std::shared_ptr<ApplicationListener> list
             return;
         }
         glContext = SDL_GL_CreateContext(window); 
-
-        SDL_Log("++SET OPENGL ATTRIBUTES++");
-		// Turn on double buffering with a 24bit Z buffer.
-		// You may need to change this to 16 or 32 for your system
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);  
- 
-        //Set OpenGL version.
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
-        
-        #ifdef DESKTOP
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-            GLenum glewError = glewInit(); 
-            if(glewError != GLEW_OK){
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Error initializing GLEW! %s\n",glewGetErrorString(glewError));
-                return;
-            }
-        #else
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        #endif
 
 		//Use Vsync
 		if(SDL_GL_SetSwapInterval(1) < 0){
