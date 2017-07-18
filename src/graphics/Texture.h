@@ -34,11 +34,11 @@
  * A Texture must be disposed when it is no longer used
  * @author badlogicgames@gmail.com */
 class Texture{
-	static void uploadImageData (int target, SDL2::Surface data,bool useMipMaps) {
+	static void uploadImageData (int target, /*SDL2::Surface*/SDL_Surface* data,bool useMipMaps) {
 		uploadImageData(target, data, 0,useMipMaps);
 	}
 	
-	static void uploadImageData (int target, SDL2::Surface data, int miplevel,bool useMipMaps) {
+	static void uploadImageData (int target, /*SDL2::Surface*/SDL_Surface* data, int miplevel,bool useMipMaps) {
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		if (useMipMaps)
 			MipMapGenerator::generateMipMap(target, data, data->w, data->h);
@@ -64,7 +64,7 @@ class Texture{
 	GLenum uWrap = GL_CLAMP_TO_EDGE,vWrap = GL_CLAMP_TO_EDGE;
     bool useMipMaps;
 public:
-	SDL2::Surface data;
+	/*SDL2::Surface*/SDL_Surface* data;
     
     Texture(){}
     
@@ -74,24 +74,24 @@ public:
         this->uWrap = uWrap;
         this->vWrap = vWrap;
         this->useMipMaps = useMipMaps;
-        data = SDL2::Surface(IMG_Load(internalPath.c_str()));
+        data = /*SDL2::Surface(*/IMG_Load(internalPath.c_str())/*)*/;
         if(!data)
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"IMG_Load: %s\n",IMG_GetError());
         else load(data);
     }
     
-    Texture (int glTarget,SDL2::Surface data){
+    Texture (int glTarget,/*SDL2::Surface*/SDL_Surface* data){
         this->glTarget = glTarget;
         glGenTextures(1, &glHandle);
 		load(data);
 	}
 
-	Texture (SDL2::Surface data):Texture(GL_TEXTURE_2D,data) {}
+	Texture (/*SDL2::Surface*/SDL_Surface* data):Texture(GL_TEXTURE_2D,data) {}
     
     /** Disposes all resources associated with the texture */
-	~Texture() {destroy();}
+	~Texture() {destroy();SDL_Log("TEXTURE DESTROY!");}
 
-	void load (SDL2::Surface data) {
+	void load (/*SDL2::Surface*/SDL_Surface* data) {
 		this->data = data;
         
         //Create image, set its properties.
@@ -117,7 +117,7 @@ public:
 	 * @param pixmap The Pixmap
 	 * @param x The x coordinate in pixels
 	 * @param y The y coordinate in pixels */
-	void draw (SDL2::Surface data, int x, int y) {
+	void draw (/*SDL2::Surface*/SDL_Surface* data, int x, int y) {
         int format = data->format->BytesPerPixel == 4? GL_RGBA : GL_RGB;
 		bind();
 		glTexSubImage2D(glTarget, 0, x, y, data->w, data->h, format, GL_UNSIGNED_BYTE,data->pixels);
@@ -126,7 +126,7 @@ public:
     GLuint getTextureObjectHandle () {return glHandle;}
 
     //SDL_Surface data.
-    SDL2::Surface getTextureData () {return data;}
+    /*SDL2::Surface*/SDL_Surface* getTextureData () {return data;}
 	int getWidth () {return data->w;}
 	int getHeight () {return data->h;}
 	int getDepth () {return data->pitch;}
