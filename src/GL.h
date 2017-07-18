@@ -43,7 +43,7 @@ namespace SDL2 {
     //TODO: Unique Pointers too?
 }
 
-#include <graphics/Texture.h>
+#include "graphics/Texture.h"
 namespace GDXPP{
     struct GDXPP_Deleter{
       void operator()(Texture*  ptr) { if (ptr) ptr->destroy();} 
