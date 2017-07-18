@@ -111,7 +111,7 @@ public:
 		this->primitiveType = type;
 		this->center.set(0, 0, 0);
 		this->halfExtents.set(0, 0, 0);
-		this->radius = -1f;
+		this->radius = -1.0f;
 		return *this;
 	}
 
@@ -120,7 +120,7 @@ public:
 	 * minimum x, y and z coordinate of the shape. Note that MeshPart is not aware of any transformation that might be applied when
 	 * rendering. It calculates the untransformed (not moved, not scaled, not rotated) values. */
 	void update () {
-		mesh.calculateBoundingBox(bounds, offset, size);
+		mesh->calculateBoundingBox(bounds, offset, size);
 		bounds.getCenter(center);
 		bounds.getDimensions(halfExtents).scl(0.5f);
 		radius = halfExtents.len();
@@ -138,14 +138,14 @@ public:
 	 * {@link ShaderProgram#end()}.
 	 * @param shader the shader to be used
 	 * @param autoBind overrides the autoBind member of the Mesh */
-	void render (const ShaderProgram& shader, bool autoBind) {
+	void render (ShaderProgram& shader, bool autoBind) {
 		mesh->render(shader, primitiveType, offset, size, autoBind);
 	}
 
 	/** Renders the mesh part using the specified shader, must be called in between {@link ShaderProgram#begin()} and
 	 * {@link ShaderProgram#end()}.
 	 * @param shader the shader to be used */
-	void render (const ShaderProgram& shader) {
+	void render (ShaderProgram& shader) {
 		mesh->render(shader, primitiveType, offset, size);
 	}
 };

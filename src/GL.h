@@ -5,7 +5,6 @@
     #include <SDL_opengl.h> 
 	#include <GL/glu.h>
 #else
-    //#include <SDL_opengl.h>
     #include <GLES3/gl3.h>
 #endif
 
@@ -15,10 +14,3 @@
 
 char* file_read(const char* filename);
 std::string fileToString(const std::string& filename);
-
-class Color{
-public:
-    Color(float r,float g,float b,float a){this->r = r;this->g = g;this->b = b;this->a = a;}
-    float r,g,b,a;
-};
-
