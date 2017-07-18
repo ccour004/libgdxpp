@@ -21,10 +21,6 @@ if(SDL2IMAGE_FOUND)
 endif()
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/ SOURCE)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/math/ MATH_SOURCE)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/math/collision MATH_COLLISION_SOURCE)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/ GRAPHICS_SOURCE)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/glutils GLUTILS_SOURCE)
 
-add_library(gdxpp SHARED ${SOURCE} ${MATH_SOURCE} ${GRAPHICS_SOURCE} ${MATH_COLLISION_SOURCE} ${GLUTILS_SOURCE})
+add_library(gdxpp SHARED ${SOURCE})
 target_compile_definitions(gdxpp PRIVATE DESKTOP=1)
