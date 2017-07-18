@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #pragma once
-#include <ostream>
+#include <sstream>
 #include <iomanip>
 #include "../utils/NumberUtils.h"
 
