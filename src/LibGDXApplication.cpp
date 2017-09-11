@@ -2,6 +2,7 @@
 
 bool LibGDX_Application::setAttributes(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile){
     #ifdef DESKTOP
+    	SDL_Log("++SET GL ATTRIBUTES [DESKTOP]++");
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,desktop->gl_major_version);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,desktop->gl_minor_version);  
@@ -10,6 +11,7 @@ bool LibGDX_Application::setAttributes(std::shared_ptr<DesktopConfiguration> des
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, desktop->multiSampleBuffer);
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, desktop->multiSampleSamples);
     #else
+	SDL_Log("++SET GL ATTRIBUTES [MOBILE]++");
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,mobile->gl_major_version);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,mobile->gl_minor_version);  
@@ -22,29 +24,34 @@ bool LibGDX_Application::setAttributes(std::shared_ptr<DesktopConfiguration> des
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     
     //Build window and context.
-    SDL_Log("++BUILD SDL WINDOW AND SDL/GL CONTEXT++");
     int params = SDL_WINDOW_OPENGL;
     #ifdef DESKTOP
+    SDL_Log("++START BUILD SDL WINDOW [DESKTOP]++");
         if(desktop->resizable) params |= SDL_WINDOW_RESIZABLE;
         if(desktop->fullscreen) params |= SDL_WINDOW_FULLSCREEN;
         window = SDL_CreateWindow(desktop->title.c_str(),
             desktop->x > -1 ? desktop->x : SDL_WINDOWPOS_UNDEFINED,
             desktop->y > -1 ? desktop->y : SDL_WINDOWPOS_UNDEFINED,
             desktop->width,desktop->height,params);
+    SDL_Log("++END BUILD SDL WINDOW [DESKTOP]++");
     #else
+    SDL_Log("++START BUILD SDL WINDOW [MOBILE]++");
         window = SDL_CreateWindow("",
             SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
-            640,480,params);        
+            640,480,params);       
+    SDL_Log("++END BUILD SDL WINDOW [MOBILE]++"); 
     #endif
     if (window == NULL){
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create window: %s", SDL_GetError());
         return false;
     }
+    SDL_Log("++CREATE SDL/GL CONTEXT++");
     glContext = SDL_GL_CreateContext(window);
     if(glContext == NULL){
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create context: %s", SDL_GetError());
         return false;        
     }
+    SDL_Log("++SET ATTRIBUTES COMPLETE++");
 }
 
 LibGDX_Application::LibGDX_Application(std::shared_ptr<DesktopConfiguration> desktop,std::shared_ptr<MobileConfiguration> mobile,std::shared_ptr<ApplicationListener> listener){
